@@ -2,14 +2,14 @@ package src;
 
 import java.util.Scanner;
 
+import org.json.JSONObject;
+
 public class Connect4 extends Challenge{
 
 	private int[] grille;
 
 	public Connect4() {
-		this.nom = "Connect 4";
-		this.tour = 1;
-		this.fini = false;
+		super("Connect 4");
 		this.grille = new int[6*7];
 	}
 
@@ -181,6 +181,14 @@ public class Connect4 extends Challenge{
 	public void finPartie() {
 		if(this.tour == 1)System.out.println("Le joueur 2 a gagné.");
 		else System.out.println("Le joueur 1 a gagné.");
+	}
+	
+	public JSONObject fromJson(String json) {
+		return new JSONObject(json);
+	}
+	
+	public String toJson(JSONObject json) {
+		return json.toString();
 	}
 
 	public void lancer() {
