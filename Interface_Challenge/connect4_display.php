@@ -10,13 +10,13 @@ for($i =0; $i < 6; $i++){
       if($j == 0){
         $php .= "<div style='display:flex; flex-direction:column; justify-content:center;'>";
         $php .= "<div style='background-color:blue; display:flex; flex-direction:row; justify-content:space-between; width:80%;height:75px;border-top:10px solid;border-left:10px solid;border-right:10px solid;margin:auto'>";
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
       }else if($j==6){
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
         $php .= "</div></div>";
 
       }else{
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
       }
     
     }else if($i == 5){
@@ -24,13 +24,13 @@ for($i =0; $i < 6; $i++){
       if($j == 0){
         $php .= "<div style='display:flex; flex-direction:column; justify-content:center;'>";
         $php .= "<div style='background-color:blue; display:flex; flex-direction:row; justify-content:space-between; width:80%;height:75px;border-left:10px solid;border-right:10px solid;border-bottom:10px solid;;margin:auto'>";
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
       }else if($j==6){
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
         $php .= "</div></div>";
 
       }else{
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
       }
           
      
@@ -39,13 +39,13 @@ for($i =0; $i < 6; $i++){
       if($j == 0){
         $php .= "<div style='display:flex; flex-direction:column; justify-content:center;'>";
         $php .= "<div style='background-color:blue; display:flex; flex-direction:row; justify-content:space-between; width:80%;height:75px;border-left:10px solid;border-right:10px solid;;margin:auto'>";
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
       }else if($j==6){
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";
         $php .= "</div></div>";
 
       }else{
-        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";  
+        $php .= "<div onclick='choose_col(".$j.")' id=".$j."-".$i." style='background-color:white;display:flex;flex-direction:column; justify-content:center; border:10px solid DarkBlue ;border-radius:100px; width:50px;height:50px;margin-top:auto;margin-bottom:auto'>  </div>";  
       }
      
     }
