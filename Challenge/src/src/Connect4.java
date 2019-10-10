@@ -163,49 +163,27 @@ public class Connect4 extends Challenge{
 		if(complet) fini = true;
 	}
 	
-	public void recevoirEtJouerCoup() {
-		int col = -1;
+	public boolean jouerCoup(JSONObject colonne) {
+		int col = colonne.getInt("colonne");
 		boolean ok = false;
 		
-		while(!ok) {
-			//col = colonne reçue dans la requete de l'ia/joueur
-			if((col < 0 || col > 6) || grille[col] != 0) {
-				//colonne non valide, envoyer false à l'ia/joueur
-			}else {
-				ok = true;
-			}
+		if(col >= 0 && col <= 6 && grille[col] == 0) {
+			while(col < 35 && grille[col+7]==0)col+=7;
+			grille[col]=tour;
+			majFini(col);
+			if(this.tour==1)tour = 2;
+			else tour = 1;
+			ok = true;
 		}
-		this.jouerCoup(col);
-	}
-	
-	public void jouerCoup(int col) {
-		while(col < 35 && grille[col+7]==0)col+=7;
-		grille[col]=tour;
-		majFini(col);
-		if(this.tour==1)tour = 2;
-		else tour = 1;
-	}
-	
-	public void envoyerDonnees() {
-		//envoi de la grille et du numéro de joueur qui doit jouer à l'ia et au joueur
-		//toJson
+		return ok;
 	}
 
 	public void finPartie() {
 		
 	}
-	
-	public void lancer() {
-		while(!estFini()) {
-			this.envoyerDonnees();
-			this.recevoirEtJouerCoup();
-		}
-		this.envoyerDonnees();
-	}
 
 	public static void main (String[] args){
 		Connect4 c = new Connect4();
-		c.lancer();
 	}
 
 }

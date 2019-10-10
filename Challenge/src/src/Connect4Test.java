@@ -4,12 +4,17 @@ import org.json.JSONObject;
 
 
 
-public class Connect4Test extends Challenge{
+public class Connect4Test{
 
 	private int[] grille;
+	private String nom;
+	private boolean fini;
+	private int tour; //J1 ou J2
 
 	public Connect4Test() {
-		super("Connect 4");
+		this.nom = "Connect 4";
+		this.fini = false;
+		this.tour = 1;
 		this.grille = new int[6*7];
 	}
 	
@@ -194,8 +199,6 @@ public class Connect4Test extends Challenge{
 			}
 		}
 	}
-	
-	public void envoyerDonnees() {}
 
 	public void finPartie() {
 		if(this.tour == 1)System.out.println("Le joueur 2 a gagné.");
