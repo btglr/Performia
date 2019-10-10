@@ -32,17 +32,12 @@ abstract class Challenge {
 	/**
 	 * Attend l'action du joueur
 	 */
-	abstract void attendreCoup();
+	abstract void recevoirEtJouerCoup();
 	
 	/**
 	 * Envoie les données de la partie (etat du plateau ou score par ex) au joueur et à l'ia
 	 */
 	abstract void envoyerDonnees();
-	
-	/**
-	 * Affiche le resultat de la partie
-	 */
-	abstract void finPartie();
 	
 	/**
 	 * Lance la partie
