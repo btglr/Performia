@@ -1,8 +1,8 @@
 package src;
-
 import java.util.Scanner;
-
 import org.json.JSONObject;
+
+
 
 public class Connect4 extends Challenge{
 
@@ -12,7 +12,21 @@ public class Connect4 extends Challenge{
 		super("Connect 4");
 		this.grille = new int[6*7];
 	}
-
+	
+	public JSONObject toJson() {
+		
+		JSONObject json = new JSONObject();
+		json.put("fini", this.fini);
+		json.put("tour", this.tour);
+		json.put("grille", this.grille);
+		
+		return json;
+	}
+	
+	public Object fromJson(JSONObject json) {
+		return json.getInt("column");
+	}
+	
 	boolean estFini() {
 		return fini;
 	}
@@ -182,27 +196,31 @@ public class Connect4 extends Challenge{
 		if(this.tour == 1)System.out.println("Le joueur 2 a gagné.");
 		else System.out.println("Le joueur 1 a gagné.");
 	}
-	
-	public JSONObject fromJson(String json) {
-		return new JSONObject(json);
-	}
-	
-	public String toJson(JSONObject json) {
-		return json.toString();
-	}
 
 	public void lancer() {
+		JSONObject json_grille_and_tour = new JSONObject();
+		int column_select;
 		while(!estFini()) {
 			System.out.println("Tour du J"+tour);
+			//JSON A ENVOYE AU JOUEUR
+			json_grille_and_tour = this.toJson();
 			this.afficherGrille(); // A remplacer par l'envoi de la nouvelle grille au joueur et à l'ia
+			
+			//JSON RECU PAR LE JOUEUR/IA
+			//column_select = this.fromJson(  );
 			this.attendreCoup();
 			System.out.println();
 		}
+		this.afficherGrille();// A remplacer par l'envoi de la nouvelle grille au joueur et à l'ia
 		this.finPartie();
 	}
 
 	public static void main (String[] args){
 		Connect4 c = new Connect4();
+//		JSONObject json = new JSONObject();
+//		json.put("column", 5);
+//		int x = (int)c.fromJson(json);
+//		System.out.println(x);
 		c.lancer();
 	}
 

@@ -15,6 +15,16 @@ abstract class Challenge {
 	}
 	
 	/**
+	 * Converti les données du challenge à envoyer en Json
+	 */
+	abstract JSONObject toJson();
+	
+	/**
+	 * Transforme les données reçu des participants en Objet
+	 */
+	abstract Object fromJson(JSONObject json);
+	
+	/**
 	 * Retourne true si la partie est finie
 	 */
 	abstract boolean estFini();
@@ -33,16 +43,6 @@ abstract class Challenge {
 	 * Affiche le resultat de la partie
 	 */
 	abstract void finPartie();
-	
-	/**
-	 * Lit le fichier json
-	 */
-	abstract JSONObject fromJson(String json);
-	
-	/**
-	 * Ecrit en json
-	 */
-	abstract String toJson(JSONObject json);
 	
 	/**
 	 * Lance la partie
