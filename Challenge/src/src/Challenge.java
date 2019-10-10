@@ -32,15 +32,5 @@ abstract class Challenge {
 	/**
 	 * Attend l'action du joueur
 	 */
-	abstract void recevoirEtJouerCoup();
-	
-	/**
-	 * Envoie les données de la partie (etat du plateau ou score par ex) au joueur et à l'ia
-	 */
-	abstract void envoyerDonnees();
-	
-	/**
-	 * Lance la partie
-	 */
-	abstract void lancer();
+	abstract boolean jouerCoup(JSONObject colonne);
 }
