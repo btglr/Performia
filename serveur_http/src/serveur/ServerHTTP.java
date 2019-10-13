@@ -19,6 +19,7 @@ public class ServerHTTP {
         }
 
         HttpContext request = server.createContext("/request", new RequestHandler());
+        request.getFilters().add(new ParameterFilter());
 
         server.setExecutor(null);
         server.start();
