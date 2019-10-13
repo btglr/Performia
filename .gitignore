@@ -1,2 +1,10 @@
+<<<<<<< HEAD
 *.iml
 .idea/*
+=======
+*.class
+*.iml
+out/*
+.idea/*
+.idea
+>>>>>>> serveur_http
