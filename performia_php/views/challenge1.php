@@ -93,7 +93,7 @@ $content = <<<HTML
 		function choose_col(col){
 			console.log("column select : ",col);
 			$.ajax({
-			  url: $urlSend,
+			  url: "$urlSend",
 			  data: col
 			});
 			updatePlateau()
