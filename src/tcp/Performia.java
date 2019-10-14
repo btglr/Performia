@@ -8,6 +8,8 @@ package tcp;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import challenge.Salle;
 import requete.FileRequete;
 import requete.RequeteManager;
 import data.Participant;
@@ -23,6 +25,7 @@ public class Performia {
      */
     
     public static ArrayList<Participant> participants = new ArrayList<>();
+    public static ArrayList<Salle> salles = new ArrayList<>();
     
     public static void main(String[] args) {
         RequeteManager gestionnaireRequete = new RequeteManager();
