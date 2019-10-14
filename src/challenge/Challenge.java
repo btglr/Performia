@@ -1,4 +1,4 @@
-package src;
+package challenge;
 
 import org.json.JSONObject;
 
@@ -15,12 +15,12 @@ abstract class Challenge {
 	}
 	
 	/**
-	 * Converti les données du challenge à envoyer en Json
+	 * Converti les donnï¿½es du challenge ï¿½ envoyer en Json
 	 */
 	abstract JSONObject toJson();
 	
 	/**
-	 * Transforme les données reçu des participants en Objet
+	 * Transforme les donnï¿½es reï¿½u des participants en Objet
 	 */
 	abstract Object fromJson(JSONObject json);
 	

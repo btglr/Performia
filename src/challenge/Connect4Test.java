@@ -1,14 +1,20 @@
-package src;
+package challenge;
+import java.util.Scanner;
 import org.json.JSONObject;
 
 
 
-public class Connect4 extends Challenge{
+public class Connect4Test{
 
 	private int[] grille;
+	private String nom;
+	private boolean fini;
+	private int tour; //J1 ou J2
 
-	public Connect4() {
-		super("Connect 4");
+	public Connect4Test() {
+		this.nom = "Connect 4";
+		this.fini = false;
+		this.tour = 1;
 		this.grille = new int[6*7];
 	}
 	
@@ -27,6 +33,17 @@ public class Connect4 extends Challenge{
 	
 	boolean estFini() {
 		return fini;
+	}
+
+	public void afficherGrille() {
+		int cpt = 0;
+		for(int i = 0; i < 6; i++) {
+			for(int j = 0; j < 7; j++) {
+				System.out.print(grille[cpt]+" ");
+				cpt++;
+			}
+			System.out.println("");
+		}
 	}
 
 	public void majFini(int pos) {
@@ -162,28 +179,53 @@ public class Connect4 extends Challenge{
 		}
 		if(complet) fini = true;
 	}
-	
-	public boolean jouerCoup(JSONObject colonne) {
-		int col = colonne.getInt("colonne");
-		boolean ok = false;
-		
-		if(col >= 0 && col <= 6 && grille[col] == 0) {
-			while(col < 35 && grille[col+7]==0)col+=7;
-			grille[col]=tour;
-			majFini(col);
-			if(this.tour==1)tour = 2;
-			else tour = 1;
-			ok = true;
+
+	public void recevoirEtJouerCoup() {
+		boolean ok = false;												//
+		int tmp = 1;													// A remplacer par la reception d'une action c�te joueur ou ia
+		Scanner sc = new Scanner(System.in);							//
+		System.out.println("Entrez un num�ro de colonne entre 0 et 6.");//
+		while(!ok) {
+			tmp = sc.nextInt();
+			if(tmp < 0 || tmp > 6) System.out.println("Valeur invalide."); // traitement � faire du c�t� joueur et ia
+			else if(grille[tmp] != 0)System.out.println("Colonne pleine.");//
+			else {
+				while(tmp < 35 && grille[tmp+7]==0)tmp+=7;
+				grille[tmp]=tour;
+				majFini(tmp);
+				ok = true;
+				if(this.tour==1)tour = 2;
+				else tour = 1;
+			}
 		}
-		return ok;
 	}
 
 	public void finPartie() {
-		
+		if(this.tour == 1)System.out.println("Le joueur 2 a gagn�.");
+		else System.out.println("Le joueur 1 a gagn�.");
+	}
+
+	public void lancer() {
+		JSONObject json_grille_and_tour = new JSONObject();
+		int column_select;
+		while(!estFini()) {
+			System.out.println("Tour du J"+tour);
+			//JSON A ENVOYE AU JOUEUR
+			json_grille_and_tour = this.toJson();
+			this.afficherGrille(); // A remplacer par l'envoi de la nouvelle grille au joueur et � l'ia
+			
+			//JSON RECU PAR LE JOUEUR/IA
+			//column_select = this.fromJson(  );
+			this.recevoirEtJouerCoup();
+			System.out.println();
+		}
+		this.afficherGrille();// A remplacer par l'envoi de la nouvelle grille au joueur et � l'ia
+		this.finPartie();
 	}
 
 	public static void main (String[] args){
-		Connect4 c = new Connect4();
+		Connect4Test c = new Connect4Test();
+		c.lancer();
 	}
 
 }
