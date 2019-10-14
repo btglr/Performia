@@ -182,12 +182,12 @@ public class Connect4Test{
 
 	public void recevoirEtJouerCoup() {
 		boolean ok = false;												//
-		int tmp = 1;													// A remplacer par la reception d'une action c�te joueur ou ia
+		int tmp = 1;													// A remplacer par la reception d'une action côte joueur ou ia
 		Scanner sc = new Scanner(System.in);							//
-		System.out.println("Entrez un num�ro de colonne entre 0 et 6.");//
+		System.out.println("Entrez un numéro de colonne entre 0 et 6.");//
 		while(!ok) {
 			tmp = sc.nextInt();
-			if(tmp < 0 || tmp > 6) System.out.println("Valeur invalide."); // traitement � faire du c�t� joueur et ia
+			if(tmp < 0 || tmp > 6) System.out.println("Valeur invalide."); // traitement à faire du côté joueur et ia
 			else if(grille[tmp] != 0)System.out.println("Colonne pleine.");//
 			else {
 				while(tmp < 35 && grille[tmp+7]==0)tmp+=7;
@@ -201,8 +201,8 @@ public class Connect4Test{
 	}
 
 	public void finPartie() {
-		if(this.tour == 1)System.out.println("Le joueur 2 a gagn�.");
-		else System.out.println("Le joueur 1 a gagn�.");
+		if(this.tour == 1)System.out.println("Le joueur 2 a gagné.");
+		else System.out.println("Le joueur 1 a gagné.");
 	}
 
 	public void lancer() {
@@ -212,14 +212,14 @@ public class Connect4Test{
 			System.out.println("Tour du J"+tour);
 			//JSON A ENVOYE AU JOUEUR
 			json_grille_and_tour = this.toJson();
-			this.afficherGrille(); // A remplacer par l'envoi de la nouvelle grille au joueur et � l'ia
+			this.afficherGrille(); // A remplacer par l'envoi de la nouvelle grille au joueur et à l'ia
 			
 			//JSON RECU PAR LE JOUEUR/IA
 			//column_select = this.fromJson(  );
 			this.recevoirEtJouerCoup();
 			System.out.println();
 		}
-		this.afficherGrille();// A remplacer par l'envoi de la nouvelle grille au joueur et � l'ia
+		this.afficherGrille();// A remplacer par l'envoi de la nouvelle grille au joueur et à l'ia
 		this.finPartie();
 	}
 

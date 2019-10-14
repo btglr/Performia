@@ -15,12 +15,12 @@ abstract class Challenge {
 	}
 	
 	/**
-	 * Converti les donn�es du challenge � envoyer en Json
+	 * Converti les données du challenge à envoyer en Json
 	 */
 	abstract JSONObject toJson();
 	
 	/**
-	 * Transforme les donn�es re�u des participants en Objet
+	 * Transforme les données reçu des participants en Objet
 	 */
 	abstract Object fromJson(JSONObject json);
 	
