@@ -7,10 +7,11 @@ if (!empty($data))
 }
 
 //Addresse du serveur http
-//Handler de recuperation de la grille : request (a modifier ?)
-$url = "http://localhost:25633/request";
+//Handler de recuperation de la grille : 
+$urlRecupGrille = "http://localhost:25633/request";
+$urlSend = "http://localhost:25633/";
 
-$handle = curl_init($url);
+$handle = curl_init($urlRecupGrille);
 curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
 $response = curl_exec($handle);
@@ -18,7 +19,7 @@ $response = curl_exec($handle);
 if($response == FALSE) {
 	$json = 0;
 } else {
-    $json = file_get_contents($url);
+    $json = file_get_contents($urlRecupGrille);
 }
 
 $content = <<<HTML
@@ -91,8 +92,10 @@ $content = <<<HTML
 		//Fonction de selection de la colonne du plateau pour l'envoi au serveur http
 		function choose_col(col){
 			console.log("column select : ",col);
-			//A faire :
-			//sendToJava(col) 
+			$.ajax({
+			  url: $urlSend,
+			  data: col
+			});
 			updatePlateau()
 		}
 	</script>
