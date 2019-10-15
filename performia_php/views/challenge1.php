@@ -95,7 +95,7 @@ $content = <<<HTML
 			$.ajax({
 			  url: "$url",
 			  type: "GET",
-			  data: "col=" + col
+			  data: "PLAY_TURN=" + col
 			});
 			updatePlateau()
 		}
