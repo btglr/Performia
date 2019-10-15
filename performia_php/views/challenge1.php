@@ -7,11 +7,11 @@ if (!empty($data))
 }
 
 //Addresse du serveur http
-//Handler de recuperation de la grille : 
-$urlRecupGrille = "http://localhost:25633/request";
-$urlSend = "http://localhost:25633/";
+//Handler de recuperation de la grille
+//et d'envoi de la colonne
+$url = "http://localhost:25633/request";
 
-$handle = curl_init($urlRecupGrille);
+$handle = curl_init($url);
 curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
 $response = curl_exec($handle);
@@ -19,7 +19,7 @@ $response = curl_exec($handle);
 if($response == FALSE) {
 	$json = 0;
 } else {
-    $json = file_get_contents($urlRecupGrille);
+    $json = file_get_contents($url);
 }
 
 $content = <<<HTML
@@ -77,7 +77,7 @@ $content = <<<HTML
 		function updatePlateau() {
 			$.ajax({
 			  url: "challenges/connect4/connect4.php",
-			  data: $json
+			  data: "url=$url"
 			}).done(function(res) {
 			  $("#challenge").replaceWith(res);
 			  console.log('update done');
@@ -93,8 +93,9 @@ $content = <<<HTML
 		function choose_col(col){
 			console.log("column select : ",col);
 			$.ajax({
-			  url: "$urlSend",
-			  data: col
+			  url: "$url",
+			  type: "GET",
+			  data: "col=" + col
 			});
 			updatePlateau()
 		}
