@@ -27,7 +27,7 @@ if(isset($_GET["url"])) {
 	} else {
 		$json = file_get_contents($url);
 	}
-if($json != 0) {
+if(strcmp($json,"") != 0) {
 	$grille = json_decode($json)->grille;
 
 		$php="<div style='display:flex; flex-direction:column;height:80%';justify-content:center'>";
