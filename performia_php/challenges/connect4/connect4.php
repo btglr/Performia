@@ -1,9 +1,9 @@
 <?php
 
 function getColor($col){
-  if($col === "1"){
+  if($col === 1){
     return "yellow";
-  }else if($col === "2"){
+  }else if($col === 2){
     return "red";
   }else{
     return "white";
@@ -14,8 +14,9 @@ $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> serveur http injoignable ?</p>
 		<p>     -> donnees recues invalides ?</p>";
 
-if(isset($_GET["grille"])) {
-		$grille = $_GET["grille"];
+if(isset($_GET["url"])) {
+	$json = file_get_contents($_GET["url"]);
+	$grille = json_decode($json)->grille;
 
 		$php="<div style='display:flex; flex-direction:column;height:80%';justify-content:center'>";
 		for($i =0; $i < 6; $i++){
