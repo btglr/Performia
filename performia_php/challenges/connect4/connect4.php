@@ -15,7 +15,19 @@ $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> donnees recues invalides ?</p>";
 
 if(isset($_GET["url"])) {
-	$json = file_get_contents($_GET["url"]);
+	$url = $_GET["url"];
+
+	$handle = curl_init($url);
+	curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+	$response = curl_exec($handle);
+
+	if($response == FALSE) {
+		$json = 0;
+	} else {
+		$json = file_get_contents($url);
+	}
+if($json != 0) {
 	$grille = json_decode($json)->grille;
 
 		$php="<div style='display:flex; flex-direction:column;height:80%';justify-content:center'>";
@@ -64,5 +76,6 @@ if(isset($_GET["url"])) {
 		  }
 		}
 	$php .= "</div><br></body></html>";
+	}
 }
 echo $php;
