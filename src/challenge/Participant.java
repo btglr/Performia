@@ -1,4 +1,4 @@
-package data;
+package challenge;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;

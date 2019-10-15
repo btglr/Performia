@@ -6,13 +6,11 @@
 package tcp;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import challenge.Salle;
 import requete.FileRequete;
 import requete.RequeteManager;
-import data.Participant;
+import challenge.Participant;
 
 /**
  *
@@ -34,17 +32,17 @@ public class Performia {
         Thread serveurTCP = new Thread(new ServeurTCP(25154));
         serveurTCP.start();
         
-        /* 
+        /*
             Thread serveurHTTP = new Thread(new ServeurHTTP(port));
             serveurHTTP.start();
         */
-        
+
         /* Permet de traité les requêtes clients avec une mise en attente passive */
         gestionnaireRequete.traitementRequete(listeRequete);
-        
+
     }
-    
-    
+
+
     
     public Participant getParticipantByID(int id) {
         Participant participant = null;
