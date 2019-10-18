@@ -6,12 +6,12 @@ abstract class Challenge {
 
 	protected String nom;
 	protected boolean fini;
-	protected int tour; //J1 ou J2
+	protected int id_player; //J1 ou J2
 	
 	public Challenge(String nom) {
 		this.nom = nom;
 		this.fini = false;
-		this.tour = 1;
+		this.id_player = 1;
 	}
 	
 	/**

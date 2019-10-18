@@ -15,7 +15,7 @@ public class Connect4 extends Challenge{
 	public JSONObject toJson() {
 		JSONObject json = new JSONObject();
 		json.put("fini", this.fini);
-		json.put("tour", this.tour);
+		json.put("id_player", this.id_player);
 		json.put("grille", this.grille);
 		
 		return json;
@@ -48,7 +48,7 @@ public class Connect4 extends Challenge{
 
 		//droite
 		while(c) {
-			if(x<6 && gr[x+1][y] == tour) {
+			if(x<6 && gr[x+1][y] == id_player) {
 				nb++;
 				x++;
 			}else {
@@ -59,7 +59,7 @@ public class Connect4 extends Challenge{
 		c = true;
 		x = pos%7;
 		while(c) {
-			if(x>0 && gr[x-1][y] == tour) {
+			if(x>0 && gr[x-1][y] == id_player) {
 				nb++;
 				x--;
 			}else {
@@ -73,7 +73,7 @@ public class Connect4 extends Challenge{
 			//haut
 			c = true;
 			while(c) {
-				if(y>0 && gr[x][y-1] == tour) {
+				if(y>0 && gr[x][y-1] == id_player) {
 					nb++;
 					y--;
 				}else {
@@ -84,7 +84,7 @@ public class Connect4 extends Challenge{
 			c = true;
 			y = pos/7;
 			while(c) {
-				if(y<5 && gr[x][y+1] == tour) {
+				if(y<5 && gr[x][y+1] == id_player) {
 					nb++;
 					y++;
 				}else {
@@ -100,7 +100,7 @@ public class Connect4 extends Challenge{
 			c = true;
 			//bas droite
 			while(c) {
-				if(y<5 && x < 6 && gr[x+1][y+1] == tour) {
+				if(y<5 && x < 6 && gr[x+1][y+1] == id_player) {
 					nb++;
 					x++;
 					y++;
@@ -114,7 +114,7 @@ public class Connect4 extends Challenge{
 			c = true;
 			//haut gauche
 			while(c) {
-				if(y>0 && x > 0 && gr[x-1][y-1] == tour) {
+				if(y>0 && x > 0 && gr[x-1][y-1] == id_player) {
 					nb++;
 					x--;
 					y--;
@@ -130,7 +130,7 @@ public class Connect4 extends Challenge{
 				c = true;
 				//bas gauche
 				while(c) {
-					if(y<5 && x > 0 && gr[x-1][y+1] == tour) {
+					if(y<5 && x > 0 && gr[x-1][y+1] == id_player) {
 						nb++;
 						x--;
 						y++;
@@ -144,7 +144,7 @@ public class Connect4 extends Challenge{
 				c = true;
 				//haut droite
 				while(c) {
-					if(y>0 && x < 6 && gr[x+1][y-1] == tour) {
+					if(y>0 && x < 6 && gr[x+1][y-1] == id_player) {
 						nb++;
 						x++;
 						y--;
@@ -169,10 +169,10 @@ public class Connect4 extends Challenge{
 		
 		if(col >= 0 && col <= 6 && grille[col] == 0) {
 			while(col < 35 && grille[col+7]==0)col+=7;
-			grille[col]=tour;
+			grille[col]=id_player;
 			majFini(col);
-			if(this.tour==1)tour = 2;
-			else tour = 1;
+			if(this.id_player==1)id_player = 2;
+			else id_player = 1;
 			ok = true;
 		}
 		return ok;

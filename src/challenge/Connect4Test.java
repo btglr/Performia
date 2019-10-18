@@ -9,19 +9,19 @@ public class Connect4Test{
 	private int[] grille;
 	private String nom;
 	private boolean fini;
-	private int tour; //J1 ou J2
+	private int id_player; //J1 ou J2
 
 	public Connect4Test() {
 		this.nom = "Connect 4";
 		this.fini = false;
-		this.tour = 1;
+		this.id_player = 1;
 		this.grille = new int[6*7];
 	}
 	
 	public JSONObject toJson() {
 		JSONObject json = new JSONObject();
 		json.put("fini", this.fini);
-		json.put("tour", this.tour);
+		json.put("id_player", this.id_player);
 		json.put("grille", this.grille);
 		
 		return json;
@@ -65,7 +65,7 @@ public class Connect4Test{
 
 		//droite
 		while(c) {
-			if(x<6 && gr[x+1][y] == tour) {
+			if(x<6 && gr[x+1][y] == id_player) {
 				nb++;
 				x++;
 			}else {
@@ -76,7 +76,7 @@ public class Connect4Test{
 		c = true;
 		x = pos%7;
 		while(c) {
-			if(x>0 && gr[x-1][y] == tour) {
+			if(x>0 && gr[x-1][y] == id_player) {
 				nb++;
 				x--;
 			}else {
@@ -90,7 +90,7 @@ public class Connect4Test{
 			//haut
 			c = true;
 			while(c) {
-				if(y>0 && gr[x][y-1] == tour) {
+				if(y>0 && gr[x][y-1] == id_player) {
 					nb++;
 					y--;
 				}else {
@@ -101,7 +101,7 @@ public class Connect4Test{
 			c = true;
 			y = pos/7;
 			while(c) {
-				if(y<5 && gr[x][y+1] == tour) {
+				if(y<5 && gr[x][y+1] == id_player) {
 					nb++;
 					y++;
 				}else {
@@ -117,7 +117,7 @@ public class Connect4Test{
 			c = true;
 			//bas droite
 			while(c) {
-				if(y<5 && x < 6 && gr[x+1][y+1] == tour) {
+				if(y<5 && x < 6 && gr[x+1][y+1] == id_player) {
 					nb++;
 					x++;
 					y++;
@@ -131,7 +131,7 @@ public class Connect4Test{
 			c = true;
 			//haut gauche
 			while(c) {
-				if(y>0 && x > 0 && gr[x-1][y-1] == tour) {
+				if(y>0 && x > 0 && gr[x-1][y-1] == id_player) {
 					nb++;
 					x--;
 					y--;
@@ -147,7 +147,7 @@ public class Connect4Test{
 				c = true;
 				//bas gauche
 				while(c) {
-					if(y<5 && x > 0 && gr[x-1][y+1] == tour) {
+					if(y<5 && x > 0 && gr[x-1][y+1] == id_player) {
 						nb++;
 						x--;
 						y++;
@@ -161,7 +161,7 @@ public class Connect4Test{
 				c = true;
 				//haut droite
 				while(c) {
-					if(y>0 && x < 6 && gr[x+1][y-1] == tour) {
+					if(y>0 && x < 6 && gr[x+1][y-1] == id_player) {
 						nb++;
 						x++;
 						y--;
@@ -191,27 +191,27 @@ public class Connect4Test{
 			else if(grille[tmp] != 0)System.out.println("Colonne pleine.");//
 			else {
 				while(tmp < 35 && grille[tmp+7]==0)tmp+=7;
-				grille[tmp]=tour;
+				grille[tmp]=id_player;
 				majFini(tmp);
 				ok = true;
-				if(this.tour==1)tour = 2;
-				else tour = 1;
+				if(this.id_player==1)id_player = 2;
+				else id_player = 1;
 			}
 		}
 	}
 
 	public void finPartie() {
-		if(this.tour == 1)System.out.println("Le joueur 2 a gagné.");
+		if(this.id_player == 1)System.out.println("Le joueur 2 a gagné.");
 		else System.out.println("Le joueur 1 a gagné.");
 	}
 
 	public void lancer() {
-		JSONObject json_grille_and_tour = new JSONObject();
+		JSONObject json_grille_and_id_player = new JSONObject();
 		int column_select;
 		while(!estFini()) {
-			System.out.println("Tour du J"+tour);
+			System.out.println("Tour du J"+id_player);
 			//JSON A ENVOYE AU JOUEUR
-			json_grille_and_tour = this.toJson();
+			json_grille_and_id_player = this.toJson();
 			this.afficherGrille(); // A remplacer par l'envoi de la nouvelle grille au joueur et à l'ia
 			
 			//JSON RECU PAR LE JOUEUR/IA
