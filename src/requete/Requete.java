@@ -41,9 +41,12 @@ public class Requete {
         return code;
     }
 
-    
     public JSONObject getData() {
         return data;
+    }
+
+    public void addData(String key, Object data) {
+        this.data.append(key, data);
     }
 
     @Override
