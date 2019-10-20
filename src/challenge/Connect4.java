@@ -12,6 +12,11 @@ public class Connect4 extends Challenge{
 		this.grille = new int[6*7];
 	}
 	
+	public Connect4(int[] grille) {
+		super("Connect 4");
+		this.grille = grille;
+	}
+	
 	public JSONObject toJson() {
 		JSONObject json = new JSONObject();
 		json.put("fini", this.fini);
@@ -164,7 +169,7 @@ public class Connect4 extends Challenge{
 	}
 	
 	public boolean jouerCoup(JSONObject colonne) {
-		int col = colonne.getInt("colonne");
+		int col = colonne.getInt("column");
 		boolean ok = false;
 		
 		if(col >= 0 && col <= 6 && grille[col] == 0) {
@@ -176,14 +181,6 @@ public class Connect4 extends Challenge{
 			ok = true;
 		}
 		return ok;
-	}
-
-	public void finPartie() {
-		
-	}
-
-	public static void main (String[] args){
-		Connect4 c = new Connect4();
 	}
 
 }
