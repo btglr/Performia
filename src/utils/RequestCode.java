@@ -2,6 +2,7 @@ package utils;
 
 public enum RequestCode {
     UNKNOWN(-1, "Unknown request"),
+    CONNECTION(1, "Request sent by the web interface when a user tries to connect"),
     CHOOSE_CHALLENGE(2, "Request sent by the web interface when choosing a challenge"),
     INITIAL_GAME_STATE(3, "Answer sent by the HTTP server with the initial state of the game"),
     PLAY_TURN(4, "Request sent by the web interface when the user has made a move"),
