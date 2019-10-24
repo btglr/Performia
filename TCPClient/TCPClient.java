@@ -54,6 +54,7 @@ public class TCPClient
         {
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
             out.println(req.toJSON());
+            out.close();
         }
         catch (IOException e) 
         {
@@ -68,9 +69,11 @@ public class TCPClient
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             response = Requete.fromJSON(new JSONObject(in.readLine()));
+            in.close();
         } catch (IOException ex) {
             Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         return response;
     }
     
