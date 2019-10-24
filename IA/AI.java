@@ -61,13 +61,13 @@ public class AI{
 		/*--------------------------------<PARTIE>--------------------------------*/
 		while(partieEnCours==true) {
 			info = connexion.retrieveData();
-			partieEnCours=info.getBool("parti");
+			partieEnCours=info.getBool("fini");
 			grille = (int[]) info.get("grille");
 			
-			if(iD == info.getInt("IDJoueur") && partieEnCours){
+			if(iD == info.getInt("id_player") && partieEnCours){
 				//choisit
 				choix = choisit_Alea(grille);
-				reponse.put("choix",choix);
+				reponse.put("column",choix);
 				//envoie
 				connexion.jouer(reponse);
 			}
