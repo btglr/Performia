@@ -100,8 +100,24 @@ public class RequeteManager {
 
     public void actualisation(Requete requete) {
         /* Récupérer user*/
- /* Récupérer le challenge*/
- /* Envoyer l'état de jeu*/
+        int idUser = requete.getData().getInt("id");
+        Participant p = Performia.getParticipantByID(idUser);
+        if(p != null) {
+            /* Récupérer le challenge*/
+            Salle s = Performia.getSalleByID(idUser);
+            if(s != null) {
+                /* Envoyer l'état de jeu*/
+                p.getPrintWriter().print(s.getChallenge().toJson());
+            }
+            else {
+                System.out.println("Erreur.");
+            }
+        }
+        else {
+            System.out.println("Erreur.");
+        }
+
+
     }
 
     public void choisirChallenge(Requete requete) {
@@ -117,6 +133,10 @@ public class RequeteManager {
             json.put("tour",joueurs[json.getInt("tour")-1]);
             for (int i = 0; i < 2; ++i) {
                 p = Performia.getParticipantByID(joueurs[i]);
+                if(p == null) {
+                    System.out.println("Erreur du participant");
+                    return;
+                }
                 p.getPrintWriter().println(s.getChallenge().toJson());//
             }
         }
@@ -124,7 +144,12 @@ public class RequeteManager {
 
     public void jouerTour (Requete requete){
         int idUser = requete.getData().getInt("id");
-        Salle s = Performia.nonPleine();
+        Participant p = Performia.getParticipantByID(idUser);
+        Salle s = Performia.getSalleByID(idUser);
+        if(p == null) {
+            System.out.println("Erreur du participant");
+            return;
+        }
         if (s == null)
             s = new Salle(new Connect4());
         if(s.getChallenge().jouerCoup(requete.getData())) {
@@ -135,7 +160,6 @@ public class RequeteManager {
                 s.getChallenge().fromJson(s.getChallenge().toJson().put("tour",1));
             }
         }
-        Participant p = Performia.getParticipantByID(idUser);
         p.getPrintWriter().print(s.getChallenge().toJson());
     }
 }
