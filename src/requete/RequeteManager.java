@@ -5,13 +5,19 @@
  */
 package requete;
 
+import challenge.Challenge;
+import challenge.Connect4;
+import challenge.Salle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
+import challenge.Participant;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.json.JSONException;
+import org.json.JSONObject;
+import serveur.Performia;
 
 /**
  *
@@ -69,20 +75,21 @@ public class RequeteManager {
         String login = "", mdp = "";
         int id = -1;
         ResultSet resultat;
+
         try {
             login = requete.getData().getString("login");
             mdp = requete.getData().getString("mdp");
         } catch (JSONException ex) {
             Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         DBManager db = new DBManager();
         PreparedStatement query = db.getConnection().prepareStatement("SELECT user_id FROM user WHERE user_name= ? AND  user_pass =?");
         query.setString(1, login);
         query.setString(2, mdp);
         resultat = query.executeQuery();
-        boolean encore;
-        encore = resultat.next();
-        if (encore == true) {
+
+        if (resultat.next()) {
             id = resultat.getInt(1);
         }
         if (resultat.next()) {
@@ -98,13 +105,37 @@ public class RequeteManager {
     }
 
     public void choisirChallenge(Requete requete) {
-        /* Récupérer l'id user*/
- /* Crée un challenge avec le nombre de personne nécessaire pour le challenge choisit.*/
- /* Envoyer état initiale*/
-        
+        int idUser = requete.getData().getInt("id");
+        Salle s = Performia.nonPleine();
+        if (s == null)
+            s = new Salle(new Connect4());
+        s.addJoueur(idUser);
+        if (s.getNbJoueursConnectes() == 2) {
+            int[] joueurs = s.getJoueurs();
+            Participant p;
+            JSONObject json = s.getChallenge().toJson();
+            json.put("tour",joueurs[json.getInt("tour")-1]);
+            for (int i = 0; i < 2; ++i) {
+                p = Performia.getParticipantByID(joueurs[i]);
+                p.getPrintWriter().println(s.getChallenge().toJson());//
+            }
+        }
     }
 
-    public void jouerTour(Requete requete) {
-
+    public void jouerTour (Requete requete){
+        int idUser = requete.getData().getInt("id");
+        Salle s = Performia.nonPleine();
+        if (s == null)
+            s = new Salle(new Connect4());
+        if(s.getChallenge().jouerCoup(requete.getData())) {
+            if(s.getChallenge().toJson().getInt("tour") == 1) {
+                s.getChallenge().fromJson(s.getChallenge().toJson().put("tour",2));
+            }
+            else {
+                s.getChallenge().fromJson(s.getChallenge().toJson().put("tour",1));
+            }
+        }
+        Participant p = Performia.getParticipantByID(idUser);
+        p.getPrintWriter().print(s.getChallenge().toJson());
     }
 }
