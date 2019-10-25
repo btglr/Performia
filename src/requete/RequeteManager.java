@@ -17,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import serveur.Performia;
+import tcp.Performia;
 
 /**
  *
