@@ -45,23 +45,30 @@ public class Performia {
 
 
     public static Participant getParticipantByID(int id) {
-        Participant participant = null;
         for (Participant p : participants) {
             if (p.getId() == id) {
-                participant = p;
+                return p;
             }
         }
-        return participant;
+        return null;
     }
 
-    //TODO: REGLER LES BUGS SAU NIVEAU DES COMMENTAIRES
+    public static Salle getSalleByID(int id) {
+        for (Salle s : salles) {
+            for (int i : s.getJoueurs()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
     public static Salle nonPleine() {
         Salle s = null, tmp;
         Iterator<Salle> it = salles.iterator();
         while (it.hasNext() && s == null) {
             tmp = it.next();
-            //    if(tmp.getNbJoueursConnectes() < 2)
-            s = tmp;
+            if (tmp.getNbJoueursConnectes() < 2)
+                s = tmp;
         }
         return s;
     }

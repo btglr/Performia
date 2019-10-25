@@ -35,7 +35,7 @@ public class ServeurTCP implements Runnable {
     public ServeurTCP(String configFile)
     */
     public void run() {
-        
+
         boolean quitter = false;
         /* Creation de la socket */
 
