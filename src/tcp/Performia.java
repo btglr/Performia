@@ -56,7 +56,9 @@ public class Performia {
     public static Salle getSalleByID(int id) {
         for (Salle s : salles) {
             for (int i : s.getJoueurs()) {
-                return s;
+                if(i == id) {
+                    return s;
+                }
             }
         }
         return null;
