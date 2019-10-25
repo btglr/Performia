@@ -30,7 +30,7 @@ public class Connect4 extends Challenge{
 		return json.getInt("column");
 	}
 	
-	boolean estFini() {
+	public boolean estFini() {
 		return fini;
 	}
 

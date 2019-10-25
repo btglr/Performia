@@ -63,6 +63,7 @@ public class RequeteManager {
                     break;
                 /* Jouer un tour */
                 case 3:
+                    jouerTour(req);
                     break;
                 case 5:
                     System.out.println("J'ai une requete de type 5 a traite");
@@ -130,7 +131,7 @@ public class RequeteManager {
             int[] joueurs = s.getJoueurs();
             Participant p;
             JSONObject json = s.getChallenge().toJson();
-            json.put("tour",joueurs[json.getInt("tour")-1]);
+            json.put("id_player",joueurs[json.getInt("id_player")-1]);
             for (int i = 0; i < 2; ++i) {
                 p = Performia.getParticipantByID(joueurs[i]);
                 if(p == null) {
@@ -153,11 +154,11 @@ public class RequeteManager {
         if (s == null)
             s = new Salle(new Connect4());
         if(s.getChallenge().jouerCoup(requete.getData())) {
-            if(s.getChallenge().toJson().getInt("tour") == 1) {
-                s.getChallenge().fromJson(s.getChallenge().toJson().put("tour",2));
+            if(s.getChallenge().toJson().getInt("id_player") == 1) {
+                s.getChallenge().fromJson(s.getChallenge().toJson().put("id_player",2));
             }
             else {
-                s.getChallenge().fromJson(s.getChallenge().toJson().put("tour",1));
+                s.getChallenge().fromJson(s.getChallenge().toJson().put("id_player",1));
             }
         }
         p.getPrintWriter().print(s.getChallenge().toJson());
