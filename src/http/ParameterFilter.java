@@ -37,7 +37,8 @@ public class ParameterFilter extends Filter {
             query = requestedUri.getRawQuery();
         }
 
-        String pattern = "([a-zA-Z]+)=([a-zA-Z0-9]+)?&?";
+        // TODO faire en sorte d'accepter tous types de caractères (surtout dans le cas de mots de passe !)
+        String pattern = "([a-zA-Z_]+)=([a-zA-Z0-9]+)?&?";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(query);
 
