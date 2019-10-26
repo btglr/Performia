@@ -1,19 +1,20 @@
 package requete;
 
 public class RequestQueue extends MessageQueue {
-    private static RequestQueue instance = null;
+    private static RequestQueue instance = new RequestQueue();
 
     private RequestQueue() {
     }
 
     public static RequestQueue getInstance() {
-        if (instance == null)
-            instance = new RequestQueue();
-
         return instance;
     }
 
-    public boolean addRequest(Requete req) {
+    public boolean addRequest(Message req) {
         return addMessage(req);
+    }
+
+    public synchronized void addManager(RequeteManager manager) {
+        super.addManager(manager);
     }
 }

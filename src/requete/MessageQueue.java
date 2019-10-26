@@ -6,23 +6,25 @@ import java.util.LinkedList;
  * Classe abstraite de messages (requêtes, réponses)
  */
 public abstract class MessageQueue {
-    private static LinkedList<Requete> list = new LinkedList<Requete>();
+    private LinkedList<Message> list = new LinkedList<Message>();
     private static RequeteManager manager = null;
 
-    protected synchronized Requete getMessage() {
+    protected synchronized Message getMessage() {
         return list.poll();
     }
 
     /**
      * Ajoute un message à la file de messages
      * @param msg le message à ajouter
-     * @return true ?
      */
-    protected synchronized boolean addMessage(Requete msg) {
+    protected synchronized boolean addMessage(Message msg) {
+        boolean result = list.add(msg);
+
         if (manager != null) {
             manager.notify();
         }
-        return list.add(msg);
+
+        return result;
     }
 
     /**
