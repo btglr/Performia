@@ -14,26 +14,26 @@ import org.json.JSONObject;
  *
  * @author Noizet Mathieu
  */
-public class Requete {
+public class Message {
     private int code;
-    private JSONObject data;
+    private JSONObject data = new JSONObject();
     
-    public Requete(int code, JSONObject json){
+    public Message(int code, JSONObject json){
         this.code = code;
         this.data = json;
     }
     
-    public Requete(int code)
+    public Message(int code)
     {
         this.code = code;
     }
       
-    public Requete(int code, String data){
+    public Message(int code, String data){
         this.code = code;
         try {
             this.data = new JSONObject(data);
         } catch (JSONException ex) {
-            Logger.getLogger(Requete.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -51,7 +51,7 @@ public class Requete {
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        Requete req = new Requete(this.code, new JSONObject(this.data));
+        Message req = new Message(this.code, new JSONObject(this.data));
         return req;
     }
 
@@ -70,22 +70,22 @@ public class Requete {
         try {
             json.put("code",this.code);
         } catch (JSONException ex) {
-            Logger.getLogger(Requete.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             json.put("data",this.data.toString());
         } catch (JSONException ex) {
-            Logger.getLogger(Requete.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
         }
         return json;
     }
     
-    public static Requete fromJSON(JSONObject json){
-        Requete req = null;
+    public static Message fromJSON(JSONObject json){
+        Message req = null;
         try {
-            req =  new Requete(json.getInt("code"),new JSONObject(json.getString("data")));
+            req =  new Message(json.getInt("code"),new JSONObject(json.getString("data")));
         } catch (JSONException ex) {
-            Logger.getLogger(Requete.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
         }
         return req;
     }
