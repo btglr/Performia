@@ -5,7 +5,6 @@
  */
 package requete;
 
-import challenge.Challenge;
 import challenge.Connect4;
 import challenge.Salle;
 import java.util.logging.Level;
@@ -23,16 +22,28 @@ import tcp.Performia;
  *
  * @author Noizet Mathieu
  */
-public class RequeteManager {
+public class RequeteManager implements Runnable {
+    private RequestQueue requestQueue;
+    private ResponseQueue responseQueue;
+    private static RequeteManager instance = null;
 
-    public RequeteManager() {
+    private RequeteManager(RequestQueue requestQueue, ResponseQueue responseQueue) {
+        this.requestQueue = requestQueue;
+        this.responseQueue = responseQueue;
     }
 
-    public void traitementRequete(FileRequete file) {
-        Requete req;
+    public static synchronized RequeteManager getInstance() {
+        if (instance == null)
+            instance = new RequeteManager(RequestQueue.getInstance(), ResponseQueue.getInstance());
+
+        return instance;
+    }
+
+    public void run() {
+        Message req;
         while (true) {
             /* Attente passive d'une requete */
-            while (file.estVide()) {
+            while (requestQueue.isEmpty()) {
                 synchronized (this) {
                     System.out.println("Je m'endors car je n'ai plus de travail");
                     try {
@@ -43,7 +54,7 @@ public class RequeteManager {
                 }
             }
             /* J'ai des requêtes à traité*/
-            req = file.getRequete();
+            req = requestQueue.getMessage();
             switch (req.getCode()) {
                 /* Authentification */
 
@@ -72,7 +83,7 @@ public class RequeteManager {
         }
     }
 
-    public int connexion(Requete requete) throws SQLException {
+    public int connexion(Message requete) throws SQLException {
         String login = "", mdp = "";
         int id = -1;
         ResultSet resultat;
@@ -99,7 +110,7 @@ public class RequeteManager {
         return id;
     }
 
-    public void actualisation(Requete requete) {
+    public void actualisation(Message requete) {
         /* Récupérer user*/
         int idUser = requete.getData().getInt("id");
         Participant p = Performia.getParticipantByID(idUser);
@@ -121,7 +132,7 @@ public class RequeteManager {
 
     }
 
-    public void choisirChallenge(Requete requete) {
+    public void choisirChallenge(Message requete) {
         int idUser = requete.getData().getInt("id");
         Salle s = Performia.nonPleine();
         if (s == null)
@@ -143,7 +154,7 @@ public class RequeteManager {
         }
     }
 
-    public void jouerTour (Requete requete){
+    public void jouerTour (Message requete){
         int idUser = requete.getData().getInt("id");
         Participant p = Performia.getParticipantByID(idUser);
         Salle s = Performia.getSalleByID(idUser);

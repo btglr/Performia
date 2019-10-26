@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONObject;
 import requete.RequestQueue;
-import requete.Requete;
+import requete.Message;
 import utils.QueryUtils;
 import utils.RequestCode;
 
@@ -32,7 +32,7 @@ public class RequestHandler implements HttpHandler {
         if (parameters != null) {
             if (parameters.containsKey("code")) {
                 RequestCode code = getRequest(Integer.parseInt(parameters.get("code")));
-                Requete req = new Requete(code.getCode());
+                Message req = new Message(code.getCode());
 
                 // Le code permet d'identifier la requête
                 switch (code) {
@@ -138,6 +138,6 @@ public class RequestHandler implements HttpHandler {
         }
 
         String response = jsonResponse.toString();
-        QueryUtils.sendHTTPResponse(exchange, response);
+//        QueryUtils.sendHTTPResponse(exchange, response);
     }
 }

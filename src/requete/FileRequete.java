@@ -13,21 +13,21 @@ import java.util.LinkedList;
  */
 public class FileRequete {
 
-    private static LinkedList<Requete> liste = new LinkedList<Requete>();
+    private static LinkedList<Message> liste = new LinkedList<Message>();
     private static RequeteManager manager;
 
     public FileRequete(RequeteManager manager) {
-        this.manager = manager;
+        FileRequete.manager = manager;
     }
 
     public FileRequete() {
     }
 
-    public synchronized Requete getRequete() {
+    public synchronized Message getRequete() {
         return liste.poll();
     }
 
-    public synchronized boolean addRequete(Requete req) {
+    public synchronized boolean addRequete(Message req) {
             if (manager != null) {
                 manager.notify();
             }
@@ -39,13 +39,13 @@ public class FileRequete {
     }
 
     public synchronized RequeteManager deleteManager() {
-        RequeteManager man = this.manager;
-        this.manager = null;
+        RequeteManager man = manager;
+        manager = null;
         return man;
     }
 
     public synchronized void addManager(RequeteManager manager) {
-        this.manager = manager;
+        FileRequete.manager = manager;
     }
 
 }

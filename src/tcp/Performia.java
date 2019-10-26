@@ -27,19 +27,19 @@ public class Performia {
     public static ArrayList<Salle> salles = new ArrayList<>();
     
     public static void main(String[] args) {
-        RequeteManager gestionnaireRequete = new RequeteManager();
+/*        RequeteManager gestionnaireRequete = new RequeteManager();
         FileRequete listeRequete = new FileRequete(gestionnaireRequete);
 
         Thread serveurTCP = new Thread(new ServeurTCP(25154));
         serveurTCP.start();
         
-        /* 
+        *//*
             Thread serveurHTTP = new Thread(new ServeurHTTP(port));
             serveurHTTP.start();
-        */
+        *//*
 
-        /* Permet de traité les requêtes clients avec une mise en attente passive */
-        gestionnaireRequete.traitementRequete(listeRequete);
+        *//* Permet de traité les requêtes clients avec une mise en attente passive *//*
+        gestionnaireRequete.traitementRequete(listeRequete);*/
 
     }
 

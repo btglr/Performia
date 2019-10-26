@@ -9,7 +9,7 @@ import challenge.Participant;
 import org.json.JSONException;
 import org.json.JSONObject;
 import requete.FileRequete;
-import requete.Requete;
+import requete.Message;
 import requete.RequeteManager;
 
 import java.io.*;
@@ -48,8 +48,9 @@ public class ThreadGestionClient extends Thread {
         boolean deconnecter = false, connecter = false;
         FileRequete file = new FileRequete();
         String message = "";
-        Requete req = null;
-        RequeteManager manage = new RequeteManager();
+        Message req = null;
+        RequeteManager manage = RequeteManager.getInstance();
+
         while (!deconnecter && connecter) {
             try {
                 message = input.readLine();
@@ -58,7 +59,7 @@ public class ThreadGestionClient extends Thread {
             }
             if (!message.equals("")) {
                 try {
-                    req = Requete.fromJSON(new JSONObject(message));
+                    req = Message.fromJSON(new JSONObject(message));
                 } catch (JSONException ex) {
                     Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -72,7 +73,7 @@ public class ThreadGestionClient extends Thread {
                         Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     if (connecter == false) {
-                        Requete rep = new Requete(1001);
+                        Message rep = new Message(1001);
                         output.write(rep.toJSON().toString());
                         //id = a recupérer dans la bdd 
                     }
@@ -92,7 +93,7 @@ public class ThreadGestionClient extends Thread {
             }
             if (!message.equals("")) {
                 try {
-                    req = Requete.fromJSON(new JSONObject(message));
+                    req = Message.fromJSON(new JSONObject(message));
                     req.getData().put("id_user", id);
                 } catch (JSONException ex) {
                     Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
