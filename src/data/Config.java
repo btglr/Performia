@@ -8,11 +8,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Config {
-
-    private JSONObject objet;
+    private JSONObject objet = null;
 
     public Config(String filename) {
         // Ouverture du fichier
@@ -21,7 +22,7 @@ public class Config {
             fs = new FileInputStream(filename);
         } catch (FileNotFoundException e) {
             System.err.println("Fichier '" + filename + "' introuvable");
-            System.exit(-1);
+            return;
         }
 
         // Récupération de la chaîne JSON depuis le fichier
@@ -37,19 +38,24 @@ public class Config {
             fs.close();
         } catch (IOException e) {
             System.err.println("Erreur lors de la fermeture du fichier." + e);
-            System.exit(-1);
+            return;
         }
 
         // Création d'un objet JSON
         objet = new JSONObject(json);
-
     }
 
     public String getString(String key) {
+        if (objet == null)
+            throw new JSONException("JSONObject is not initialized");
+
         return objet.getString(key);
     }
 
     public int getInt(String key) {
+        if (objet == null)
+            throw new JSONException("JSONObject is not initialized");
+
         return objet.getInt(key);
     }
 

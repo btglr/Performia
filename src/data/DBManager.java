@@ -1,5 +1,7 @@
 package data;
 
+import org.json.JSONException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,7 +15,7 @@ public class DBManager {
     private static Config cfg = new Config("database.json");
     private Connection connection;
 
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
         if (isConnected()) {
             return this.connection;
         } else {
@@ -23,20 +25,15 @@ public class DBManager {
         }
     }
 
-    public void connect() {
-        try {
-            String host = cfg.getString("host");
-            int port = cfg.getInt("port");
-            String user = cfg.getString("user");
-            String password = cfg.getString("password");
-            String database = cfg.getString("database");
-            String sqlhost = "jdbc:mysql://" + host + ":" + port + "/" + database + "?verifyServerCertificate=false&useSSL=true";
+    public void connect() throws SQLException, JSONException {
+        String host = cfg.getString("host");
+        int port = cfg.getInt("port");
+        String user = cfg.getString("user");
+        String password = cfg.getString("password");
+        String database = cfg.getString("database");
+        String sqlhost = "jdbc:mysql://" + host + ":" + port + "/" + database + "?verifyServerCertificate=false&useSSL=true";
 
-            this.connection = DriverManager.getConnection(sqlhost, user, password);
-        } catch (SQLException e) {
-            System.out.println("Une erreur de connection à la base de données est survenue.");
-            e.printStackTrace();
-        }
+        this.connection = DriverManager.getConnection(sqlhost, user, password);
     }
 
     public boolean isConnected() {
@@ -45,6 +42,7 @@ public class DBManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return false;
     }
 
