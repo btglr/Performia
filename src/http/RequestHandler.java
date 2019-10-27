@@ -41,11 +41,15 @@ public class RequestHandler implements HttpHandler {
                 switch (code) {
                     /**
                      * Détails de la requête de connexion
+                     * @in code : 1
                      * @in login : string
                      * @in password : string
-                     * @out connected : 0 ou 1
-                     * si connected = 1
+                     * Si ok
+                     * @out code : 503
                      * @out id_utilisateur : int
+                     * Si pas ok
+                     * @out code : 1001
+                     * @out error_message : string
                      */
                     case CONNECTION:
                         if (parameters.containsKey("login") && parameters.containsKey("password")) {
@@ -70,12 +74,15 @@ public class RequestHandler implements HttpHandler {
 
                     /**
                      * Détails de la requête de choix d'un challenge
+                     * @in code : 2
                      * @in id_utilisateur : int
                      * @in numero_challenge : int
-                     * @out reponse : int (ex : 1000 si ok, 1001 si pas ok (TODO : à déterminer)
-                     * @out id_salle : int
+                     * Si ok
+                     * @out code : 500
                      * @out etat_jeu : JSONObject (ici, état initial)
-                     * @out prochain_joueur : int (id du prochain joueur ?) (TODO : pour quelle raison ?)
+                     * Si pas ok
+                     * @out code : 1002
+                     * @out error_message : string
                      */
                     case CHOOSE_CHALLENGE:
                         if (parameters.containsKey("id_utilisateur") && parameters.containsKey("numero_challenge")) {
@@ -100,15 +107,23 @@ public class RequestHandler implements HttpHandler {
 
                     /**
                      * Détails de la requête envoyée lorsqu'un tour est joué
+                     * @in code : 3
                      * @in id_utilisateur : int
-                     * @in action : JSON ? (TODO : à déterminer)
-                     * @out reponse : int (TODO : à déterminer)
+                     * @in colonne : int (le numéro de colonne dans lequel placer le disque)
+                     * Si ok
+                     * @out code : 501
+                     * @out etat_jeu : l'état du jeu après coup
+                     * Si pas ok
+                     * @out code : 1000
+                     * @out error_message : string
                      */
                     case PLAY_TURN:
-                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("action")) {
+                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("colonne")) {
                             int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
+                            int colonne = Integer.parseInt(parameters.get("colonne"));
 
                             req.addData("id_utilisateur", id_utilisateur);
+                            req.addData("colonne", colonne);
 
                             Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "User has made a move");
 
@@ -125,17 +140,20 @@ public class RequestHandler implements HttpHandler {
 
                     /**
                      * Détails de la requête de demande d'état du jeu (périodiquement, utilisée pour rafraîchir l'interface)
-                     * @in id_utilisateur : int (peut être optionnel, dépend si l'on autorise n'importe qui à "spectate" le jeu d'un autre)
-                     * @in id_salle : int
+                     * @in code : 4
+                     * @in id_utilisateur : int
+                     * Si ok
+                     * @out code : 502
                      * @out etat_jeu : JSONObject
+                     * Si pas ok
+                     * @out code : 1003
+                     * @out error_message : string
                      */
                     case GET_GAME_STATE:
-                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("id_salle")) {
+                        if (parameters.containsKey("id_utilisateur")) {
                             int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
-                            int id_salle = Integer.parseInt(parameters.get("id_salle"));
 
                             req.addData("id_utilisateur", id_utilisateur);
-                            req.addData("id_salle", id_salle);
 
                             Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Web interface has asked for the game state");
 
