@@ -31,17 +31,17 @@ public class ServeurTCP implements Runnable {
         this.port = port;
     }
 
-    /* 
+    /*
     public ServeurTCP(String configFile)
     */
     public void run() {
-
         boolean quitter = false;
         /* Creation de la socket */
 
         /*Attente connexion Client*/
         Socket socketClient = null;
-        while (quitter != true) {
+
+        while (!quitter) {
             try {
                 socketClient = serverSocket.accept();
             } catch (IOException ex) {
@@ -50,8 +50,8 @@ public class ServeurTCP implements Runnable {
 
             ThreadGestionClient t = new ThreadGestionClient(socketClient);
             t.start();
-
         }
+
         try {
             /*Fermeture socket*/
             serverSocket.close();

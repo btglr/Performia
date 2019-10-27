@@ -39,7 +39,7 @@ public class Performia {
 
         Logger.getLogger(Performia.class.getName()).log(Level.INFO, "HTTP Server started. Press CTRL+C to stop.");
 
-        Thread serveurTCP = new Thread(new ServeurTCP(25154));
+        Thread serveurTCP = new Thread(new ServeurTCP(config.getInt("port_tcp")));
         serveurTCP.start();
 
         Thread requestThread = new Thread(messageManager);

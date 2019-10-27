@@ -1,110 +1,104 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tcp;
 
-import challenge.Participant;
 import org.json.JSONException;
 import org.json.JSONObject;
 import requete.Message;
 import requete.MessageManager;
 import requete.RequestQueue;
+import requete.ResponseQueue;
+import utils.MessageCode;
+import utils.ProtocolType;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author Noizet Mathieu
  */
 public class ThreadGestionClient extends Thread {
-
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
-    private int id = -1;
 
     public ThreadGestionClient(Socket socketClient) {
         socket = socketClient;
         try {
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException ex) {
-            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
         } catch (IOException ex) {
             Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void run() {
-        /* Traitement a faire sur une socket cliente*/
-        boolean deconnecter = false, connecter = false;
-        MessageManager manage = MessageManager.getInstance();
-        RequestQueue file = RequestQueue.getInstance();
+        // Traitement a faire sur une socket cliente
+        boolean connected = false;
+        boolean notMyResponse = true;
+        RequestQueue requestQueue = RequestQueue.getInstance();
+        ResponseQueue responseQueue = ResponseQueue.getInstance();
         String message = "";
         Message req = null;
 
-        while (!deconnecter && connecter) {
+        do {
             try {
                 message = input.readLine();
             } catch (IOException ex) {
                 Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+                continue;
             }
+
             if (!message.equals("")) {
                 try {
                     req = Message.fromJSON(new JSONObject(message));
+                    req.setProtocolType(ProtocolType.TCP);
                 } catch (JSONException ex) {
                     Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+                    continue;
                 }
-                if (!file.addRequest(req)) {
+
+                if (!requestQueue.addRequest(req)) {
                     System.err.println("Erreur lors de l'ajout de la requete dans la file");
                 }
-                if (req.getCode() == 1) {
-                    try {
-                        id = manage.connexion(req);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+
+                Message m = null;
+                // ATTENTE DE LA REPONSE ICI
+                synchronized (ResponseQueue.getLock()) {
+                    int myRequestId = req.getId();
+
+                    while (notMyResponse) {
+                        try {
+                            while (responseQueue.isEmpty()) {
+                                Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Going to sleep as I'm waiting for a response");
+                                ResponseQueue.getLock().wait();
+                            }
+                        } catch (InterruptedException e) {
+                            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, e);
+                        }
+
+                        m = responseQueue.getMessage();
+                        notMyResponse = (m.getDestination() != myRequestId);
+
+                        if (notMyResponse) {
+                            responseQueue.addResponse(m);
+                        }
+
+                        else {
+                            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Received response");
+                        }
                     }
-                    if (!connecter) {
-                        Message rep = new Message(1001);
-                        output.write(rep.toJSON().toString());
-                        //id = a recupérer dans la bdd 
-                    }
                 }
-                if (req.getCode() == 7)
-                    deconnecter = true;
-            }
-        }
-        if (connecter) {
-            Performia.participants.add(new Participant(id, input, output));
-        }
-        while (!deconnecter) {
-            try {
-                message = input.readLine();
-            } catch (IOException ex) {
-                Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (!message.equals("")) {
-                try {
-                    req = Message.fromJSON(new JSONObject(message));
-                    req.getData().put("id_user", id);
-                } catch (JSONException ex) {
-                    Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+
+                if (m != null) {
+                    Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Received response: " + m.getData().toString());
+
+                    connected = m.getCode() == MessageCode.CONNECTION_OK.getCode();
+
+                    output.println(m.toJSON());
                 }
-                if (!file.addRequest(req)) {
-                    System.err.println("Erreur lors de l'ajout de la requete dans la file");
-                }
-                if (req.getCode() == 7)
-                    deconnecter = true;
             }
-        }
+        } while (connected);
 
         try {
             socket.close();
