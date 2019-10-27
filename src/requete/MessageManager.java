@@ -9,6 +9,8 @@ import challenge.Connect4;
 import challenge.Salle;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
@@ -32,6 +34,9 @@ public class MessageManager implements Runnable {
     private ResponseQueue responseQueue;
     private static final Object lock = new Object();
     private static volatile MessageManager instance = null;
+
+    private ArrayList<Participant> participants = new ArrayList<>();
+    private ArrayList<Salle> rooms = new ArrayList<>();
 
     private MessageManager(RequestQueue requestQueue, ResponseQueue responseQueue) {
         this.requestQueue = requestQueue;
@@ -169,11 +174,11 @@ public class MessageManager implements Runnable {
     public void actualisation(Message requete) {
         /* Récupérer user*/
         int idUser = requete.getData().getInt("id_utilisateur");
-        Participant p = Performia.getParticipantByID(idUser);
+        Participant p = getParticipantByID(idUser);
 
         if(p != null) {
             /* Récupérer le challenge*/
-            Salle s = Performia.getSalleByID(idUser);
+            Salle s = getRoomByID(idUser);
 
             if(s != null) {
                 /* Envoyer l'état de jeu*/
@@ -192,7 +197,7 @@ public class MessageManager implements Runnable {
 
     public void choisirChallenge(Message requete) {
         int idUser = requete.getData().getInt("id_utilisateur");
-        Salle s = Performia.nonPleine();
+        Salle s = findAvailableRoom();
 
         if (s == null)
             s = new Salle(new Connect4());
@@ -206,7 +211,7 @@ public class MessageManager implements Runnable {
             json.put("id_player",joueurs[json.getInt("id_player")-1]);
 
             for (int i = 0; i < 2; ++i) {
-                p = Performia.getParticipantByID(joueurs[i]);
+                p = getParticipantByID(joueurs[i]);
 
                 if(p == null) {
                     System.out.println("Erreur du participant");
@@ -220,8 +225,8 @@ public class MessageManager implements Runnable {
 
     public void jouerTour (Message requete){
         int idUser = requete.getData().getInt("id_utilisateur");
-        Participant p = Performia.getParticipantByID(idUser);
-        Salle s = Performia.getSalleByID(idUser);
+        Participant p = getParticipantByID(idUser);
+        Salle s = getRoomByID(idUser);
 
         if(p == null) {
             System.out.println("Erreur du participant");
@@ -242,5 +247,39 @@ public class MessageManager implements Runnable {
         }
 
         p.getPrintWriter().print(s.getChallenge().toJson());
+    }
+
+    public Participant getParticipantByID(int id) {
+        for (Participant p : participants) {
+            if (p.getId() == id) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public Salle getRoomByID(int id) {
+        for (Salle s : rooms) {
+            for (int i : s.getJoueurs()) {
+                if (i == id) {
+                    return s;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public Salle findAvailableRoom() {
+        Salle s = null, tmp;
+        Iterator<Salle> it = rooms.iterator();
+
+        while (it.hasNext() && s == null) {
+            tmp = it.next();
+            if (tmp.getNbJoueursConnectes() < 2)
+                s = tmp;
+        }
+
+        return s;
     }
 }

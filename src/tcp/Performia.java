@@ -40,38 +40,6 @@ public class Performia {
         gestionnaireRequete.traitementRequete(listeRequete);*/
 
     }
-
-
-    public static Participant getParticipantByID(int id) {
-        for (Participant p : participants) {
-            if (p.getId() == id) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    public static Salle getSalleByID(int id) {
-        for (Salle s : salles) {
-            for (int i : s.getJoueurs()) {
-                if(i == id) {
-                    return s;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static Salle nonPleine() {
-        Salle s = null, tmp;
-        Iterator<Salle> it = salles.iterator();
-        while (it.hasNext() && s == null) {
-            tmp = it.next();
-            if (tmp.getNbJoueursConnectes() < 2)
-                s = tmp;
-        }
-        return s;
-    }
 }
 
 
