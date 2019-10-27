@@ -1,10 +1,13 @@
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+import data.Config;
+import data.DBManager;
 import http.ParameterFilter;
 import http.RequestHandler;
 import requete.*;
 import tcp.ServeurTCP;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
@@ -18,10 +21,10 @@ public class Performia {
 
         requestQueue.addManager(gestionnaireRequete);
         responseQueue.addManager(gestionnaireRequete);
-
+        Config config = new Config("config/config.json");
         HttpServer server = null;
         try {
-            server = HttpServer.create(new InetSocketAddress(25000), 0);
+            server = HttpServer.create(new InetSocketAddress(config.getInt("port")), 0);
         } catch(IOException e) {
             System.err.println("An error occurred while creating the server: " + e);
             System.exit(-1);

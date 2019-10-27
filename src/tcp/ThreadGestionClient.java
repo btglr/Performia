@@ -72,7 +72,7 @@ public class ThreadGestionClient extends Thread {
                     } catch (SQLException ex) {
                         Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    if (connecter == false) {
+                    if (!connecter) {
                         Message rep = new Message(1001);
                         output.write(rep.toJSON().toString());
                         //id = a recupérer dans la bdd 

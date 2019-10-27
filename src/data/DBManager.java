@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 public class DBManager {
 
-    private static Config cfg = new Config("database.json");
+    private static Config cfg = new Config("config/database.json");
     private Connection connection;
 
     public Connection getConnection() throws SQLException {
