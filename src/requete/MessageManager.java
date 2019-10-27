@@ -9,7 +9,6 @@ import challenge.*;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
@@ -18,12 +17,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javafx.print.PageLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
-import tcp.Performia;
 import utils.MessageCode;
-import utils.ProtocolType;
 
 import static utils.MessageCode.getRequest;
 
@@ -109,6 +105,8 @@ public class MessageManager implements Runnable {
                         response.setCode(MessageCode.CONNECTION_OK.getCode());
                         response.addData("id_utilisateur", id);
                     }
+
+                    response.setProtocolType(req.getProtocolType());
                 }
 
                 break;
