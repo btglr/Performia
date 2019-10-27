@@ -18,9 +18,11 @@ public enum MessageCode {
     INITIAL_GAME_STATE(MessageType.RESPONSE, ProtocolType.HTTP, 500, "Answer sent by the HTTP server with the initial state of the game"),
     ACTION_OK(MessageType.RESPONSE, ProtocolType.HTTP, 501, "Answer sent by the HTTP server if the action was successful"),
     GAME_STATE(MessageType.RESPONSE, ProtocolType.HTTP, 502, "Answer sent by the HTTP server with the game state"),
+    CONNECTION_OK(MessageType.RESPONSE, ProtocolType.BOTH, 503, "Answer sent by the HTTP/TCP server when the user/AI successfully connected"),
 
     // Error responses
-    ACTION_NOT_OK(MessageType.RESPONSE, ProtocolType.BOTH, 1000, "Answer sent by the HTTP server if the action was not successful")
+    ACTION_NOT_OK(MessageType.RESPONSE, ProtocolType.BOTH, 1000, "Answer sent by the HTTP server if the action was not successful"),
+    CONNECTION_ERROR(MessageType.RESPONSE, ProtocolType.BOTH, 1001, "Answer sent by the HTTP/TCP server if the connection was not successful")
     ;
 
     private final MessageType messageType;

@@ -7,6 +7,8 @@ package requete;
 
 import challenge.Connect4;
 import challenge.Salle;
+
+import java.sql.Connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
@@ -79,19 +81,32 @@ public class RequeteManager implements Runnable {
             switch (code) {
                 // Authentification
                 case CONNECTION: {
+                    int id = -1;
                     try {
-                        int id;
                         id = connexion(req);
-
-                    } catch (SQLException ex) {
-                        Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException e) {
+                        Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, e);
                     }
+
+                    Message response = new Message();
+
+                    if (id == -1) {
+                        response.setCode(MessageCode.CONNECTION_ERROR.getCode());
+                        response.addData("error_message", "Connection was not successful");
+                    }
+
+                    else {
+                        response.setCode(MessageCode.CONNECTION_OK.getCode());
+                    }
+
+                    responseQueue.addResponse(response);
                 }
+
                 break;
 
                 // Choix d'un challenge
                 case CHOOSE_CHALLENGE:
-                    System.out.println("Choix de challenge");
+                    choisirChallenge(req);
                     break;
 
                 // Jouer un tour
@@ -115,12 +130,24 @@ public class RequeteManager implements Runnable {
         try {
             login = requete.getData().getString("login");
             password = requete.getData().getString("password");
-        } catch (JSONException ex) {
-            Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException e) {
+            Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, e);
         }
 
         DBManager db = new DBManager();
-        PreparedStatement query = db.getConnection().prepareStatement("SELECT user_id FROM user WHERE user_name= ? AND  user_pass =?");
+
+        Connection dbConnection;
+        try {
+            dbConnection = db.getConnection();
+        } catch (SQLException e) {
+            System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the database is online.");
+            return -1;
+        } catch (JSONException e) {
+            System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the configuration file exists.");
+            return -1;
+        }
+
+        PreparedStatement query = dbConnection.prepareStatement("SELECT user_id FROM user WHERE user_name= ? AND  user_pass =?");
         query.setString(1, login);
         query.setString(2, password);
         resultat = query.executeQuery();
@@ -128,72 +155,89 @@ public class RequeteManager implements Runnable {
         if (resultat.next()) {
             id = resultat.getInt(1);
         }
+
         if (resultat.next()) {
             id = -1; // Erreur plusieurs même login/mdp
         }
+
         return id;
     }
 
     public void actualisation(Message requete) {
         /* Récupérer user*/
-        int idUser = requete.getData().getInt("id");
+        int idUser = requete.getData().getInt("id_utilisateur");
         Participant p = Performia.getParticipantByID(idUser);
+
         if(p != null) {
             /* Récupérer le challenge*/
             Salle s = Performia.getSalleByID(idUser);
+
             if(s != null) {
                 /* Envoyer l'état de jeu*/
                 p.getPrintWriter().print(s.getChallenge().toJson());
             }
+
             else {
                 System.out.println("Erreur.");
             }
         }
+
         else {
             System.out.println("Erreur.");
         }
     }
 
     public void choisirChallenge(Message requete) {
-        int idUser = requete.getData().getInt("id");
+        int idUser = requete.getData().getInt("id_utilisateur");
         Salle s = Performia.nonPleine();
+
         if (s == null)
             s = new Salle(new Connect4());
+
         s.addJoueur(idUser);
+
         if (s.getNbJoueursConnectes() == 2) {
             int[] joueurs = s.getJoueurs();
             Participant p;
             JSONObject json = s.getChallenge().toJson();
             json.put("id_player",joueurs[json.getInt("id_player")-1]);
+
             for (int i = 0; i < 2; ++i) {
                 p = Performia.getParticipantByID(joueurs[i]);
+
                 if(p == null) {
                     System.out.println("Erreur du participant");
                     return;
                 }
-                p.getPrintWriter().println(s.getChallenge().toJson());//
+
+                p.getPrintWriter().println(s.getChallenge().toJson());
             }
         }
     }
 
     public void jouerTour (Message requete){
-        int idUser = requete.getData().getInt("id");
+        int idUser = requete.getData().getInt("id_utilisateur");
         Participant p = Performia.getParticipantByID(idUser);
         Salle s = Performia.getSalleByID(idUser);
+
         if(p == null) {
             System.out.println("Erreur du participant");
             return;
         }
+
         if (s == null)
             s = new Salle(new Connect4());
+
         if(s.getChallenge().jouerCoup(requete.getData())) {
             if(s.getChallenge().toJson().getInt("id_player") == 1) {
                 s.getChallenge().fromJson(s.getChallenge().toJson().put("id_player",2));
             }
+
             else {
                 s.getChallenge().fromJson(s.getChallenge().toJson().put("id_player",1));
             }
         }
+
         p.getPrintWriter().print(s.getChallenge().toJson());
     }
 }
