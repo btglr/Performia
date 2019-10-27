@@ -46,7 +46,7 @@ public class Message {
     }
 
     public void addData(String key, Object data) {
-        this.data.append(key, data);
+        this.data.put(key, data);
     }
 
     @Override
