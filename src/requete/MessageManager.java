@@ -107,6 +107,7 @@ public class MessageManager implements Runnable {
 
                     else {
                         response.setCode(MessageCode.CONNECTION_OK.getCode());
+                        response.addData("id_utilisateur", id);
                     }
                 }
 
