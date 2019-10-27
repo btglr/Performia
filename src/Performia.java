@@ -22,9 +22,10 @@ public class Performia {
         requestQueue.addManager(gestionnaireRequete);
         responseQueue.addManager(gestionnaireRequete);
         Config config = new Config("config/config.json");
+
         HttpServer server = null;
         try {
-            server = HttpServer.create(new InetSocketAddress(config.getInt("port")), 0);
+            server = HttpServer.create(new InetSocketAddress(config.getInt("port_http")), 0);
         } catch(IOException e) {
             System.err.println("An error occurred while creating the server: " + e);
             System.exit(-1);
