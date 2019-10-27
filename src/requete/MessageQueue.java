@@ -9,7 +9,7 @@ public abstract class MessageQueue {
     private LinkedList<Message> list = new LinkedList<Message>();
     private static MessageManager manager = null;
 
-    protected synchronized Message getMessage() {
+    public synchronized Message getMessage() {
         return list.poll();
     }
 
@@ -18,22 +18,14 @@ public abstract class MessageQueue {
      * @param msg le message à ajouter
      */
     protected boolean addMessage(Message msg) {
-        synchronized (MessageManager.getLock()) {
-            boolean result = list.add(msg);
-
-            if (manager != null) {
-                MessageManager.getLock().notify();
-            }
-
-            return result;
-        }
+        return list.add(msg);
     }
 
     /**
      * Détermine si la file de messages est vide
      * @return true ou false
      */
-    protected boolean isEmpty() {
+    public boolean isEmpty() {
         return list.isEmpty();
     }
 

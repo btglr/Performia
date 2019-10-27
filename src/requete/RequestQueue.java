@@ -24,10 +24,20 @@ public class RequestQueue extends MessageQueue {
     }
 
     public boolean addRequest(Message req) {
-        return addMessage(req);
+        synchronized (lock) {
+            boolean result = addMessage(req);
+
+            lock.notify();
+
+            return result;
+        }
     }
 
     public synchronized void addManager(MessageManager manager) {
         super.addManager(manager);
+    }
+
+    public static Object getLock() {
+        return lock;
     }
 }

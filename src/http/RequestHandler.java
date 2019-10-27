@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONObject;
 import requete.RequestQueue;
 import requete.Message;
+import requete.ResponseQueue;
 import utils.MessageCode;
 import utils.QueryUtils;
 
@@ -18,8 +19,7 @@ import static utils.MessageCode.*;
 
 public class RequestHandler implements HttpHandler {
     public void handle(HttpExchange exchange) {
-        String timestamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
-
+        boolean notMyResponse = true;
         String query = exchange.getAttribute("query").toString();
 
         @SuppressWarnings("unchecked")
@@ -28,6 +28,7 @@ public class RequestHandler implements HttpHandler {
         Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Received query with parameters " + query);
 
         RequestQueue requestQueue = RequestQueue.getInstance();
+        ResponseQueue responseQueue = ResponseQueue.getInstance();
         JSONObject jsonResponse = new JSONObject();
 
         // Vérifications de base
@@ -153,7 +154,43 @@ public class RequestHandler implements HttpHandler {
                     default:
                         Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Received an unknown request");
                 }
+
+                // ATTENTE DE LA REPONSE ICI
+                synchronized (ResponseQueue.getLock()) {
+                    int myRequestId = req.getId();
+
+                    while (notMyResponse) {
+                        try {
+                            while (responseQueue.isEmpty()) {
+                                Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Going to sleep as I'm waiting for a response");
+                                ResponseQueue.getLock().wait();
+                            }
+                        } catch (InterruptedException e) {
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, e);
+                        }
+
+                        Message message = responseQueue.getMessage();
+                        jsonResponse = message.getData();
+                        notMyResponse = (message.getDestination() != myRequestId);
+
+                        if (notMyResponse) {
+                            responseQueue.addResponse(message);
+                        }
+
+                        else {
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Received response");
+                        }
+                    }
+                }
             }
+
+            else {
+                // Erreur code manquant
+            }
+        }
+
+        else {
+            // Erreur aucun paramètre soumis
         }
 
         String response = jsonResponse.toString();
