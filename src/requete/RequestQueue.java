@@ -27,7 +27,7 @@ public class RequestQueue extends MessageQueue {
         return addMessage(req);
     }
 
-    public synchronized void addManager(RequeteManager manager) {
+    public synchronized void addManager(MessageManager manager) {
         super.addManager(manager);
     }
 }

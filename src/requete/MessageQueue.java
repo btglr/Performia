@@ -7,7 +7,7 @@ import java.util.LinkedList;
  */
 public abstract class MessageQueue {
     private LinkedList<Message> list = new LinkedList<Message>();
-    private static RequeteManager manager = null;
+    private static MessageManager manager = null;
 
     protected synchronized Message getMessage() {
         return list.poll();
@@ -18,11 +18,11 @@ public abstract class MessageQueue {
      * @param msg le message à ajouter
      */
     protected boolean addMessage(Message msg) {
-        synchronized (RequeteManager.getLock()) {
+        synchronized (MessageManager.getLock()) {
             boolean result = list.add(msg);
 
             if (manager != null) {
-                RequeteManager.getLock().notify();
+                MessageManager.getLock().notify();
             }
 
             return result;
@@ -41,8 +41,8 @@ public abstract class MessageQueue {
      * Supprime le RequestManager associé à l'instance
      * @return la référence du RequestManager
      */
-    protected synchronized RequeteManager deleteManager() {
-        RequeteManager man = manager;
+    protected synchronized MessageManager deleteManager() {
+        MessageManager man = manager;
         manager = null;
         return man;
     }
@@ -51,7 +51,7 @@ public abstract class MessageQueue {
      * Ajoute un RequestManager
      * @param manager le RequestManager
      */
-    protected synchronized void addManager(RequeteManager manager) {
+    protected synchronized void addManager(MessageManager manager) {
         MessageQueue.manager = manager;
     }
 

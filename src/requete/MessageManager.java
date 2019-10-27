@@ -27,25 +27,25 @@ import static utils.MessageCode.getRequest;
  *
  * @author Noizet Mathieu
  */
-public class RequeteManager implements Runnable {
+public class MessageManager implements Runnable {
     private RequestQueue requestQueue;
     private ResponseQueue responseQueue;
     private static final Object lock = new Object();
-    private static volatile RequeteManager instance = null;
+    private static volatile MessageManager instance = null;
 
-    private RequeteManager(RequestQueue requestQueue, ResponseQueue responseQueue) {
+    private MessageManager(RequestQueue requestQueue, ResponseQueue responseQueue) {
         this.requestQueue = requestQueue;
         this.responseQueue = responseQueue;
     }
 
-    public static RequeteManager getInstance() {
-        RequeteManager r = instance;
+    public static MessageManager getInstance() {
+        MessageManager r = instance;
 
         if (r == null) {
             synchronized (lock) {
                 r = instance;
                 if (r == null) {
-                    r = new RequeteManager(RequestQueue.getInstance(), ResponseQueue.getInstance());
+                    r = new MessageManager(RequestQueue.getInstance(), ResponseQueue.getInstance());
                     instance = r;
                 }
             }
@@ -69,7 +69,7 @@ public class RequeteManager implements Runnable {
                     try {
                         lock.wait();
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
@@ -85,7 +85,7 @@ public class RequeteManager implements Runnable {
                     try {
                         id = connexion(req);
                     } catch (SQLException e) {
-                        Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, e);
+                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, e);
                     }
 
                     Message response = new Message();
@@ -131,7 +131,7 @@ public class RequeteManager implements Runnable {
             login = requete.getData().getString("login");
             password = requete.getData().getString("password");
         } catch (JSONException e) {
-            Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, e);
         }
 
         DBManager db = new DBManager();

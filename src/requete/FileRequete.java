@@ -14,9 +14,9 @@ import java.util.LinkedList;
 public class FileRequete {
 
     private static LinkedList<Message> liste = new LinkedList<Message>();
-    private static RequeteManager manager;
+    private static MessageManager manager;
 
-    public FileRequete(RequeteManager manager) {
+    public FileRequete(MessageManager manager) {
         FileRequete.manager = manager;
     }
 
@@ -38,13 +38,13 @@ public class FileRequete {
         return liste.isEmpty();
     }
 
-    public synchronized RequeteManager deleteManager() {
-        RequeteManager man = manager;
+    public synchronized MessageManager deleteManager() {
+        MessageManager man = manager;
         manager = null;
         return man;
     }
 
-    public synchronized void addManager(RequeteManager manager) {
+    public synchronized void addManager(MessageManager manager) {
         FileRequete.manager = manager;
     }
 

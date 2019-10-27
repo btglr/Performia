@@ -1,13 +1,11 @@
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import data.Config;
-import data.DBManager;
 import http.ParameterFilter;
 import http.RequestHandler;
 import requete.*;
 import tcp.ServeurTCP;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
@@ -17,7 +15,7 @@ public class Performia {
     public static void main(String[] args) {
         RequestQueue requestQueue = RequestQueue.getInstance();
         ResponseQueue responseQueue = ResponseQueue.getInstance();
-        RequeteManager gestionnaireRequete = RequeteManager.getInstance();
+        MessageManager gestionnaireRequete = MessageManager.getInstance();
 
         requestQueue.addManager(gestionnaireRequete);
         responseQueue.addManager(gestionnaireRequete);

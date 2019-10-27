@@ -7,8 +7,6 @@ package tcp;
 
 import challenge.Participant;
 import challenge.Salle;
-import requete.FileRequete;
-import requete.RequeteManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import requete.FileRequete;
 import requete.Message;
-import requete.RequeteManager;
+import requete.MessageManager;
 
 import java.io.*;
 import java.net.Socket;
@@ -49,7 +49,7 @@ public class ThreadGestionClient extends Thread {
         FileRequete file = new FileRequete();
         String message = "";
         Message req = null;
-        RequeteManager manage = RequeteManager.getInstance();
+        MessageManager manage = MessageManager.getInstance();
 
         while (!deconnecter && connecter) {
             try {
