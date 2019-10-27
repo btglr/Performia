@@ -5,14 +5,13 @@ import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONObject;
 import requete.RequestQueue;
 import requete.Message;
-import utils.QueryUtils;
-import utils.RequestCode;
+import utils.MessageCode;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
 
-import static utils.RequestCode.*;
+import static utils.MessageCode.*;
 
 public class RequestHandler implements HttpHandler {
     public void handle(HttpExchange exchange) {
@@ -31,7 +30,7 @@ public class RequestHandler implements HttpHandler {
         // Vérifications de base
         if (parameters != null) {
             if (parameters.containsKey("code")) {
-                RequestCode code = getRequest(Integer.parseInt(parameters.get("code")));
+                MessageCode code = getRequest(Integer.parseInt(parameters.get("code")));
                 Message req = new Message(code.getCode());
 
                 // Le code permet d'identifier la requête
