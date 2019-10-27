@@ -15,7 +15,7 @@ $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> donnees recues invalides ?</p>";
 
 if(isset($_GET["url"])) {
-	$url = $_GET["url"] . "?GET_GAME_STATE";
+	$url = $_GET["url"] . "?code=4&id_utilisateur=1";
 
 	$handle = curl_init($url);
 	curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
