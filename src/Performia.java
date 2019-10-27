@@ -17,10 +17,10 @@ public class Performia {
     public static void main(String[] args) {
         RequestQueue requestQueue = RequestQueue.getInstance();
         ResponseQueue responseQueue = ResponseQueue.getInstance();
-        MessageManager gestionnaireRequete = MessageManager.getInstance();
+        MessageManager messageManager = MessageManager.getInstance();
 
-        requestQueue.addManager(gestionnaireRequete);
-        responseQueue.addManager(gestionnaireRequete);
+        requestQueue.addManager(messageManager);
+        responseQueue.addManager(messageManager);
         Config config = new Config("config/config.json");
 
         HttpServer server = null;
@@ -42,7 +42,7 @@ public class Performia {
         Thread serveurTCP = new Thread(new ServeurTCP(25154));
         serveurTCP.start();
 
-        Thread requestThread = new Thread(gestionnaireRequete);
+        Thread requestThread = new Thread(messageManager);
         requestThread.start();
     }
 }
