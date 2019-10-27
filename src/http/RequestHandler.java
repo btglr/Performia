@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import requete.RequestQueue;
 import requete.Message;
 import utils.MessageCode;
+import utils.QueryUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,7 +45,24 @@ public class RequestHandler implements HttpHandler {
                      * @out id_utilisateur : int
                      */
                     case CONNECTION:
-                        // TODO
+                        if (parameters.containsKey("login") && parameters.containsKey("password")) {
+                            String login = parameters.get("login");
+                            String password = parameters.get("password");
+
+                            req.addData("login", login);
+                            req.addData("password", password);
+
+                            System.out.println(timestamp + " - User has asked to connect");
+
+                            if (requestQueue.addRequest(req)) {
+                                System.out.println(timestamp + " - Request was added to the RequestQueue");
+                            }
+                        }
+
+                        else {
+                            System.out.println(timestamp + " - Missing a parameter with request CONNECTION");
+                        }
+
                         break;
 
                     /**
@@ -137,6 +155,6 @@ public class RequestHandler implements HttpHandler {
         }
 
         String response = jsonResponse.toString();
-//        QueryUtils.sendHTTPResponse(exchange, response);
+        QueryUtils.sendHTTPResponse(exchange, response);
     }
 }
