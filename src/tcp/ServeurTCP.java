@@ -48,7 +48,9 @@ public class ServeurTCP implements Runnable {
                 Logger.getLogger(ServeurTCP.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            /* Redirection de la socket vers un thread */
+            ThreadGestionClient t = new ThreadGestionClient(socketClient);
+            t.start();
+
         }
         try {
             /*Fermeture socket*/
