@@ -8,9 +8,9 @@ package tcp;
 import challenge.Participant;
 import org.json.JSONException;
 import org.json.JSONObject;
-import requete.FileRequete;
 import requete.Message;
 import requete.MessageManager;
+import requete.RequestQueue;
 
 import java.io.*;
 import java.net.Socket;
@@ -46,10 +46,10 @@ public class ThreadGestionClient extends Thread {
     public void run() {
         /* Traitement a faire sur une socket cliente*/
         boolean deconnecter = false, connecter = false;
-        FileRequete file = new FileRequete();
+        MessageManager manage = MessageManager.getInstance();
+        RequestQueue file = RequestQueue.getInstance();
         String message = "";
         Message req = null;
-        MessageManager manage = MessageManager.getInstance();
 
         while (!deconnecter && connecter) {
             try {
@@ -63,7 +63,7 @@ public class ThreadGestionClient extends Thread {
                 } catch (JSONException ex) {
                     Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                if (!file.addRequete(req)) {
+                if (!file.addRequest(req)) {
                     System.err.println("Erreur lors de l'ajout de la requete dans la file");
                 }
                 if (req.getCode() == 1) {
@@ -98,7 +98,7 @@ public class ThreadGestionClient extends Thread {
                 } catch (JSONException ex) {
                     Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                if (!file.addRequete(req)) {
+                if (!file.addRequest(req)) {
                     System.err.println("Erreur lors de l'ajout de la requete dans la file");
                 }
                 if (req.getCode() == 7)
