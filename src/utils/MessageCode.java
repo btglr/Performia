@@ -22,7 +22,8 @@ public enum MessageCode {
 
     // Error responses
     ACTION_NOT_OK(MessageType.RESPONSE, ProtocolType.BOTH, 1000, "Answer sent by the HTTP server if the action was not successful"),
-    CONNECTION_ERROR(MessageType.RESPONSE, ProtocolType.BOTH, 1001, "Answer sent by the HTTP/TCP server if the connection was not successful")
+    CONNECTION_ERROR(MessageType.RESPONSE, ProtocolType.BOTH, 1001, "Answer sent by the HTTP/TCP server if the connection was not successful"),
+    WRONG_CHALLENGE(MessageType.RESPONSE, ProtocolType.BOTH, 1002, "Answer sent by the HTTP/TCP server if the chose challenge doesn't exist")
     ;
 
     private final MessageType messageType;
