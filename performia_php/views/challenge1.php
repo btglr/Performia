@@ -79,7 +79,7 @@ $content = <<<HTML
 			  url: "challenges/connect4/connect4.php",
 			  data: "url=$url"
 			}).done(function(res) {
-			  $("#challenge").replaceWith(res);
+			 	 $("#challenge").replaceWith(res);
 			  console.log('update done');
 			});
 		}
@@ -95,7 +95,7 @@ $content = <<<HTML
 			$.ajax({
 			  url: "$url",
 			  type: "GET",
-			  data: "PLAY_TURN=" + col
+			  data: "code=3&id_utilisateur=1&colonne=" + col
 			});
 			updatePlateau()
 		}
