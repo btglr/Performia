@@ -11,6 +11,8 @@ import utils.QueryUtils;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static utils.MessageCode.*;
 
@@ -23,7 +25,7 @@ public class RequestHandler implements HttpHandler {
         @SuppressWarnings("unchecked")
         Map<String, String> parameters = (Map<String, String>) exchange.getAttribute("parameters");
 
-        System.out.println(timestamp + " - Received query with parameters " + query);
+        Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Received query with parameters " + query);
 
         RequestQueue requestQueue = RequestQueue.getInstance();
         JSONObject jsonResponse = new JSONObject();
@@ -52,15 +54,15 @@ public class RequestHandler implements HttpHandler {
                             req.addData("login", login);
                             req.addData("password", password);
 
-                            System.out.println(timestamp + " - User has asked to connect");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "User has asked to connect");
 
                             if (requestQueue.addRequest(req)) {
-                                System.out.println(timestamp + " - Request was added to the RequestQueue");
+                                Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Request was added to the RequestQueue");
                             }
                         }
 
                         else {
-                            System.out.println(timestamp + " - Missing a parameter with request CONNECTION");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO,"Missing a parameter with request CONNECTION");
                         }
 
                         break;
@@ -82,15 +84,15 @@ public class RequestHandler implements HttpHandler {
                             req.addData("id_utilisateur", id_utilisateur);
                             req.addData("numero_challenge", numero_challenge);
 
-                            System.out.println(timestamp + " - User has chosen a challenge");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "User has chosen a challenge");
 
                             if (requestQueue.addRequest(req)) {
-                                System.out.println(timestamp + " - Request was added to the RequestQueue");
+                                Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Request was added to the RequestQueue");
                             }
                         }
 
                         else {
-                            System.out.println(timestamp + " - Missing a parameter with request CHOOSE_CHALLENGE");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Missing a parameter with request CHOOSE_CHALLENGE");
                         }
 
                         break;
@@ -107,15 +109,15 @@ public class RequestHandler implements HttpHandler {
 
                             req.addData("id_utilisateur", id_utilisateur);
 
-                            System.out.println(timestamp + " - User has made a move");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "User has made a move");
 
                             if (requestQueue.addRequest(req)) {
-                                System.out.println(timestamp + " - Request was added to the RequestQueue");
+                                Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Request was added to the RequestQueue");
                             }
                         }
 
                         else {
-                            System.out.println(timestamp + " - Missing a parameter with request PLAY_TURN");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Missing a parameter with request PLAY_TURN");
                         }
 
                         break;
@@ -134,22 +136,22 @@ public class RequestHandler implements HttpHandler {
                             req.addData("id_utilisateur", id_utilisateur);
                             req.addData("id_salle", id_salle);
 
-                            System.out.println(timestamp + " - Web interface has asked for the game state");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Web interface has asked for the game state");
 
                             if (requestQueue.addRequest(req)) {
-                                System.out.println(timestamp + " - Request was added to the RequestQueue");
+                                Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Request was added to the RequestQueue");
                             }
                         }
 
                         else {
-                            System.out.println(timestamp + " - Missing a parameter with request GET_GAME_STATE");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Missing a parameter with request GET_GAME_STATE");
                         }
 
                         break;
 
                     case UNKNOWN:
                     default:
-                        System.out.println(timestamp + " - Received an unknown request");
+                        Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Received an unknown request");
                 }
             }
         }

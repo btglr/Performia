@@ -65,7 +65,8 @@ public class MessageManager implements Runnable {
             // Attente passive d'une requête
             while (requestQueue.isEmpty()) {
                 synchronized (lock) {
-                    System.out.println("Je m'endors car je n'ai plus de travail");
+                    Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, "Going to sleep as I don't have any messages to process");
+
                     try {
                         lock.wait();
                     } catch (InterruptedException ex) {
@@ -99,7 +100,9 @@ public class MessageManager implements Runnable {
                         response.setCode(MessageCode.CONNECTION_OK.getCode());
                     }
 
-                    responseQueue.addResponse(response);
+                    if (responseQueue.addResponse(response)) {
+                        Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, "Response was added to the ResponseQueue");
+                    }
                 }
 
                 break;

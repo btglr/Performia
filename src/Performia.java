@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Performia {
     public static void main(String[] args) {
@@ -35,8 +37,7 @@ public class Performia {
         server.setExecutor(null);
         server.start();
 
-        String timestamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
-        System.out.println(timestamp + " - HTTP Server started. Press CTRL+C to stop.");
+        Logger.getLogger(Performia.class.getName()).log(Level.INFO, "HTTP Server started. Press CTRL+C to stop.");
 
         Thread serveurTCP = new Thread(new ServeurTCP(25154));
         serveurTCP.start();
