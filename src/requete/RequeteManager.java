@@ -17,6 +17,9 @@ import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import tcp.Performia;
+import utils.MessageCode;
+
+import static utils.MessageCode.getRequest;
 
 /**
  *
@@ -25,40 +28,57 @@ import tcp.Performia;
 public class RequeteManager implements Runnable {
     private RequestQueue requestQueue;
     private ResponseQueue responseQueue;
-    private static RequeteManager instance = null;
+    private static final Object lock = new Object();
+    private static volatile RequeteManager instance = null;
 
     private RequeteManager(RequestQueue requestQueue, ResponseQueue responseQueue) {
         this.requestQueue = requestQueue;
         this.responseQueue = responseQueue;
     }
 
-    public static synchronized RequeteManager getInstance() {
-        if (instance == null)
-            instance = new RequeteManager(RequestQueue.getInstance(), ResponseQueue.getInstance());
+    public static RequeteManager getInstance() {
+        RequeteManager r = instance;
 
-        return instance;
+        if (r == null) {
+            synchronized (lock) {
+                r = instance;
+                if (r == null) {
+                    r = new RequeteManager(RequestQueue.getInstance(), ResponseQueue.getInstance());
+                    instance = r;
+                }
+            }
+        }
+
+        return r;
+    }
+
+    public static Object getLock() {
+        return lock;
     }
 
     public void run() {
         Message req;
+
         while (true) {
-            /* Attente passive d'une requete */
+            // Attente passive d'une requête
             while (requestQueue.isEmpty()) {
-                synchronized (this) {
+                synchronized (lock) {
                     System.out.println("Je m'endors car je n'ai plus de travail");
                     try {
-                        this.wait();
+                        lock.wait();
                     } catch (InterruptedException ex) {
                         Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
-            /* J'ai des requêtes à traité*/
-            req = requestQueue.getMessage();
-            switch (req.getCode()) {
-                /* Authentification */
 
-                case 1: {
+            // Attente terminée, on a été notify
+            req = requestQueue.getMessage();
+            MessageCode code = getRequest(req.getCode());
+
+            switch (code) {
+                // Authentification
+                case CONNECTION: {
                     try {
                         int id;
                         id = connexion(req);
@@ -68,29 +88,33 @@ public class RequeteManager implements Runnable {
                     }
                 }
                 break;
-                /* Demande d'actualisation */
-                case 2:
-                    actualisation(req);
+
+                // Choix d'un challenge
+                case CHOOSE_CHALLENGE:
+                    System.out.println("Choix de challenge");
                     break;
-                /* Jouer un tour */
-                case 3:
+
+                // Jouer un tour
+                case PLAY_TURN:
                     jouerTour(req);
                     break;
-                case 5:
-                    System.out.println("J'ai une requete de type 5 a traite");
+
+                // Demande d'actualisation de l'état du jeu
+                case GET_GAME_STATE:
+                    actualisation(req);
                     break;
             }
         }
     }
 
     public int connexion(Message requete) throws SQLException {
-        String login = "", mdp = "";
+        String login = "", password = "";
         int id = -1;
         ResultSet resultat;
 
         try {
             login = requete.getData().getString("login");
-            mdp = requete.getData().getString("mdp");
+            password = requete.getData().getString("password");
         } catch (JSONException ex) {
             Logger.getLogger(RequeteManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -98,7 +122,7 @@ public class RequeteManager implements Runnable {
         DBManager db = new DBManager();
         PreparedStatement query = db.getConnection().prepareStatement("SELECT user_id FROM user WHERE user_name= ? AND  user_pass =?");
         query.setString(1, login);
-        query.setString(2, mdp);
+        query.setString(2, password);
         resultat = query.executeQuery();
 
         if (resultat.next()) {
@@ -128,8 +152,6 @@ public class RequeteManager implements Runnable {
         else {
             System.out.println("Erreur.");
         }
-
-
     }
 
     public void choisirChallenge(Message requete) {

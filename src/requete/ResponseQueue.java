@@ -4,13 +4,26 @@ package requete;
  * Classe Singleton gérant les réponses
  */
 public class ResponseQueue extends MessageQueue {
-    private static ResponseQueue instance = new ResponseQueue();
+    private static final Object lock = new Object();
+    private static volatile ResponseQueue instance = null;
 
     private ResponseQueue() {
     }
 
     public static ResponseQueue getInstance() {
-        return instance;
+        ResponseQueue r = instance;
+
+        if (r == null) {
+            synchronized (lock) {
+                r = instance;
+                if (r == null) {
+                    r = new ResponseQueue();
+                    instance = r;
+                }
+            }
+        }
+
+        return r;
     }
 
     public boolean addResponse(Message req) {

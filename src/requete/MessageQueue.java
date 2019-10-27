@@ -17,14 +17,16 @@ public abstract class MessageQueue {
      * Ajoute un message à la file de messages
      * @param msg le message à ajouter
      */
-    protected synchronized boolean addMessage(Message msg) {
-        boolean result = list.add(msg);
+    protected boolean addMessage(Message msg) {
+        synchronized (RequeteManager.getLock()) {
+            boolean result = list.add(msg);
 
-        if (manager != null) {
-            manager.notify();
+            if (manager != null) {
+                RequeteManager.getLock().notify();
+            }
+
+            return result;
         }
-
-        return result;
     }
 
     /**
