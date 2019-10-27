@@ -181,12 +181,12 @@ public class MessageManager implements Runnable {
             }
 
             else {
-                System.out.println("Erreur.");
+                Logger.getLogger(MessageManager.class.getName()).log(Level.WARNING, "User is not in a game room");
             }
         }
 
         else {
-            System.out.println("Erreur.");
+            Logger.getLogger(MessageManager.class.getName()).log(Level.WARNING, "User is not currently playing");
         }
     }
 
