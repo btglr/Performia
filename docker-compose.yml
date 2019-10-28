@@ -1,5 +1,7 @@
 # ./docker-compose.yml
 
+# TODO Déplacer db mysql en dehors du docker compose, la DB doit être sur le même serveur que le serveur TCP/HTTP Java
+
 version: '3'
 
 services:
@@ -30,7 +32,7 @@ services:
     links:
       - db:mysql
     extra_hosts:
-      - "http_server:192.168.1.33"
+      - "http_server:192.168.43.193"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
