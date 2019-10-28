@@ -20,7 +20,7 @@ require './public/define.php';
         </div>
         <? if(isset($err) && $err != -1)
          {?>
-            <div class="input_error"><?php echo ERROR_[$err];?> </div>
+            <div class="input_error"><? echo ERROR_[$err];?> </div>
          <?}?>
 
         <p><input type="submit" value="Login" /></p>

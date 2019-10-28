@@ -1,0 +1,45 @@
+# ./docker-compose.yml
+
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: performia
+      MYSQL_USER: performia
+      MYSQL_PASSWORD: performia
+    volumes:
+      - "./performia_php:/docker-entrypoint-initdb.d"
+    ports:
+      - "9906:3306"
+
+  web:
+    image: php/php_pdo:1.0
+    container_name: php_web
+    depends_on:
+      - db
+    volumes:
+      - "./performia_php/:/var/www/html/"
+      - "./config/php.ini:/usr/local/etc/php/conf.d/php.ini"
+    ports:
+      - "8080:80"
+    stdin_open: true
+    tty: true
+    links:
+      - db:mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    external_links:
+      - db:mysql
+    ports:
+      - "8081:80"
+    environment:
+      MYSQL_USER: performia
+      MYSQL_PASSWORD: performia
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: db
