@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 if (!empty($data))
 {
     $challenge = $data->fetch();
@@ -6,20 +8,29 @@ if (!empty($data))
 	$css = "public/challenge.css";
 }
 
+if (!isset($_SESSION["id"])) {
+    header("Location: index.php");
+}
+
 //Addresse du serveur http
 //Handler de recuperation de la grille
 //et d'envoi de la colonne
+
+
+// Envoi au serveur HTTP que l'utilisateur a choisi ce challenge
+
 $url = HTTP_SERVER_URL;
-$handle = curl_init($url);
+
+$handle = curl_init($url . "?code=2&id_utilisateur=" . $_SESSION["id"] . "&numero_challenge=1");
 curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
 $response = curl_exec($handle);
 
-if($response == FALSE) {
+/*if($response == FALSE) {
 	$json = 0;
 } else {
     $json = file_get_contents($url);
-}
+}*/
 
 $content = <<<HTML
 	<div class="challengebox">
