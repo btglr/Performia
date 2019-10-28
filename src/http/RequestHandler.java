@@ -19,7 +19,6 @@ import static utils.MessageCode.*;
 
 public class RequestHandler implements HttpHandler {
     public void handle(HttpExchange exchange) {
-        boolean notMyResponse = true;
         String query = exchange.getAttribute("query").toString();
 
         @SuppressWarnings("unchecked")
@@ -177,6 +176,7 @@ public class RequestHandler implements HttpHandler {
                 synchronized (ResponseQueue.getLock()) {
                     int myRequestId = req.getId();
 
+                    boolean notMyResponse = true;
                     while (notMyResponse) {
                         try {
                             while (responseQueue.isEmpty()) {

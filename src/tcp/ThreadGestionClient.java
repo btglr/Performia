@@ -35,7 +35,6 @@ public class ThreadGestionClient extends Thread {
     public void run() {
         // Traitement a faire sur une socket cliente
         boolean connected = false;
-        boolean notMyResponse = true;
         RequestQueue requestQueue = RequestQueue.getInstance();
         ResponseQueue responseQueue = ResponseQueue.getInstance();
         String message = "";
@@ -58,8 +57,8 @@ public class ThreadGestionClient extends Thread {
                     continue;
                 }
 
-                if (!requestQueue.addRequest(req)) {
-                    System.err.println("Erreur lors de l'ajout de la requete dans la file");
+                if (requestQueue.addRequest(req)) {
+                    Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Request was added to the RequestQueue from TCP Thread");
                 }
 
                 Message m = null;
@@ -67,6 +66,7 @@ public class ThreadGestionClient extends Thread {
                 synchronized (ResponseQueue.getLock()) {
                     int myRequestId = req.getId();
 
+                    boolean notMyResponse = true;
                     while (notMyResponse) {
                         try {
                             while (responseQueue.isEmpty()) {

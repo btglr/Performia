@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import utils.MessageCode;
+import utils.ProtocolType;
 
 import static utils.MessageCode.getRequest;
 
@@ -99,11 +100,15 @@ public class MessageManager implements Runnable {
                     if (id == -1) {
                         response.setCode(MessageCode.CONNECTION_ERROR.getCode());
                         response.addData("error_message", "Connection was not successful");
+
+                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, "Connection was not successful");
                     }
 
                     else {
                         response.setCode(MessageCode.CONNECTION_OK.getCode());
                         response.addData("id_utilisateur", id);
+
+                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, "User successfully connected");
                     }
 
                     response.setProtocolType(req.getProtocolType());
@@ -190,6 +195,7 @@ public class MessageManager implements Runnable {
     public JSONObject actualisation(Message requete) {
         /* Récupérer user*/
         int idUser = requete.getData().getInt("id_utilisateur");
+
         Participant p = getParticipantByID(idUser);
 
         if(p != null) {
@@ -217,7 +223,13 @@ public class MessageManager implements Runnable {
 
     public void choisirChallenge(Message requete) {
         int idUser = requete.getData().getInt("id_utilisateur");
+
+        Participant p = getParticipantByID(idUser);
         Salle s = findAvailableRoom();
+
+        if (p != null) {
+            p.setSourceIdRequest(requete.getId());
+        }
 
         if (s == null) {
             s = new Salle(new Connect4());
@@ -228,7 +240,7 @@ public class MessageManager implements Runnable {
 
         if (s.getNbJoueursConnectes() == 2) {
             int[] joueurs = s.getJoueurs();
-            Participant p;
+
             JSONObject json = s.getChallenge().toJson();
             json.put("id_player", joueurs[json.getInt("id_player") - 1]);
 
@@ -241,6 +253,11 @@ public class MessageManager implements Runnable {
                 }
 
 //                p.getPrintWriter().println(s.getChallenge().toJson());
+
+                Message response = new Message(MessageCode.INITIAL_GAME_STATE.getCode(), s.getChallenge().toJson(), ProtocolType.BOTH);
+                response.setDestination(p.getSourceIdRequest());
+
+                responseQueue.addResponse(response);
             }
         }
     }

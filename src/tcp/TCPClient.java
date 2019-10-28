@@ -22,6 +22,7 @@ public class TCPClient {
     private Socket socket = null;
     private PrintWriter out = null;
     private BufferedReader in = null;
+    private int user_id;
 
     public TCPClient(String login, String mdp) {
         try {
@@ -42,6 +43,10 @@ public class TCPClient {
             if (responseConnexion.getCode() != MessageCode.CONNECTION_OK.getCode()) {
                 System.err.println("Connection failed");
                 System.exit(-1);
+            }
+
+            if (responseConnexion.getData().has("id_utilisateur")) {
+                user_id = responseConnexion.getData().getInt("id_utilisateur");
             }
         } catch (UnknownHostException e) {
             System.err.println("Erreur sur l'hôte : " + e);
@@ -74,8 +79,10 @@ public class TCPClient {
 
     public JSONObject demandeChallenge(int numeroChallenge) {
         JSONObject jo = new JSONObject();
-        jo.append("numero_challenge", numeroChallenge);
-        Message connexion = new Message(2, jo, ProtocolType.TCP);
+        jo.put("id_utilisateur", user_id);
+        jo.put("numero_challenge", numeroChallenge);
+
+        Message connexion = new Message(MessageCode.CHOOSE_CHALLENGE.getCode(), jo, ProtocolType.TCP);
         sendData(connexion);
         Message responseConnexion = retrieveData();
         if (responseConnexion.getCode() != MessageCode.INITIAL_GAME_STATE.getCode()) {
