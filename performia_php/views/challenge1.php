@@ -9,8 +9,7 @@ if (!empty($data))
 //Addresse du serveur http
 //Handler de recuperation de la grille
 //et d'envoi de la colonne
-$url = "http://http_server:25000/request";
-
+$url = HTTP_SERVER_URL;
 $handle = curl_init($url);
 curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
