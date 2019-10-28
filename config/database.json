@@ -1,7 +1,7 @@
 {
-  "host" : "hostname",
-  "port" : 2500,
-  "user" : "user",
-  "password" : "password",
-  "database" : "database"
+  "host" : "127.0.0.1",
+  "port" : 9906,
+  "user" : "performia",
+  "password" : "performia",
+  "database" : "performia"
 }

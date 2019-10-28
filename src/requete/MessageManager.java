@@ -168,8 +168,9 @@ public class MessageManager implements Runnable {
             return -1;
         }
 
-        PreparedStatement query = dbConnection.prepareStatement("SELECT user_id FROM user WHERE user_name= ? AND  user_pass =?");
+        PreparedStatement query = dbConnection.prepareStatement("SELECT id FROM user WHERE username=? AND  password=?");
         query.setString(1, login);
+        // Password envoyé en SHA1 par l'interface !
         query.setString(2, password);
         resultat = query.executeQuery();
 

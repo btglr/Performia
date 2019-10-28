@@ -31,7 +31,7 @@ public class DBManager {
         String user = cfg.getString("user");
         String password = cfg.getString("password");
         String database = cfg.getString("database");
-        String sqlhost = "jdbc:mysql://" + host + ":" + port + "/" + database + "?verifyServerCertificate=false&useSSL=true";
+        String sqlhost = "jdbc:mysql://" + host + ":" + port + "/" + database + "?verifyServerCertificate=false&useSSL=false";
 
         this.connection = DriverManager.getConnection(sqlhost, user, password);
     }
