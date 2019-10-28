@@ -9,7 +9,7 @@ if (!empty($data))
 //Addresse du serveur http
 //Handler de recuperation de la grille
 //et d'envoi de la colonne
-$url = "http://localhost:25633/request";
+$url = "http://http_server:25000/request";
 
 $handle = curl_init($url);
 curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);

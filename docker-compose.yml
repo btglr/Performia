@@ -29,6 +29,8 @@ services:
     tty: true
     links:
       - db:mysql
+    extra_hosts:
+      - "http_server:192.168.1.33"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
