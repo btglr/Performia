@@ -26,9 +26,13 @@ public class ResponseQueue extends MessageQueue {
         return r;
     }
 
-    public boolean addResponse(Message req) {
+    public boolean addResponse(Message response) {
         synchronized (lock) {
-            boolean result = addMessage(req);
+            if (response.getData() != null && !response.getData().has("code")) {
+                response.getData().put("code", response.getCode());
+            }
+
+            boolean result = addMessage(response);
 
             lock.notify();
 
