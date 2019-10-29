@@ -7,13 +7,28 @@ public class Connect4 extends Challenge {
 
 	private int[] grille;
 
-	public Connect4(int id1, int id2) {
-		super("Connect 4", id1, id2);
+	public Connect4(Participant p1) {
+		this(p1, null);
+		this.id_player = p1.getId();
+	}
+
+	public Connect4(Participant p1, Participant p2) {
+		super("Connect 4");
+
+		this.players = new Participant[2];
+		this.players[0] = p1;
+		this.players[1] = p2;
+
 		this.grille = new int[6 * 7];
 	}
 
-	public Connect4(int[] grille, int id1, int id2) {
-		super("Connect 4", id1, id2);
+	public Connect4(int[] grille, Participant p1, Participant p2) {
+		super("Connect 4");
+
+		this.players = new Participant[2];
+		this.players[0] = p1;
+		this.players[1] = p2;
+
 		this.grille = grille;
 	}
 
@@ -21,7 +36,12 @@ public class Connect4 extends Challenge {
 		JSONObject json = new JSONObject();
 		json.put("fini", this.fini);
 		json.put("id_player", this.id_player);
-		json.put("id_players", this.id_players);
+
+		JSONArray arrayPlayers = new JSONArray();
+		arrayPlayers.put(this.players[0].toJson());
+		arrayPlayers.put(this.players[1].toJson());
+
+		json.put("players", arrayPlayers);
 		json.put("grille", this.grille);
 
 		return json;
@@ -29,8 +49,11 @@ public class Connect4 extends Challenge {
 
 	public Object fromJson(JSONObject json) {
 		int[] grille = (int[]) json.get("grille");
+		JSONArray arrayPlayers = json.getJSONArray("players");
+		Participant p1 = Participant.fromJson(arrayPlayers.getJSONObject(0));
+		Participant p2 = Participant.fromJson(arrayPlayers.getJSONObject(1));
 
-		return new Connect4(grille,id_players[0],id_players[1]);
+		return new Connect4(grille, p1, p2);
 	}
 
 	public boolean estFini() {
@@ -187,11 +210,41 @@ public class Connect4 extends Challenge {
 			while (col < 35 && grille[col + 7] == 0) col += 7;
 			grille[col] = id_player;
 			majFini(col);
-			if (this.id_player == this.id_players[0]) id_player = this.id_players[1];
-			else id_player = this.id_players[0];
+			if (this.id_player == this.players[0].getId()) id_player = this.players[1].getId();
+			else id_player = this.players[0].getId();
 			ok = true;
 		}
 		return ok;
 	}
 
+	@Override
+	public Participant prochainJoueur() {
+		Participant prochain;
+
+		if (this.id_player == this.players[0].getId()) {
+			prochain = this.players[1];
+		}
+
+		else {
+			prochain = this.players[0];
+		}
+
+		return prochain;
+	}
+
+	@Override
+	public int getCurrentPlayerId() {
+		return id_player;
+	}
+
+	@Override
+	public boolean addPlayer(Participant p) {
+		int i;
+
+		for (i = 0; i < this.players.length; ++i) {
+			this.players[i] = (this.players[i] == null) ? p : this.players[i];
+		}
+
+		return (i != this.players.length);
+	}
 }

@@ -5,16 +5,12 @@ import org.json.JSONObject;
 public abstract class Challenge {
 	protected String nom;
 	protected boolean fini;
-	protected int[] id_players;
+	protected Participant[] players;
 	protected int id_player; //J1 ou J2
 
-	public Challenge(String nom, int id1, int id2) {
+	public Challenge(String nom) {
 		this.nom = nom;
 		this.fini = false;
-		id_players = new int[2];
-		id_players[0] = id1;
-		id_players[1] = id2;
-		this.id_player = id_players[0];
 	}
 
 	/**
@@ -36,4 +32,22 @@ public abstract class Challenge {
 	 * Attend l'action du joueur
 	 */
 	public abstract boolean jouerCoup(JSONObject colonne);
+
+	/**
+	 * Détermine le prochain joueur
+	 */
+	public abstract Participant prochainJoueur();
+
+	/**
+	 * Retourne l'id du joueur courant
+	 * @return l'id du joueur courant
+	 */
+	public abstract int getCurrentPlayerId();
+
+	/**
+	 * Ajoute un participant/joueur au challenge
+	 * @param p le participant
+	 * @return vrai ou faux si un joueur a bien été ajouté
+	 */
+	public abstract boolean addPlayer(Participant p);
 }
