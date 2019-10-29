@@ -18,7 +18,7 @@ function login($username,$pass)
 
     $hashed_password = hash("sha1", $pass);
 
-    $url = HTTP_SERVER_URL;
+    $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
     $url .= "?code=1&login=" . $username . "&password=" . $hashed_password;
 
     echo $url;

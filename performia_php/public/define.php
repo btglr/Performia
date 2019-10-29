@@ -9,5 +9,13 @@ if (!defined("ERROR_")) {
 }
 
 if (!defined("HTTP_SERVER_URL")) {
-    define("HTTP_SERVER_URL", "http://http_server:25000/request");
+    define("HTTP_SERVER_URL", "http://http_server:25000");
+}
+
+if (!defined("HTTP_SERVER_AJAX_URL")) {
+	define("HTTP_SERVER_AJAX_URL", "http://localhost:25000");
+}
+
+if (!defined("REQUEST_HANDLER")) {
+	define("REQUEST_HANDLER", "request");
 }

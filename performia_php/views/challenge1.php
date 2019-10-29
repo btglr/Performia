@@ -1,15 +1,14 @@
 <?php
 session_start();
 
-if (!empty($data))
-{
-    $challenge = $data->fetch();
-    $title = $challenge['challenge_name'];
+if (!empty($data)) {
+	$challenge = $data->fetch();
+	$title = $challenge['challenge_name'];
 	$css = "public/challenge.css";
 }
 
 if (!isset($_SESSION["id"])) {
-    header("Location: index.php");
+	header("Location: index.php");
 }
 
 //Addresse du serveur http
@@ -19,10 +18,12 @@ if (!isset($_SESSION["id"])) {
 
 // Envoi au serveur HTTP que l'utilisateur a choisi ce challenge
 
-$url = HTTP_SERVER_URL;
+$url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
+$ajax_url = implode("/", array(HTTP_SERVER_AJAX_URL, REQUEST_HANDLER));
+$user_id = $_SESSION["id"];
 
-$handle = curl_init($url . "?code=2&id_utilisateur=" . $_SESSION["id"] . "&numero_challenge=1");
-curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+$handle = curl_init($url . "?code=2&id_utilisateur=" . $user_id . "&numero_challenge=1");
+curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 
 $response = curl_exec($handle);
 
@@ -42,7 +43,7 @@ $content = <<<HTML
 		<h1>Informations</h1>
 		<hr width="40%" color="-webkit-linear-gradient(left, #b721ff, #21d4fd);" align="left">
 			<p>Votre but ?</p>
-			<p>Devinez a l'issue de la partie si vous avez joué contre un vrai joueur !</p>
+			<p>Deviner a l'issue de la partie si vous avez joué contre un vrai joueur !</p>
 			<button id="guess">→</button>
 			<hr width="40%" color="-webkit-linear-gradient(left, #b721ff, #21d4fd);" align="left">
 			<button id="stats">Statistiques</button>
@@ -73,7 +74,28 @@ $content = <<<HTML
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script>
 		$( document ).ready(function() {
-		    updatePlateau();
+		    var intervalID = setInterval(waitChallenge, 2000);
+		    
+			function waitChallenge() {
+				$.ajax({
+				  url: "$ajax_url",
+				  type: "GET",
+				  data: "code=5&id_utilisateur=$user_id",
+				  dataType: "json"
+				}).done(function(res) {
+					 if (res["code"] === 504) {
+					   console.log("Challenge can start");
+					   clearInterval(intervalID);
+					   updatePlateau();
+					   
+					   // TODO setInterval quand le challenge commence jusqu'à ce qu'on reçoive que le challenge est terminé, ensuite clearInterval
+					 }
+					 else {
+					   $("#challenge").html("<h2>Waiting for an opponent</h2>");
+					   console.log("Challenge cannot start");
+					 }
+				});
+			}
 		});
 
 		//Mise a jour du plateau
@@ -81,7 +103,7 @@ $content = <<<HTML
 		$("#refresh").click(function() {
 			updatePlateau();
 		});
-
+		
 		//Fonction de mise a jour visuel
 		//Parametre json -> recuperation de la grille sur le serveur http
 		function updatePlateau() {
@@ -89,25 +111,26 @@ $content = <<<HTML
 			  url: "challenges/connect4/connect4.php",
 			  data: "url=$url"
 			}).done(function(res) {
-			 	 $("#challenge").replaceWith(res);
+			 	 $("#challenge").html(res);
 			  console.log('update done');
 			});
 		}
 
 		//Fonction pour l'affichage du plateau
-		function change_color(i,j){
+		function change_color(i,j) {
 			document.getElementById(j+'-'+i).style.backgroundColor="red";    
 		}
 
 		//Fonction de selection de la colonne du plateau pour l'envoi au serveur http
-		function choose_col(col){
+		function choose_col(col) {
 			console.log("column select : ",col);
 			$.ajax({
-			  url: "$url",
+			  url: "$ajax_url",
 			  type: "GET",
-			  data: "code=3&id_utilisateur=1&colonne=" + col
+			  data: "code=3&id_utilisateur=$user_id&colonne=" + col
+			}).done(function(res) {
+				updatePlateau();
 			});
-			updatePlateau()
 		}
 	</script>
 HTML;
