@@ -5,82 +5,79 @@ package ai;/* Dreugui && Laurie
  * //========================================<>=================================================//
  * //========================================<>=================================================//
  * 	IA puissance 4 V1.2 Aleatoire
- * //===========================================================================================//
- * //										IMPORT												//
- * //===========================================================================================//
  * */
-/*================================<DEFINE>================================*/
 
-/*================================<GENERAL>================================*/
+import static java.lang.Thread.sleep;
 
 import data.Config;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import requete.Message;
 
-/*================================<DECLARATION>================================*/
 public class AI {
+	private static int randomlyChoose(int grille[]) {
+		int res;
 
-    /*
-     * //===========================================================================================//
-     * //										MAIN												//
-     * //===========================================================================================//
-     * */
-    /*================================<FONCTION>================================*/
-    private static int choisit_Alea(int grille[]) {
-        int res;
+		res = (int)(Math.random() * 7);
+		while (grille[res] != 0) {
+			res = (int)(Math.random() * 7);
+			System.out.println("Res = " + res);
+		}
 
-        res = (int) (Math.random() * 7);
-        while (grille[res] != 0) {
-            res = (int) (Math.random() * 7);
-            System.out.println("Res = " + res);
-        }
+		return res;
+	}
 
-        return res;
-    }
-
-    /*================================<MAIN>================================*/
-
-    public static void main(String[] args) {
-
-        /*--------------------------------<DECLARATION>--------------------------------*/
-        // lecteur JSON ID MPD
-        Config ia = new Config("config/ia.json");
-        /*Conexion au serveur id+mdp*/
-        TCPClient connexion = new TCPClient(ia.getString("ID"), ia.getString("mdp"));
-        int choix, id;
-        int grille[];
-        boolean partieEnCours = true;
-        int numeroChalenge = 0;
+	public static void main(String[] args) {
+		// Login + password JSON
+		Config ia = new Config("config/ia.json");
+		TCPClient tcpClient = new TCPClient();
+		int choice;
+		int[] grid;
+        boolean ongoingChallenge = true;
+        int challengeID = 1;
         JSONObject info;
-        JSONObject reponse = new JSONObject();
+        JSONObject result;
 
-        /*--------------------------------<INITIALISATION>--------------------------------*/
+        tcpClient.connect(ia.getString("login"), ia.getString("password"));
+
         /*Demande de chalege au serveur et recuperation de l'ID*/
-        id = connexion.demandeChallenge(numeroChalenge).getInt("id_utilisateur");
+        JSONObject initialGameState = tcpClient.chooseChallenge(challengeID);
+        info = initialGameState.getJSONObject("data");
 
-        /*--------------------------------<PARTIE>--------------------------------*/
-        while (partieEnCours) {
-            info = connexion.retrieveData().toJSON();
-            partieEnCours = info.getBoolean("fini");
-            grille = (int[]) info.get("grille");
+		while (ongoingChallenge) {
+            JSONObject response = new JSONObject();
 
-            if (id == info.getInt("id_player") && partieEnCours) {
-                //choisit
-                choix = choisit_Alea(grille);
-                reponse.put("column", choix);
-                //envoie
-                connexion.jouerTour(reponse);
+            ongoingChallenge = !info.getBoolean("fini");
+
+            JSONArray gridArray = info.getJSONArray("grille");
+            grid = new int[gridArray.length()];
+
+            for (int i = 0; i < gridArray.length(); ++i) {
+                grid[i] = gridArray.getInt(i);
+            }
+
+            if (tcpClient.getUserId() == info.getInt("id_player") && ongoingChallenge) {
+                // Choose randomly (smart AI)
+                choice = randomlyChoose(grid);
+                response.put("id_utilisateur", tcpClient.getUserId());
+                response.put("colonne", choice);
+
+                // Play turn
+                info = tcpClient.playTurn(response).getJSONObject("data");
+            }
+
+            else {
+                // Ask for the state of the challenge to check if the other player has made a move
+                info = tcpClient.getChallengeState().getJSONObject("data");
+            }
+
+            try {
+                sleep(250);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
-        /*--------------------------------<FIN>--------------------------------*/
-		connexion.CloseSocket();
-    }
+		tcpClient.closeSocket();
+	}
 }
-
-
-
-
-
-
-
-
