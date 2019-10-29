@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 
 public class Connect4 extends Challenge {
+
 	private int[] grille;
 
 	public Connect4() {
@@ -26,10 +27,9 @@ public class Connect4 extends Challenge {
 	}
 
 	public Object fromJson(JSONObject json) {
-		int[] grille = (int[])json.get("grille");
+		int[] grille = (int[]) json.get("grille");
 
 		return new Connect4(grille);
-//		return json.getInt("colonne");
 	}
 
 	public boolean estFini() {
