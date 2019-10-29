@@ -18,6 +18,8 @@ import java.util.logging.Logger;
  * @author Noizet Mathieu
  */
 public class ThreadGestionClient extends Thread {
+    private static final Logger logger = Logger.getLogger(ThreadGestionClient.class.getName());
+
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
@@ -28,7 +30,7 @@ public class ThreadGestionClient extends Thread {
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
         } catch (IOException ex) {
-            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -38,13 +40,13 @@ public class ThreadGestionClient extends Thread {
         RequestQueue requestQueue = RequestQueue.getInstance();
         ResponseQueue responseQueue = ResponseQueue.getInstance();
         String message = "";
-        Message req = null;
+        Message req;
 
         do {
             try {
                 message = input.readLine();
             } catch (IOException ex) {
-                Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, null, ex);
                 continue;
             }
 
@@ -52,12 +54,12 @@ public class ThreadGestionClient extends Thread {
                 try {
                     req = Message.fromJSON(new JSONObject(message));
                 } catch (JSONException ex) {
-                    Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.log(Level.SEVERE, null, ex);
                     continue;
                 }
 
                 if (requestQueue.addRequest(req)) {
-                    Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Request was added to the RequestQueue from TCP Thread");
+                    logger.info("Request was added to the RequestQueue from TCP Thread");
                 }
 
                 Message m = null;
@@ -69,11 +71,11 @@ public class ThreadGestionClient extends Thread {
                     while (notMyResponse) {
                         try {
                             while (responseQueue.isEmpty()) {
-                                Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Going to sleep as I'm waiting for a response");
+                                logger.info("Going to sleep as I'm waiting for a response");
                                 ResponseQueue.getLock().wait();
                             }
                         } catch (InterruptedException e) {
-                            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, e);
+                            logger.log(Level.SEVERE, null, e);
                         }
 
                         m = responseQueue.getMessage();
@@ -84,7 +86,7 @@ public class ThreadGestionClient extends Thread {
                         }
 
                         else {
-                            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Received response: " + m.getData().toString());
+                            logger.info("Received response: " + m.getData().toString());
                         }
                     }
                 }
@@ -100,7 +102,7 @@ public class ThreadGestionClient extends Thread {
             input.close();
             output.close();
         } catch (IOException ex) {
-            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
        
     }

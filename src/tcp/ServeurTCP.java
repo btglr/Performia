@@ -17,18 +17,17 @@ import java.util.logging.Logger;
  * @author Noizet Mathieu
  */
 public class ServeurTCP implements Runnable {
-    private int port;
-    private String address;
+    private static final Logger logger = Logger.getLogger(ServeurTCP.class.getName());
+
     private ServerSocket serverSocket;
 
     public ServeurTCP(int port) {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException ex) {
-            Logger.getLogger(ServeurTCP.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
             serverSocket = null;
         }
-        this.port = port;
     }
 
     /*
@@ -45,7 +44,7 @@ public class ServeurTCP implements Runnable {
             try {
                 socketClient = serverSocket.accept();
             } catch (IOException ex) {
-                Logger.getLogger(ServeurTCP.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, null, ex);
             }
 
             ThreadGestionClient t = new ThreadGestionClient(socketClient);
@@ -56,7 +55,7 @@ public class ServeurTCP implements Runnable {
             /*Fermeture socket*/
             serverSocket.close();
         } catch (IOException ex) {
-            Logger.getLogger(ServeurTCP.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 }

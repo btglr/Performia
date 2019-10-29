@@ -19,6 +19,8 @@ import utils.MessageCode;
 import utils.ProtocolType;
 
 public class TCPClient {
+    private static final Logger logger = Logger.getLogger(TCPClient.class.getName());
+
     private Socket socket = null;
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -71,7 +73,7 @@ public class TCPClient {
                 response = Message.fromJSON(obj);
             }
         } catch (IOException ex) {
-            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
 
         return response;
@@ -111,7 +113,7 @@ public class TCPClient {
             this.out.close();
             this.in.close();
         } catch (IOException ex) {
-            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 }
