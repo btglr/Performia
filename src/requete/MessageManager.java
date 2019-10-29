@@ -149,6 +149,7 @@ public class MessageManager implements Runnable {
 
                     break;
 
+                // Attente du début du challenge
                 case WAIT_CHALLENGE_START:
                     boolean canStart = checkCanChallengeStart(req);
 
@@ -203,7 +204,7 @@ public class MessageManager implements Runnable {
 
         PreparedStatement query = dbConnection.prepareStatement("SELECT id FROM user WHERE username=? AND  password=?");
         query.setString(1, login);
-        // Password envoyé en SHA1 par l'interface !
+        // Password envoyé en SHA1 par l'interface/l'IA !
         query.setString(2, password);
         resultat = query.executeQuery();
 
@@ -234,7 +235,6 @@ public class MessageManager implements Runnable {
                 /* Envoyer l'état de jeu*/
 
                 return s.getChallenge().toJson();
-//                p.getPrintWriter().print(s.getChallenge().toJson());
             }
 
             else {

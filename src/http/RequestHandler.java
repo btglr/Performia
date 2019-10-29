@@ -147,6 +147,17 @@ public class RequestHandler implements HttpHandler {
                      * @out error_message : string
                      */
                     case GET_CHALLENGE_STATE:
+                        // Pas de break, même traitement que la requête du dessous
+
+                    /**
+                     * Attente de l'interface pour le démarrage du challenge
+                     * @in code : 5
+                     * @in id_utilisateur : int
+                     * Si ok
+                     * @out code : 504
+                     * Si pas ok
+                     * @out code : 505
+                     */
                     case WAIT_CHALLENGE_START:
                         if (parameters.containsKey("id_utilisateur")) {
                             int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
@@ -167,7 +178,7 @@ public class RequestHandler implements HttpHandler {
                         }
 
                         else {
-                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Missing a parameter with request GET_GAME_STATE");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Missing a parameter with request GET_CHALLENGE_STATE / WAIT_CHALLENGE_START");
                         }
 
                         break;
@@ -201,7 +212,7 @@ public class RequestHandler implements HttpHandler {
                         }
 
                         else {
-                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Received response");
+                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Received response: " + message.getData().toString());
                         }
                     }
                 }
