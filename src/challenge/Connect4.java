@@ -7,13 +7,13 @@ public class Connect4 extends Challenge {
 
 	private int[] grille;
 
-	public Connect4() {
-		super("Connect 4");
+	public Connect4(int id1, int id2) {
+		super("Connect 4", id1, id2);
 		this.grille = new int[6 * 7];
 	}
 
-	public Connect4(int[] grille) {
-		super("Connect 4");
+	public Connect4(int[] grille, int id1, int id2) {
+		super("Connect 4", id1, id2);
 		this.grille = grille;
 	}
 
@@ -21,6 +21,7 @@ public class Connect4 extends Challenge {
 		JSONObject json = new JSONObject();
 		json.put("fini", this.fini);
 		json.put("id_player", this.id_player);
+		json.put("id_players", this.id_players);
 		json.put("grille", this.grille);
 
 		return json;
@@ -29,7 +30,7 @@ public class Connect4 extends Challenge {
 	public Object fromJson(JSONObject json) {
 		int[] grille = (int[]) json.get("grille");
 
-		return new Connect4(grille);
+		return new Connect4(grille,id_players[0],id_players[1]);
 	}
 
 	public boolean estFini() {
@@ -186,8 +187,8 @@ public class Connect4 extends Challenge {
 			while (col < 35 && grille[col + 7] == 0) col += 7;
 			grille[col] = id_player;
 			majFini(col);
-			if (this.id_player == 1) id_player = 2;
-			else id_player = 1;
+			if (this.id_player == this.id_players[0]) id_player = this.id_players[1];
+			else id_player = this.id_players[0];
 			ok = true;
 		}
 		return ok;
