@@ -21,8 +21,8 @@ import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import utils.MessageCode;
-import utils.ProtocolType;
 
+import static utils.MessageCode.*;
 import static utils.MessageCode.getRequest;
 
 /**
@@ -91,79 +91,98 @@ public class MessageManager implements Runnable {
 			Message response = new Message();
 			JSONObject jsonObject;
 
-			switch (code) {
-				// Authentification
-				case CONNECTION: {
-					int id = -1;
-					try {
-						id = connexion(req);
-					} catch (SQLException e) {
-						logger.log(Level.SEVERE, null, e);
-					}
+			if (code == CONNECTION) {
+				int id = -1;
+				try {
+					id = connexion(req);
+				} catch (SQLException e) {
+					logger.log(Level.SEVERE, null, e);
+				}
 
-					if (id == -1) {
-						response.setCode(MessageCode.CONNECTION_ERROR.getCode());
-						response.addData("error_message", "Connection was not successful");
+				if (id == -1) {
+					response.setCode(CONNECTION_ERROR.getCode());
+					response.addData("error_message", "Connection was not successful");
 
-						logger.info("Connection was not successful");
+					logger.info("Connection was not successful");
+				}
+
+				else {
+					response.setCode(CONNECTION_OK.getCode());
+					response.addData("id_utilisateur", id);
+
+					logger.info("User successfully connected");
+				}
+			}
+
+			else {
+				if (req.getData().has("id_utilisateur")) {
+					Participant p = getParticipantByID(req.getData().getInt("id_utilisateur"));
+
+					if (p == null) {
+						response.setCode(UNKNOWN_USER.getCode());
 					}
 
 					else {
-						response.setCode(MessageCode.CONNECTION_OK.getCode());
-						response.addData("id_utilisateur", id);
+						switch (code) {
+							// Choix d'un challenge
+							case CHOOSE_CHALLENGE:
+								jsonObject = choisirChallenge(req);
 
-						logger.info("User successfully connected");
+								if (jsonObject == null) {
+									response.setCode(ROOM_NOT_FULL.getCode());
+								}
+
+								else {
+									response.setCode(INITIAL_CHALLENGE_STATE.getCode());
+									response.addData("data", jsonObject);
+								}
+
+								break;
+
+							// Jouer un tour
+							case PLAY_TURN:
+								jsonObject = jouerTour(req);
+
+								if (jsonObject == null) {
+									response.setCode(ACTION_NOT_OK.getCode());
+								}
+
+								else {
+									response.setCode(ACTION_OK.getCode());
+									response.addData("data", jsonObject);
+								}
+
+								break;
+
+							// Demande d'actualisation de l'état du jeu
+							case GET_CHALLENGE_STATE:
+								jsonObject = actualisation(req);
+
+								if (jsonObject == null) {
+									response.setCode(USER_NOT_PLAYING.getCode());
+								}
+
+								else {
+									response.setCode(CHALLENGE_STATE.getCode());
+									response.addData("data", jsonObject);
+								}
+
+								break;
+
+							// Attente du début du challenge
+							case WAIT_CHALLENGE_START:
+								boolean canStart = checkCanChallengeStart(req);
+
+								response.setCode(canStart ? CHALLENGE_CAN_START.getCode() : CHALLENGE_CANNOT_START.getCode());
+
+								break;
+						}
 					}
 				}
 
-				break;
-
-				// Choix d'un challenge
-				case CHOOSE_CHALLENGE:
-					jsonObject = choisirChallenge(req);
-
-					if (jsonObject == null) {
-						response.setCode(MessageCode.ROOM_NOT_FULL.getCode());
-					}
-
-					else {
-						response.setCode(MessageCode.INITIAL_CHALLENGE_STATE.getCode());
-						response.addData("data", jsonObject);
-					}
-
-					break;
-
-				// Jouer un tour
-				case PLAY_TURN:
-					jsonObject = jouerTour(req);
-
-					response.setCode(MessageCode.PLAY_TURN.getCode());
-					response.addData("data", jsonObject);
-
-					break;
-
-				// Demande d'actualisation de l'état du jeu
-				case GET_CHALLENGE_STATE:
-					jsonObject = actualisation(req);
-
-					if (jsonObject == null) {
-						response.setCode(MessageCode.USER_NOT_PLAYING.getCode());
-					}
-
-					else {
-						response.setCode(MessageCode.CHALLENGE_STATE.getCode());
-						response.addData("data", jsonObject);
-					}
-
-					break;
-
-				// Attente du début du challenge
-				case WAIT_CHALLENGE_START:
-					boolean canStart = checkCanChallengeStart(req);
-
-					response.setCode(canStart ? MessageCode.CHALLENGE_CAN_START.getCode() : MessageCode.CHALLENGE_CANNOT_START.getCode());
-
-					break;
+				else {
+					response.setCode(MISSING_PARAMETERS.getCode());
+				}
 			}
 
 			response.setDestination(sourceId);
@@ -260,22 +279,22 @@ public class MessageManager implements Runnable {
 	public JSONObject choisirChallenge(Message requete) {
 		int idUser = requete.getData().getInt("id_utilisateur");
 
+		Participant p = getParticipantByID(idUser);
 		Salle s = findAvailableRoom();
 
 		if (s == null) {
-			s = new Salle(new Connect4());
+			s = new Salle(new Connect4(p));
 			rooms.add(s);
+		}
+
+		else {
+			s.getChallenge().addPlayer(p);
 		}
 
 		s.addJoueur(idUser);
 
 		if (s.estPleine()) {
-			int[] joueurs = s.getJoueurs();
-
-			JSONObject json = s.getChallenge().toJson();
-			json.put("id_player", joueurs[json.getInt("id_player") - 1]);
-
-			return json;
+			return s.getChallenge().toJson();
 		}
 
 		else {
@@ -288,22 +307,20 @@ public class MessageManager implements Runnable {
 		Participant p = getParticipantByID(idUser);
 		Salle s = getRoomByID(idUser);
 
-		if (p == null) {
+		if (p == null || s == null) {
 		    logger.info("No player found with the provided id");
 			return null;
 		}
 
-		if (s == null)
-			s = new Salle(new Connect4());
-
-
-		if (s.getChallenge().jouerCoup(requete.getData())) {
-			if (s.getChallenge().toJson().getInt("id_player") == 1) {
-				s.getChallenge().fromJson(s.getChallenge().toJson().put("id_player", 2));
+		if(p.getId() == s.getChallenge().getCurrentPlayerId()) {
+			if (s.getChallenge().jouerCoup(requete.getData())) {
+				// Coup ok ici
+				return s.getChallenge().toJson();
 			}
 
 			else {
-				s.getChallenge().fromJson(s.getChallenge().toJson().put("id_player", 1));
+				// Coup pas ok
+				return null;
 			}
 		}
 

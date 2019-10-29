@@ -33,7 +33,8 @@ public enum MessageCode {
     WRONG_CHALLENGE(RESPONSE, BOTH, 1002, "Answer sent by the HTTP/TCP server if the chose challenge doesn't exist"),
     USER_NOT_PLAYING(RESPONSE, HTTP, 1003, "Answer sent by the HTTP server if the user isn't playing a challenge"),
     MISSING_PARAMETERS(RESPONSE, BOTH, 1004, "Answer sent by the HTTP/TCP server if the request is missing parameters"),
-    MISSING_REQUEST_CODE(RESPONSE, BOTH, 1005, "Answer sent by the HTTP/TCP server if the request is missing its code")
+    MISSING_REQUEST_CODE(RESPONSE, BOTH, 1005, "Answer sent by the HTTP/TCP server if the request is missing its code"),
+	UNKNOWN_USER(RESPONSE, BOTH, 1006, "Answer sent by the HTTP/TCP server if the user id is unknown or missing")
     ;
 
     private final MessageType messageType;

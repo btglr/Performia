@@ -58,6 +58,8 @@ public class ThreadGestionClient extends Thread {
                     continue;
                 }
 
+                logger.info("Received query with parameters " + message);
+
                 if (requestQueue.addRequest(req)) {
                     logger.info("Request was added to the RequestQueue from TCP Thread");
                 }
@@ -91,7 +93,9 @@ public class ThreadGestionClient extends Thread {
                     }
                 }
 
-                connected = m.getCode() == MessageCode.CONNECTION_OK.getCode();
+//                connected = m.getCode() != MessageCode.LOGOUT_OK.getCode();
+//                connected = m.getCode() == MessageCode.CONNECTION_OK.getCode();
+                connected = true;
 
                 output.println(m.toJSON());
             }
