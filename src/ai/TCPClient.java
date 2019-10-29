@@ -61,7 +61,7 @@ public class TCPClient {
         out.println(req.toJSON());
     }
 
-    private Message retrieveData() {
+    public Message retrieveData() {
         Message response = null;
         try {
             String res = in.readLine();
