@@ -146,8 +146,14 @@ public class MessageManager implements Runnable {
                 case GET_CHALLENGE_STATE:
                     jsonObject = actualisation(req);
 
-                    response.setCode(MessageCode.CHALLENGE_STATE.getCode());
-                    response.addData("data", jsonObject);
+                    if (jsonObject == null) {
+                        response.setCode(MessageCode.USER_NOT_PLAYING.getCode());
+                    }
+
+                    else {
+                        response.setCode(MessageCode.CHALLENGE_STATE.getCode());
+                        response.addData("data", jsonObject);
+                    }
 
                     break;
 
