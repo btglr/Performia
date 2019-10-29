@@ -41,7 +41,7 @@ public class Connect4Test extends TestCase{
 		coup.put("column", 3);
 		c.jouerCoup(coup);
 		
-		assertTrue("La partie est terminée", c.estFini());
+		assertTrue("La partie est terminÃ©e", c.estFini());
 	}
 	
 	public void testVictoireColonne() {
@@ -57,7 +57,7 @@ public class Connect4Test extends TestCase{
 		coup.put("column", 0);
 		c.jouerCoup(coup);
 		
-		assertTrue("La partie est terminée", c.estFini());
+		assertTrue("La partie est terminÃ©e", c.estFini());
 	}
 	
 	public void testVictoireDiagonale1() {
@@ -73,7 +73,7 @@ public class Connect4Test extends TestCase{
 		coup.put("column", 3);
 		c.jouerCoup(coup);
 		
-		assertTrue("La partie est terminée", c.estFini());
+		assertTrue("La partie est terminÃ©e", c.estFini());
 	}
 	
 	public void testVictoireDiagonale2() {
@@ -89,7 +89,7 @@ public class Connect4Test extends TestCase{
 		coup.put("column", 0);
 		c.jouerCoup(coup);
 		
-		assertTrue("La partie est terminée", c.estFini());
+		assertTrue("La partie est terminÃ©e", c.estFini());
 	}
 
 	
