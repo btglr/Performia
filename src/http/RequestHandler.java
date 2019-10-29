@@ -29,6 +29,7 @@ public class RequestHandler implements HttpHandler {
         RequestQueue requestQueue = RequestQueue.getInstance();
         ResponseQueue responseQueue = ResponseQueue.getInstance();
         JSONObject jsonResponse = new JSONObject();
+        boolean requestAdded = false;
 
         // Vérifications de base
         if (parameters != null) {
@@ -60,7 +61,7 @@ public class RequestHandler implements HttpHandler {
 
                             logger.info("User has asked to connect");
 
-                            if (requestQueue.addRequest(req)) {
+                            if ((requestAdded = requestQueue.addRequest(req))) {
                                 logger.info("Request was added to the RequestQueue");
                             }
                         }
@@ -93,7 +94,7 @@ public class RequestHandler implements HttpHandler {
 
                             logger.info("User has chosen a challenge");
 
-                            if (requestQueue.addRequest(req)) {
+                            if ((requestAdded = requestQueue.addRequest(req))) {
                                 logger.info("Request was added to the RequestQueue");
                             }
                         }
@@ -126,7 +127,7 @@ public class RequestHandler implements HttpHandler {
 
                             logger.info("User has made a move");
 
-                            if (requestQueue.addRequest(req)) {
+                            if ((requestAdded = requestQueue.addRequest(req))) {
                                 logger.info("Request was added to the RequestQueue");
                             }
                         }
@@ -174,7 +175,7 @@ public class RequestHandler implements HttpHandler {
                                 logger.info("Web interface has asked for the game state");
                             }
 
-                            if (requestQueue.addRequest(req)) {
+                            if ((requestAdded = requestQueue.addRequest(req))) {
                                 logger.info("Request was added to the RequestQueue");
                             }
                         }
@@ -190,43 +191,49 @@ public class RequestHandler implements HttpHandler {
                         logger.info("Received an unknown request");
                 }
 
-                // ATTENTE DE LA REPONSE ICI
-                synchronized (ResponseQueue.getLock()) {
-                    int myRequestId = req.getId();
+                if (requestAdded) {
+                    // ATTENTE DE LA REPONSE ICI
+                    synchronized (ResponseQueue.getLock()) {
+                        int myRequestId = req.getId();
 
-                    boolean notMyResponse = true;
-                    while (notMyResponse) {
-                        try {
-                            while (responseQueue.isEmpty()) {
-                                logger.info("Going to sleep as I'm waiting for a response");
-                                ResponseQueue.getLock().wait();
+                        boolean notMyResponse = true;
+                        while (notMyResponse) {
+                            try {
+                                while (responseQueue.isEmpty()) {
+                                    logger.info("Going to sleep as I'm waiting for a response");
+                                    ResponseQueue.getLock().wait();
+                                }
+                            } catch (InterruptedException e) {
+                                logger.log(Level.SEVERE, null, e);
                             }
-                        } catch (InterruptedException e) {
-                            logger.log(Level.SEVERE, null, e);
-                        }
 
-                        Message message = responseQueue.getMessage();
-                        jsonResponse = message.getData();
-                        notMyResponse = (message.getDestination() != myRequestId);
+                            Message message = responseQueue.getMessage();
+                            jsonResponse = message.getData();
+                            notMyResponse = (message.getDestination() != myRequestId);
 
-                        if (notMyResponse) {
-                            responseQueue.addResponse(message);
-                        }
+                            if (notMyResponse) {
+                                responseQueue.addResponse(message);
+                            }
 
-                        else {
-                            logger.info("Received response: " + message.getData().toString());
+                            else {
+                                logger.info("Received response: " + message.getData().toString());
+                            }
                         }
                     }
+                }
+
+                else {
+                    jsonResponse.put("code", MISSING_PARAMETERS.getCode());
                 }
             }
 
             else {
-                // Erreur code manquant
+                jsonResponse.put("code", MISSING_REQUEST_CODE.getCode());
             }
         }
 
         else {
-            // Erreur aucun paramètre soumis
+            jsonResponse.put("code", MISSING_PARAMETERS.getCode());
         }
 
         String response = jsonResponse.toString();

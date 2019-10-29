@@ -31,7 +31,9 @@ public enum MessageCode {
     ACTION_NOT_OK(RESPONSE, BOTH, 1000, "Answer sent by the HTTP server if the action was not successful"),
     CONNECTION_ERROR(RESPONSE, BOTH, 1001, "Answer sent by the HTTP/TCP server if the connection was not successful"),
     WRONG_CHALLENGE(RESPONSE, BOTH, 1002, "Answer sent by the HTTP/TCP server if the chose challenge doesn't exist"),
-    USER_NOT_PLAYING(RESPONSE, HTTP, 1003, "Answer sent by the HTTP server if the user isn't playing a challenge")
+    USER_NOT_PLAYING(RESPONSE, HTTP, 1003, "Answer sent by the HTTP server if the user isn't playing a challenge"),
+    MISSING_PARAMETERS(RESPONSE, BOTH, 1004, "Answer sent by the HTTP/TCP server if the request is missing parameters"),
+    MISSING_REQUEST_CODE(RESPONSE, BOTH, 1005, "Answer sent by the HTTP/TCP server if the request is missing its code")
     ;
 
     private final MessageType messageType;
