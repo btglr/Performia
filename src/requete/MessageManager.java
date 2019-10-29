@@ -81,6 +81,8 @@ public class MessageManager implements Runnable {
 
             // Attente terminée, on a été notify
             req = requestQueue.getMessage();
+
+            // On utilise l'ID de la requête reçue pour définir qui devra recevoir la réponse
             int sourceId = req.getId();
 
             MessageCode code = getRequest(req.getCode());
@@ -108,17 +110,25 @@ public class MessageManager implements Runnable {
                         response.setCode(MessageCode.CONNECTION_OK.getCode());
                         response.addData("id_utilisateur", id);
 
-                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, "User successfully connected");
+                        Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, "User successfully connected");
                     }
-
-                    response.setProtocolType(req.getProtocolType());
                 }
 
                 break;
 
                 // Choix d'un challenge
                 case CHOOSE_CHALLENGE:
-                    choisirChallenge(req);
+                    jsonObject = choisirChallenge(req);
+
+                    if (jsonObject == null) {
+                        response.setCode(MessageCode.ROOM_NOT_FULL.getCode());
+                    }
+
+                    else {
+                        response.setCode(MessageCode.INITIAL_CHALLENGE_STATE.getCode());
+                        response.addData("data", jsonObject);
+                    }
+
                     break;
 
                 // Jouer un tour
@@ -131,11 +141,18 @@ public class MessageManager implements Runnable {
                     break;
 
                 // Demande d'actualisation de l'état du jeu
-                case GET_GAME_STATE:
+                case GET_CHALLENGE_STATE:
                     jsonObject = actualisation(req);
 
-                    response.setCode(MessageCode.GAME_STATE.getCode());
+                    response.setCode(MessageCode.CHALLENGE_STATE.getCode());
                     response.addData("data", jsonObject);
+
+                    break;
+
+                case WAIT_CHALLENGE_START:
+                    boolean canStart = checkCanChallengeStart(req);
+
+                    response.setCode(canStart ? MessageCode.CHALLENGE_CAN_START.getCode() : MessageCode.CHALLENGE_CANNOT_START.getCode());
 
                     break;
             }
@@ -146,6 +163,17 @@ public class MessageManager implements Runnable {
                 Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, "Response was added to the ResponseQueue");
             }
         }
+    }
+
+    public boolean checkCanChallengeStart(Message request) {
+        if (request.getData().has("id_utilisateur")) {
+            int user_id = request.getData().getInt("id_utilisateur");
+            Salle s = getRoomByID(user_id);
+
+            return s != null && s.estPleine();
+        }
+
+        return false;
     }
 
     public int connexion(Message requete) throws SQLException {
@@ -221,15 +249,10 @@ public class MessageManager implements Runnable {
         return null;
     }
 
-    public void choisirChallenge(Message requete) {
+    public JSONObject choisirChallenge(Message requete) {
         int idUser = requete.getData().getInt("id_utilisateur");
 
-        Participant p = getParticipantByID(idUser);
         Salle s = findAvailableRoom();
-
-        if (p != null) {
-            p.setSourceIdRequest(requete.getId());
-        }
 
         if (s == null) {
             s = new Salle(new Connect4());
@@ -238,27 +261,17 @@ public class MessageManager implements Runnable {
 
         s.addJoueur(idUser);
 
-        if (s.getNbJoueursConnectes() == 2) {
+        if (s.estPleine()) {
             int[] joueurs = s.getJoueurs();
 
             JSONObject json = s.getChallenge().toJson();
             json.put("id_player", joueurs[json.getInt("id_player") - 1]);
 
-            for (int i = 0; i < 2; ++i) {
-                p = getParticipantByID(joueurs[i]);
+            return json;
+        }
 
-                if(p == null) {
-                    Logger.getLogger(MessageManager.class.getName()).log(Level.WARNING, "One of the players was not found");
-                    return;
-                }
-
-//                p.getPrintWriter().println(s.getChallenge().toJson());
-
-                Message response = new Message(MessageCode.INITIAL_GAME_STATE.getCode(), s.getChallenge().toJson(), ProtocolType.BOTH);
-                response.setDestination(p.getSourceIdRequest());
-
-                responseQueue.addResponse(response);
-            }
+        else {
+            return null;
         }
     }
 
@@ -297,10 +310,10 @@ public class MessageManager implements Runnable {
         return null;
     }
 
-    public Salle getRoomByID(int id) {
+    public Salle getRoomByID(int user_id) {
         for (Salle s : rooms) {
             for (int i : s.getJoueurs()) {
-                if (i == id) {
+                if (i == user_id) {
                     return s;
                 }
             }
@@ -317,7 +330,7 @@ public class MessageManager implements Runnable {
                 s = tmp;
             }
         }
-        
+
         return s;
     }
 }

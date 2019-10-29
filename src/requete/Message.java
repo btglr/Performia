@@ -21,22 +21,20 @@ public class Message {
     private static final AtomicInteger count = new AtomicInteger(0);
     private final int id;
     private int code;
-    private ProtocolType protocolType;
     private JSONObject data;
 
     // Dans le cas d'une réponse, contient l'id de la requête originelle
     private int destination;
     
-    public Message(int code, JSONObject json, ProtocolType protocolType) {
+    public Message(int code, JSONObject json) {
         this.code = code;
         this.data = json;
-        this.protocolType = protocolType;
         this.id = count.incrementAndGet();
         this.destination = -1;
     }
     
     public Message(int code) {
-        this(code, new JSONObject(), null);
+        this(code, new JSONObject());
     }
 
     public Message() {
@@ -74,7 +72,7 @@ public class Message {
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        Message req = new Message(this.code, new JSONObject(this.data), this.protocolType);
+        Message req = new Message(this.code, new JSONObject(this.data));
         return req;
     }
 
@@ -84,8 +82,7 @@ public class Message {
         details += "------- Requete -------";
         details += "\nCode requete : " + this.code + "\n";
         details += "Data = " + this.data + "\n";
-        details += "Protocole = " + this.protocolType + "\n";
-        details += "--------------------------";                
+        details += "--------------------------";
         return details;
     }
     
@@ -103,31 +100,17 @@ public class Message {
             Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        try {
-            json.put("protocolType", ProtocolType.getValue(this.protocolType));
-        } catch (JSONException ex) {
-            Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         return json;
     }
     
     public static Message fromJSON(JSONObject json) {
         Message req = null;
         try {
-            req =  new Message(json.getInt("code"), new JSONObject(json.getString("data")), ProtocolType.getProtocolType(json.getInt("protocolType")));
+            req =  new Message(json.getInt("code"), new JSONObject(json.getString("data")));
         } catch (JSONException ex) {
             Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
         }
         return req;
-    }
-
-    public ProtocolType getProtocolType() {
-        return protocolType;
-    }
-
-    public void setProtocolType(ProtocolType protocolType) {
-        this.protocolType = protocolType;
     }
 
     public int getId() {

@@ -9,8 +9,6 @@ import requete.ResponseQueue;
 import utils.MessageCode;
 import utils.QueryUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -148,13 +146,20 @@ public class RequestHandler implements HttpHandler {
                      * @out code : 1003
                      * @out error_message : string
                      */
-                    case GET_GAME_STATE:
+                    case GET_CHALLENGE_STATE:
+                    case WAIT_CHALLENGE_START:
                         if (parameters.containsKey("id_utilisateur")) {
                             int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
 
                             req.addData("id_utilisateur", id_utilisateur);
 
-                            Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Web interface has asked for the game state");
+                            if (code == WAIT_CHALLENGE_START) {
+                                Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Web interface is waiting for the game to start");
+                            }
+
+                            else {
+                                Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Web interface has asked for the game state");
+                            }
 
                             if (requestQueue.addRequest(req)) {
                                 Logger.getLogger(RequestHandler.class.getName()).log(Level.INFO, "Request was added to the RequestQueue");

@@ -36,7 +36,7 @@ public class TCPClient {
             jo.put("login", login);
             jo.put("password", mdp);
 
-            Message connexion = new Message(MessageCode.CONNECTION.getCode(), jo, ProtocolType.TCP);
+            Message connexion = new Message(MessageCode.CONNECTION.getCode(), jo);
             sendData(connexion);
             Message responseConnexion = retrieveData();
 
@@ -82,10 +82,10 @@ public class TCPClient {
         jo.put("id_utilisateur", user_id);
         jo.put("numero_challenge", numeroChallenge);
 
-        Message connexion = new Message(MessageCode.CHOOSE_CHALLENGE.getCode(), jo, ProtocolType.TCP);
+        Message connexion = new Message(MessageCode.CHOOSE_CHALLENGE.getCode(), jo);
         sendData(connexion);
         Message responseConnexion = retrieveData();
-        if (responseConnexion.getCode() != MessageCode.INITIAL_GAME_STATE.getCode()) {
+        if (responseConnexion.getCode() != MessageCode.INITIAL_CHALLENGE_STATE.getCode()) {
             System.err.println("Demande Challenge failed");
             System.exit(-1);
         }
@@ -93,7 +93,7 @@ public class TCPClient {
     }
 
     public JSONObject jouerTour(JSONObject action) {
-        Message connexion = new Message(4, action, ProtocolType.TCP);
+        Message connexion = new Message(4, action);
         sendData(connexion);
         Message responseConnexion = retrieveData();
         if (responseConnexion.getCode() != MessageCode.ACTION_OK.getCode()) {
