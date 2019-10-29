@@ -13,6 +13,7 @@ package ai;/* Dreugui && Laurie
 
 /*================================<GENERAL>================================*/
 
+import data.Config;
 import org.json.JSONObject;
 
 /*================================<DECLARATION>================================*/
@@ -24,7 +25,7 @@ public class AI {
      * //===========================================================================================//
      * */
     /*================================<FONCTION>================================*/
-    static int choisit_Alea(int grille[]) {
+    private static int choisit_Alea(int grille[]) {
         int res;
 
         res = (int) (Math.random() * 7);
@@ -42,10 +43,10 @@ public class AI {
 
         /*--------------------------------<DECLARATION>--------------------------------*/
         // lecteur JSON ID MPD
-        JSONObject ia;
+        Config ia = new Config("config/ia.json");
         /*Conexion au serveur id+mdp*/
         TCPClient connexion = new TCPClient(ia.getString("ID"), ia.getString("mdp"));
-        int choix, iD;
+        int choix, id;
         int grille[];
         boolean partieEnCours = true;
         int numeroChalenge = 0;
@@ -54,15 +55,15 @@ public class AI {
 
         /*--------------------------------<INITIALISATION>--------------------------------*/
         /*Demande de chalege au serveur et recuperation de l'ID*/
-        iD = connexion.demandeChallenge(numeroChalenge);
+        id = connexion.demandeChallenge(numeroChalenge).getInt("id_utilisateur");
 
         /*--------------------------------<PARTIE>--------------------------------*/
-        while (partieEnCours == true) {
-            info = connexion.retrieveData();
-            partieEnCours = info.getBool("fini");
+        while (partieEnCours) {
+            info = connexion.retrieveData().toJSON();
+            partieEnCours = info.getBoolean("fini");
             grille = (int[]) info.get("grille");
 
-            if (iD == info.getInt("id_player") && partieEnCours) {
+            if (id == info.getInt("id_player") && partieEnCours) {
                 //choisit
                 choix = choisit_Alea(grille);
                 reponse.put("column", choix);
