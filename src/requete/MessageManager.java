@@ -29,6 +29,8 @@ import static utils.MessageCode.getRequest;
  * @author Noizet Mathieu
  */
 public class MessageManager implements Runnable {
+    private static final Logger logger = Logger.getLogger(MessageManager.class.getName());
+
     private RequestQueue requestQueue;
     private ResponseQueue responseQueue;
     private static final Object lock = new Object();
@@ -69,12 +71,12 @@ public class MessageManager implements Runnable {
             // Attente passive d'une requête
             while (requestQueue.isEmpty()) {
                 synchronized (RequestQueue.getLock()) {
-                    Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, "Going to sleep as I don't have any messages to process");
+                    logger.info("Going to sleep as I don't have any messages to process");
 
                     try {
                         RequestQueue.getLock().wait();
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.log(Level.SEVERE, null, ex);
                     }
                 }
             }
@@ -96,21 +98,21 @@ public class MessageManager implements Runnable {
                     try {
                         id = connexion(req);
                     } catch (SQLException e) {
-                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, e);
+                        logger.log(Level.SEVERE, null, e);
                     }
 
                     if (id == -1) {
                         response.setCode(MessageCode.CONNECTION_ERROR.getCode());
                         response.addData("error_message", "Connection was not successful");
 
-                        Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, "Connection was not successful");
+                        logger.info("Connection was not successful");
                     }
 
                     else {
                         response.setCode(MessageCode.CONNECTION_OK.getCode());
                         response.addData("id_utilisateur", id);
 
-                        Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, "User successfully connected");
+                        logger.info("User successfully connected");
                     }
                 }
 
@@ -161,7 +163,7 @@ public class MessageManager implements Runnable {
             response.setDestination(sourceId);
 
             if (responseQueue.addResponse(response)) {
-                Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, "Response was added to the ResponseQueue");
+                logger.info("Response was added to the ResponseQueue");
             }
         }
     }
@@ -186,7 +188,7 @@ public class MessageManager implements Runnable {
             login = requete.getData().getString("login");
             password = requete.getData().getString("password");
         } catch (JSONException e) {
-            Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, null, e);
         }
 
         DBManager db = new DBManager();
@@ -238,12 +240,12 @@ public class MessageManager implements Runnable {
             }
 
             else {
-                Logger.getLogger(MessageManager.class.getName()).log(Level.WARNING, "User is not in a game room");
+                logger.info("User is not in a game room");
             }
         }
 
         else {
-            Logger.getLogger(MessageManager.class.getName()).log(Level.WARNING, "User is not currently playing");
+            logger.info("User is not currently playing");
         }
 
         return null;
