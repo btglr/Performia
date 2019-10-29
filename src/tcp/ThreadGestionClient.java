@@ -51,7 +51,6 @@ public class ThreadGestionClient extends Thread {
             if (!message.equals("")) {
                 try {
                     req = Message.fromJSON(new JSONObject(message));
-                    req.setProtocolType(ProtocolType.TCP);
                 } catch (JSONException ex) {
                     Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.SEVERE, null, ex);
                     continue;
@@ -85,18 +84,14 @@ public class ThreadGestionClient extends Thread {
                         }
 
                         else {
-                            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Received response");
+                            Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Received response: " + m.getData().toString());
                         }
                     }
                 }
 
-                if (m != null) {
-                    Logger.getLogger(ThreadGestionClient.class.getName()).log(Level.INFO, "Received response: " + m.getData().toString());
+                connected = m.getCode() == MessageCode.CONNECTION_OK.getCode();
 
-                    connected = m.getCode() == MessageCode.CONNECTION_OK.getCode();
-
-                    output.println(m.toJSON());
-                }
+                output.println(m.toJSON());
             }
         } while (connected);
 
