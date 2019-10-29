@@ -22,8 +22,8 @@ $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
 $ajax_url = implode("/", array(HTTP_SERVER_AJAX_URL, REQUEST_HANDLER));
 $user_id = $_SESSION["id"];
 
-$handle = curl_init($url . "?code=2&id_utilisateur=" . $user_id . "&numero_challenge=1");
-curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
+$handle = curl_init($url."?code=2&id_utilisateur=".$user_id."&numero_challenge=1");
+curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
 
@@ -73,27 +73,29 @@ $content = <<<HTML
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script>
+		var intervalIDPlateau;
+	
 		$( document ).ready(function() {
-		    var intervalID = setInterval(waitChallenge, 2000);
-		    
+			var intervalID = setInterval(waitChallenge, 2000);
+			
 			function waitChallenge() {
 				$.ajax({
-				  url: "$ajax_url",
-				  type: "GET",
-				  data: "code=5&id_utilisateur=$user_id",
-				  dataType: "json"
+					url: "$ajax_url",
+					type: "GET",
+					data: "code=5&id_utilisateur=$user_id",
+					dataType: "json"
 				}).done(function(res) {
-					 if (res["code"] === 504) {
-					   console.log("Challenge can start");
-					   clearInterval(intervalID);
-					   updatePlateau();
-					   
-					   // TODO setInterval quand le challenge commence jusqu'à ce qu'on reçoive que le challenge est terminé, ensuite clearInterval
-					 }
-					 else {
-					   $("#challenge").html("<h2>Waiting for an opponent</h2>");
-					   console.log("Challenge cannot start");
-					 }
+					if (res["code"] === 504) {
+						console.log("Challenge can start");
+						clearInterval(intervalID);
+						updatePlateau();
+						
+						intervalIDPlateau = setInterval(updatePlateau, 2000);
+					}
+					else {
+						$("#challenge").html("<h2>Waiting for an opponent</h2>");
+						console.log("Challenge cannot start");
+					}
 				});
 			}
 		});
@@ -108,11 +110,24 @@ $content = <<<HTML
 		//Parametre json -> recuperation de la grille sur le serveur http
 		function updatePlateau() {
 			$.ajax({
-			  url: "challenges/connect4/connect4.php",
-			  data: "url=$url"
+				url: "challenges/connect4/connect4.php",
+				data: "url=$url"
 			}).done(function(res) {
-			 	 $("#challenge").html(res);
-			  console.log('update done');
+				if (!isNaN(res)) {
+					clearInterval(intervalIDPlateau);
+					
+					if (res === $user_id) {
+						alert("You lost");
+					}
+					else {
+						alert("You won");
+					}
+				}
+				
+				else {
+					$("#challenge").html(res);
+					console.log('update done');
+				}
 			});
 		}
 
@@ -125,10 +140,10 @@ $content = <<<HTML
 		function choose_col(col) {
 			console.log("column select : ",col);
 			$.ajax({
-			  url: "$ajax_url",
-			  type: "GET",
-			  data: "code=3&id_utilisateur=$user_id&colonne=" + col
-			}).done(function(res) {
+				url: "$ajax_url",
+				type: "GET",
+				data: "code=3&id_utilisateur=$user_id&colonne=" + col
+			}).done(function() {
 				updatePlateau();
 			});
 		}

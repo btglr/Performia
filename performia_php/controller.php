@@ -21,8 +21,6 @@ function login($username,$pass)
     $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
     $url .= "?code=1&login=" . $username . "&password=" . $hashed_password;
 
-    echo $url;
-
     $handle = curl_init($url);
     curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
