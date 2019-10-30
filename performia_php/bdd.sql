@@ -8,6 +8,8 @@ INSERT INTO user (id, username, password) VALUES(NULL, 'user1', '5baa61e4c9b93f3
 
 -- login: toto, password: toto
 INSERT INTO user (id, username, password) VALUES(NULL, 'toto', '0b9c2625dc21ef05f6ad4ddf47c5f203837aa32c');
+-- login: ia, password: ia
+INSERT INTO user (id, username, password) VALUES(NULL, 'ia', 'f30accb48e68b071cb68125f46f669d5522b9ee8');
 
 CREATE TABLE challenge(challenge_id smallint NOT NULL AUTO_INCREMENT, challenge_name varchar(20) NOT NULL, challenge_description TEXT NOT NULL, constraint pk_challenge primary key(challenge_id));
 

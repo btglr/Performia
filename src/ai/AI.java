@@ -72,7 +72,8 @@ public class AI {
             }
 
             try {
-                sleep(250);
+                // Attente entre 1 et 5s
+                sleep((long) (1000 + (Math.random() * 4000)));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
