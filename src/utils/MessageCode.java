@@ -26,6 +26,8 @@ public enum MessageCode {
     CHALLENGE_CAN_START(RESPONSE, BOTH, 504, "Answer sent by the HTTP/TCP server as a response to the WAIT_CHALLENGE_START request when the challenge can start"),
     CHALLENGE_CANNOT_START(RESPONSE, BOTH, 505, "Answer sent by the HTTP/TCP server as a response to the WAIT_CHALLENGE_START when the challenge cannot start"),
     ROOM_NOT_FULL(RESPONSE, BOTH, 506, "Answer sent by the HTTP/TCP server when a challenge has been chosen but the room is not full"),
+    // Not used in the Java part, only the interface
+    CHALLENGE_OVER(RESPONSE, BOTH, 507, "Answer sent by the interface when it detects the game is over"),
 
     // Error responses
     ACTION_NOT_OK(RESPONSE, BOTH, 1000, "Answer sent by the HTTP server if the action was not successful"),

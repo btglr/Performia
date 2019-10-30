@@ -72,11 +72,13 @@ $content = <<<HTML
 		<p>Si lors d’une partie, tous les jetons sont joués sans qu’il y est d’alignement de jetons, la partie est déclaré nulle.</p>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 	<script>
-		var intervalIDPlateau;
+		let intervalIDPlateau;
 	
 		$( document ).ready(function() {
-			var intervalID = setInterval(waitChallenge, 2000);
+			let intervalID = setInterval(waitChallenge, 2000);
 			
 			function waitChallenge() {
 				$.ajax({
@@ -90,10 +92,10 @@ $content = <<<HTML
 						clearInterval(intervalID);
 						updatePlateau();
 						
-						intervalIDPlateau = setInterval(updatePlateau, 2000);
+						intervalIDPlateau = setInterval(updatePlateau, 1000);
 					}
 					else {
-						$("#challenge").html("<h2>Waiting for an opponent</h2>");
+						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent...</h2>");
 						console.log("Challenge cannot start");
 					}
 				});
@@ -111,23 +113,23 @@ $content = <<<HTML
 		function updatePlateau() {
 			$.ajax({
 				url: "challenges/connect4/connect4.php",
-				data: "url=$url"
+				data: "url=$url",
+				dataType: "json"
 			}).done(function(res) {
-				if (!isNaN(res)) {
+			    if (res["code"] === 507) {
 					clearInterval(intervalIDPlateau);
 					
-					if (res === $user_id) {
-						alert("You lost");
+					if (res["id_player"] === $user_id) {
+					    $("<div class='modal'><p>You have lost!</p></div>").appendTo("body").modal();
 					}
+					
 					else {
-						alert("You won");
+						$("<div class='modal'><p>You have won!</p></div>").appendTo("body").modal();
 					}
 				}
 				
-				else {
-					$("#challenge").html(res);
-					console.log('update done');
-				}
+                $("#challenge").html(res["php"]);
+                console.log('update done');
 			});
 		}
 

@@ -312,7 +312,7 @@ public class MessageManager implements Runnable {
 			return null;
 		}
 
-		if(p.getId() == s.getChallenge().getCurrentPlayerId()) {
+		if(!s.getChallenge().estFini() && p.getId() == s.getChallenge().getCurrentPlayerId()) {
 			if (s.getChallenge().jouerCoup(requete.getData())) {
 				// Coup ok ici
 				return s.getChallenge().toJson();

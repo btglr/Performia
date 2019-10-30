@@ -14,6 +14,10 @@ function getColor($col, $p1, $p2) {
 	}
 }
 
+// Connection error
+$code = 1001;
+$id_player = -1;
+
 $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> serveur http injoignable ?</p>
 		<p>     -> donnees recues invalides ?</p>";
@@ -32,9 +36,13 @@ if (isset($_GET["url"])) {
 		if (array_key_exists("data", $decoded)) {
 			if (array_key_exists("grille", $decoded["data"])) {
 				if (array_key_exists("fini", $decoded["data"]) && $decoded["data"]["fini"] === true) {
-					echo $decoded["data"]["id_player"];
-					die();
+				    $code = 507;
+				    $id_player = $decoded["data"]["id_player"];
 				}
+
+				else {
+				    $code = 502;
+                }
 
 				$grille = $decoded["data"]["grille"];
 				$players = $decoded["data"]["players"];
@@ -99,4 +107,14 @@ if (isset($_GET["url"])) {
 		}
 	}
 }
-echo $php;
+
+$result = array(
+    "code" => $code,
+    "php" => $php
+);
+
+if ($id_player !== -1) {
+    $result["id_player"] = $id_player;
+}
+
+echo json_encode($result);

@@ -80,6 +80,11 @@
     -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
 }
 
+h2.waiting-opponent {
+    text-align: center;
+    font-family: Poppins-Bold, serif;
+}
+
 body {
 	background-color:#DFDCDB;
 }

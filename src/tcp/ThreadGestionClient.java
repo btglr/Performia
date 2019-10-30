@@ -39,18 +39,18 @@ public class ThreadGestionClient extends Thread {
         boolean connected = false;
         RequestQueue requestQueue = RequestQueue.getInstance();
         ResponseQueue responseQueue = ResponseQueue.getInstance();
-        String message = "";
+        String message;
         Message req;
 
         do {
             try {
                 message = input.readLine();
-            } catch (IOException ex) {
-                logger.log(Level.SEVERE, null, ex);
-                continue;
+            } catch (IOException e) {
+                logger.info("Socket client has disconnected");
+                message = null;
             }
 
-            if (!message.equals("")) {
+            if (message != null && !message.equals("")) {
                 try {
                     req = Message.fromJSON(new JSONObject(message));
                 } catch (JSONException ex) {
@@ -98,6 +98,10 @@ public class ThreadGestionClient extends Thread {
                 connected = true;
 
                 output.println(m.toJSON());
+            }
+
+            else {
+                connected = false;
             }
         } while (connected);
 
