@@ -10,6 +10,7 @@ import challenge.*;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
@@ -26,7 +27,7 @@ import static utils.MessageCode.*;
 import static utils.MessageCode.getRequest;
 
 /**
- * @author Noizet Mathieu
+ * @author Noizet Mathieu & Dupont Kévin
  */
 public class MessageManager implements Runnable {
 	private static final Logger logger = Logger.getLogger(MessageManager.class.getName());
@@ -193,7 +194,7 @@ public class MessageManager implements Runnable {
 		}
 	}
 
-	public boolean checkCanChallengeStart(Message request) {
+	private boolean checkCanChallengeStart(Message request) {
 		if (request.getData().has("id_utilisateur")) {
 			int user_id = request.getData().getInt("id_utilisateur");
 			Salle s = getRoomByID(user_id);
@@ -204,7 +205,7 @@ public class MessageManager implements Runnable {
 		return false;
 	}
 
-	public int connexion(Message requete) throws SQLException {
+	private int connexion(Message requete) throws SQLException {
 		String login = "", password = "";
 		int id = -1;
 		ResultSet resultat;
@@ -248,7 +249,7 @@ public class MessageManager implements Runnable {
 		return id;
 	}
 
-	public JSONObject actualisation(Message requete) {
+	private JSONObject actualisation(Message requete) {
 		/* Récupérer user*/
 		int idUser = requete.getData().getInt("id_utilisateur");
 
@@ -276,7 +277,7 @@ public class MessageManager implements Runnable {
 		return null;
 	}
 
-	public JSONObject choisirChallenge(Message requete) {
+	private JSONObject choisirChallenge(Message requete) {
 		int idUser = requete.getData().getInt("id_utilisateur");
 
 		Participant p = getParticipantByID(idUser);
@@ -302,7 +303,7 @@ public class MessageManager implements Runnable {
 		}
 	}
 
-	public JSONObject jouerTour(Message requete) {
+	private JSONObject jouerTour(Message requete) {
 		int idUser = requete.getData().getInt("id_utilisateur");
 		Participant p = getParticipantByID(idUser);
 		Salle s = getRoomByID(idUser);
@@ -327,28 +328,17 @@ public class MessageManager implements Runnable {
 		return s.getChallenge().toJson();
 	}
 
-	public Participant getParticipantByID(int id) {
-		for (Participant p : participants) {
-			if (p.getId() == id) {
-				return p;
-			}
-		}
-		return null;
+	private Participant getParticipantByID(int id) {
+		return participants.stream().filter(participant -> (participant.getId()==id)).findFirst().orElse(null);
 	}
 
-	public Salle getRoomByID(int user_id) {
-		for (Salle s : rooms) {
-			for (int i : s.getJoueurs()) {
-				if (i == user_id) {
-					return s;
-				}
-			}
-		}
-
-		return null;
+	private Salle getRoomByID(int user_id) {
+		return rooms.stream()
+				.filter(salle -> (Arrays.stream(salle.getJoueurs()))
+				.filter(id -> id==user_id).findFirst().isPresent()).findFirst().orElse(null);
 	}
 
-	public Salle findAvailableRoom() {
+	private Salle findAvailableRoom() {
 		Salle s = null;
 
 		for (Salle tmp : rooms) {
