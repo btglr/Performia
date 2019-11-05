@@ -1,26 +1,37 @@
 <?php
-if (!empty($data))
-{
-    $challenge = $data->fetch();
-    $title = $challenge['challenge_name'];
+session_start();
+
+if (!empty($data)) {
+	$challenge = $data->fetch();
+	$title = $challenge['challenge_name'];
 	$css = "public/challenge.css";
+}
+
+if (!isset($_SESSION["id"])) {
+	header("Location: index.php");
 }
 
 //Addresse du serveur http
 //Handler de recuperation de la grille
 //et d'envoi de la colonne
-$url = "http://localhost:25633/request";
 
-$handle = curl_init($url);
-curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+// Envoi au serveur HTTP que l'utilisateur a choisi ce challenge
+
+$url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
+$ajax_url = implode("/", array(HTTP_SERVER_AJAX_URL, REQUEST_HANDLER));
+$user_id = $_SESSION["id"];
+
+$handle = curl_init($url."?code=2&id_utilisateur=".$user_id."&numero_challenge=1");
+curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
 
-if($response == FALSE) {
+/*if($response == FALSE) {
 	$json = 0;
 } else {
     $json = file_get_contents($url);
-}
+}*/
 
 $content = <<<HTML
 	<div class="challengebox">
@@ -32,7 +43,7 @@ $content = <<<HTML
 		<h1>Informations</h1>
 		<hr width="40%" color="-webkit-linear-gradient(left, #b721ff, #21d4fd);" align="left">
 			<p>Votre but ?</p>
-			<p>Devinez a l'issue de la partie si vous avez joué contre un vrai joueur !</p>
+			<p>Deviner a l'issue de la partie si vous avez joué contre un vrai joueur !</p>
 			<button id="guess">→</button>
 			<hr width="40%" color="-webkit-linear-gradient(left, #b721ff, #21d4fd);" align="left">
 			<button id="stats">Statistiques</button>
@@ -61,9 +72,34 @@ $content = <<<HTML
 		<p>Si lors d’une partie, tous les jetons sont joués sans qu’il y est d’alignement de jetons, la partie est déclaré nulle.</p>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 	<script>
+		let intervalIDPlateau;
+	
 		$( document ).ready(function() {
-		    updatePlateau();
+			let intervalID = setInterval(waitChallenge, 2000);
+			
+			function waitChallenge() {
+				$.ajax({
+					url: "$ajax_url",
+					type: "GET",
+					data: "code=5&id_utilisateur=$user_id",
+					dataType: "json"
+				}).done(function(res) {
+					if (res["code"] === 504) {
+						console.log("Challenge can start");
+						clearInterval(intervalID);
+						updatePlateau();
+						
+						intervalIDPlateau = setInterval(updatePlateau, 1000);
+					}
+					else {
+						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent...</h2>");
+						console.log("Challenge cannot start");
+					}
+				});
+			}
 		});
 
 		//Mise a jour du plateau
@@ -71,33 +107,47 @@ $content = <<<HTML
 		$("#refresh").click(function() {
 			updatePlateau();
 		});
-
+		
 		//Fonction de mise a jour visuel
 		//Parametre json -> recuperation de la grille sur le serveur http
 		function updatePlateau() {
 			$.ajax({
-			  url: "challenges/connect4/connect4.php",
-			  data: "url=$url"
+				url: "challenges/connect4/connect4.php",
+				data: "url=$url",
+				dataType: "json"
 			}).done(function(res) {
-			  $("#challenge").replaceWith(res);
-			  console.log('update done');
+			    if (res["code"] === 507) {
+					clearInterval(intervalIDPlateau);
+					
+					if (res["id_player"] === $user_id) {
+					    $("<div class='modal'><p>You have lost!</p></div>").appendTo("body").modal();
+					}
+					
+					else {
+						$("<div class='modal'><p>You have won!</p></div>").appendTo("body").modal();
+					}
+				}
+				
+                $("#challenge").html(res["php"]);
+                console.log('update done');
 			});
 		}
 
 		//Fonction pour l'affichage du plateau
-		function change_color(i,j){
+		function change_color(i,j) {
 			document.getElementById(j+'-'+i).style.backgroundColor="red";    
 		}
 
 		//Fonction de selection de la colonne du plateau pour l'envoi au serveur http
-		function choose_col(col){
+		function choose_col(col) {
 			console.log("column select : ",col);
 			$.ajax({
-			  url: "$url",
-			  type: "GET",
-			  data: "PLAY_TURN=" + col
+				url: "$ajax_url",
+				type: "GET",
+				data: "code=3&id_utilisateur=$user_id&colonne=" + col
+			}).done(function() {
+				updatePlateau();
 			});
-			updatePlateau()
 		}
 	</script>
 HTML;

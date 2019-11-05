@@ -1,5 +1,6 @@
 <?php
 require('controller.php');
+require './public/define.php';
 
 try {
     if (isset($_GET['action'])) {
