@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import utils.MessageCode;
@@ -90,6 +91,7 @@ public class MessageManager implements Runnable {
 			MessageCode code = getRequest(req.getCode());
 			Message response = new Message();
 			JSONObject jsonObject;
+			JSONArray jsonArray;
 
 			if (code == CONNECTION) {
 				int id = -1;
@@ -174,6 +176,21 @@ public class MessageManager implements Runnable {
 								boolean canStart = checkCanChallengeStart(req);
 
 								response.setCode(canStart ? CHALLENGE_CAN_START.getCode() : CHALLENGE_CANNOT_START.getCode());
+
+								break;
+
+							// Demande de la liste des challenges
+							case GET_LIST_CHALLENGE:
+								jsonArray = getListChallenge(req);
+
+								if (jsonArray == null) {
+									response.setCode(ACTION_NOT_OK.getCode());
+								}
+
+								else {
+									response.setCode(LIST_CHALLENGE.getCode());
+									response.addData("data", jsonArray);
+								}
 
 								break;
 						}
@@ -358,5 +375,51 @@ public class MessageManager implements Runnable {
 		}
 
 		return s;
+	}
+
+	public JSONArray getListChallenge(Message requete) {
+		int idUser = requete.getData().getInt("id_utilisateur");
+		PreparedStatement query;
+		ResultSet resultat = null;
+		JSONArray ar = new JSONArray();
+
+		DBManager db = new DBManager();
+
+		Connection dbConnection = null;
+
+		try {
+			dbConnection = db.getConnection();
+		} catch (SQLException e) {
+			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the database is online.");
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the configuration file exists.");
+		}
+
+		try {
+			query = dbConnection.prepareStatement("SELECT * FROM challenge");
+			resultat = query.executeQuery();
+		} catch (SQLException e){
+			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the database is online.");
+		}
+
+		while (true){
+			try {
+				if (!resultat.next()) break;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			JSONObject ob = new JSONObject();
+
+			try {
+				ob.put("challenge_id", resultat.getInt("challenge_id"));
+				ob.put("challenge_name", resultat.getString("challenge_name"));
+				ob.put("challenge_description", resultat.getString("challenge_description"));
+				ar.put(ob);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return ar;
 	}
 }

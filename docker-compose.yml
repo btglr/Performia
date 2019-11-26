@@ -32,7 +32,7 @@ services:
     links:
       - db:mysql
     extra_hosts:
-      - "http_server:192.168.1.33"
+      - "http_server:10.129.23.48"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
