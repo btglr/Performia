@@ -1,0 +1,3 @@
+Compile the IA with :
+  javac -cp "libs/json.jar;." ai/AI.java
+  (within ~/.../IA_XXX/ ) 
