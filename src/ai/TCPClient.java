@@ -143,18 +143,28 @@ public class TCPClient {
         return response.getData();
     }
 
-	public JSONObject playTurn(JSONObject action) {
-		Message message = new Message(MessageCode.PLAY_TURN.getCode(), action);
+    public void sendTurn(JSONObject action)
+    {
+        Message message = new Message(MessageCode.PLAY_TURN.getCode(),action);
+        sendData(message);
+    }
 
-		sendData(message);
-		Message response = retrieveData();
+    public JSONObject receiveTurn()
+    {
+        Message response = retrieveData();
 
-		if (response.getCode() != MessageCode.ACTION_OK.getCode()) {
-			logger.info("Incorrect move");
-			System.exit(-1);
-		}
-		return response.getData();
-	}
+        if (response.getCode() != MessageCode.ACTION_OK.getCode()) {
+            logger.info("Incorrect move");
+            System.exit(-1);
+        }
+        return response.getData();
+    }
+
+    public JSONObject playTurn(JSONObject action) {
+        sendTurn(action);
+
+        return receiveTurn();
+    }
 
 	public void closeSocket() {
 		try {
