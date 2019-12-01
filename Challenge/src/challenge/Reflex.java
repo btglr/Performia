@@ -1,15 +1,17 @@
 package challenge;
 
 import java.util.Random;
+import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Reflex extends Challenge {
+public class Reflex extends Challenge implements Runnable{
 	
 	private boolean[] grille;
 	private int[] score;
 	private int tour = 0;
+	private int change_round = 0;
 	
 	public Reflex(Participant[] participants) {
 		super("Reflex");
@@ -22,6 +24,8 @@ public class Reflex extends Challenge {
 		
 
 		this.grille = new boolean[5*5];
+		
+		this.score = new int[participants.length];
 	}
 	
 	public Reflex(boolean[] grille, Participant[] participants) {
@@ -50,6 +54,8 @@ public class Reflex extends Challenge {
 
 		json.put("players", arrayPlayers);
 		json.put("grille", this.grille);
+		json.put("score", this.score);
+		json.put("round", this.tour);
 
 		return json;
 	}
@@ -80,7 +86,7 @@ public class Reflex extends Challenge {
 	}
 
 	@Override
-	public boolean jouerCoup(JSONObject json) {
+	public boolean jouerCoup(JSONObject json){
 		int case_select = json.getInt("case");
 		int id_p= json.getInt("id_player");
 		int pos_player =-1;
@@ -90,11 +96,14 @@ public class Reflex extends Challenge {
 			}
 		}
 		if(pos_player != -1){
+//			System.out.println(pos_player);
 			if(this.grille[case_select] == true){
+				this.change_round = 1;
 				this.grille[case_select] = false;
-				this.updateScore(id_player, 5);
+				this.updateScore(pos_player, 5);
+//				this.setTour(this.getTour()+1);
 			}else {
-				this.updateScore(id_player, -1);
+				this.updateScore(pos_player, -1);
 			}
 			return true;
 		}
@@ -158,16 +167,29 @@ public class Reflex extends Challenge {
         int indice = r.nextInt(20);
         //Sleep entre 3 et 10 secondes (0:7 +3 => [3;10]) 
         int timeSleep = r.nextInt(8)+3;
-        try {
+                    	
+		try {
 			Thread.sleep(timeSleep*1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    			
         this.grille[indice] =true;
+        this.display_grid();
         
 	}
 	
+	void set_change_round(int val) {
+		this.change_round = val;
+	}
+	
+	void display_score() {
+		System.out.println("\n\n1 : "+this.score[0]);
+		System.out.println("2 : "+this.score[1]);
+		System.out.println("3 : "+this.score[2]);
+		System.out.println("4 : "+this.score[3]);
+	}
 	
 	
 	
@@ -187,14 +209,33 @@ public class Reflex extends Challenge {
 			System.out.println("\n\nround : "+ (r.getTour()+1));
 			
 			r.display_grid();
-			r.setRandomTrue();
-			r.display_grid();
+			new Thread(r).start();
+			Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+		    while(r.change_round == 0){
+		    	System.out.println("\n\n Enter the good number");
+			    int caseSelect = (int)Integer.parseInt(myObj.nextLine());  // Read user input
+			    Random rand = new Random();
+			    
+			    JSONObject j= new JSONObject();
+			    j.put("id_player", rand.nextInt(4)+1);
+			    j.put("case", caseSelect);
+			    r.jouerCoup(j);
+		    }
+		    r.setTour(r.getTour()+1);
+		    r.set_change_round(0);
+		    r.display_score();
 			
-			//WAIT CLICK
-			//PARALELLE JOUER_COUP()
 			
-			r.setTour(r.getTour()+1);
+			
+			
 		}
+		
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		setRandomTrue();
 		
 	}
 
