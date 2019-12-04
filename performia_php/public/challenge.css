@@ -1,0 +1,111 @@
+@font-face {
+    font-family: Poppins-Regular;
+    src: url('../fonts/poppins/Poppins-Regular.ttf');
+}
+
+@font-face {
+    font-family: Poppins-Medium;
+    src: url('../fonts/poppins/Poppins-Medium.ttf');
+}
+
+@font-face {
+    font-family: Poppins-Bold;
+    src: url('../fonts/poppins/Poppins-Bold.ttf');
+}
+
+@font-face {
+    font-family: Poppins-SemiBold;
+    src: url('../fonts/poppins/Poppins-SemiBold.ttf');
+}
+
+.title {
+    display: block;
+    font-family: Poppins-Bold;
+    font-size: 30px;
+    color: #333333;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.challengebox {
+ 	float: left;
+    position: relative;
+    margin-left:5%;
+    margin-right: 5%;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 50%;
+
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -o-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.actionsbox {
+    position: relative;
+    margin-left:2%;
+    margin-right: 5%;
+    padding: 10px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    width:30%;
+    font-family:Arial;
+
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -o-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.rulesbox {
+	display: inline-block;
+    margin-top:0.5%;
+    margin-left:5%;
+    margin-right: 5%;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 2%;
+    font-family:Arial;
+
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -o-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+h2.waiting-opponent {
+    text-align: center;
+    font-family: Poppins-Bold, serif;
+}
+
+body {
+	background-color:#DFDCDB;
+}
+
+button {
+	background-color: #008CBA;
+	border: none;
+	color: white;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	-webkit-transition-duration: 0.4s;
+  	transition-duration: 0.4s;
+}
+
+button:hover {
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+#return {
+	background-color: #f44336;
+}
