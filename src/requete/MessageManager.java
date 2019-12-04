@@ -284,11 +284,9 @@ public class MessageManager implements Runnable {
 		Salle s = findAvailableRoom();
 
 		if (s == null) {
-<<<<<<< HEAD
-			s = new Salle(new Connect4(p));
-=======
+			//s = new Salle(new Connect4(p));
+
 			s = new Salle(new Reflex(p));
->>>>>>> ChallengeV1
 			rooms.add(s);
 		}
 
