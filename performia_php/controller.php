@@ -71,3 +71,16 @@ function login($username,$pass)
         }
     }
 }
+
+function sign_out() {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // TODO Envoyer un message de déconnexion au serveur pour qu'il supprime la partie en cours ?
+
+    session_unset();
+    session_destroy();
+
+    header("Location: index.php");
+}

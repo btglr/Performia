@@ -49,7 +49,7 @@ $content = <<<HTML
 			<button id="refresh">Actualiser le plateau</button>
 		<br>
 		<br>
-			<a href="index.php"><button id="return">Quitter</button></a>
+			<a href="index.php?action=sign_out"><button id="return">Quitter</button></a>
 	</div>
 	<div class="rulesbox">
 		<h1>Règles</h1>

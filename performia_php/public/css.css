@@ -227,3 +227,18 @@ html,body{
     text-decoration: none;
     color: #555555;
 }
+
+.menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}
+
+.menu a {
+    text-decoration: none;
+}
+
+.menu a:visited {
+    color: inherit;
+}

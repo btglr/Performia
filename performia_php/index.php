@@ -33,6 +33,10 @@ try {
         else if (strcmp($_GET['action'], 'admin') == 0) {
             admin();
         }
+
+        else if (strcmp($_GET['action'], 'sign_out') == 0) {
+            sign_out();
+        }
     }
     else {
         $err = -1;
