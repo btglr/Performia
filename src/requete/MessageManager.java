@@ -135,6 +135,10 @@ public class MessageManager implements Runnable {
 									response.setCode(ROOM_NOT_FULL.getCode());
 								}
 
+								else if (jsonObject.has("code") && jsonObject.getInt("code") == WRONG_CHALLENGE.getCode()) {
+									response.setCode(WRONG_CHALLENGE.getCode());
+								}
+
 								else {
 									response.setCode(INITIAL_CHALLENGE_STATE.getCode());
 									response.addData("data", jsonObject);
@@ -315,14 +319,25 @@ public class MessageManager implements Runnable {
 
 	private JSONObject choisirChallenge(Message requete) {
 		int idUser = requete.getData().getInt("id_utilisateur");
+		int challengeId = requete.getData().getInt("challenge_id");
 
 		Participant p = getParticipantByID(idUser);
 		Salle s = findAvailableRoom();
 
 		if (s == null) {
-			//s = new Salle(new Connect4(p));
+			switch (challengeId) {
+				case 1:
+					s = new Salle(new Connect4(p));
+					break;
 
-			s = new Salle(new Reflex(p));
+				case 2:
+					s = new Salle(new Reflex(p));
+					break;
+
+				default:
+					return new JSONObject().put("code", WRONG_CHALLENGE.getCode());
+			}
+
 			rooms.add(s);
 		}
 

@@ -21,7 +21,7 @@ $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
 $ajax_url = implode("/", array(HTTP_SERVER_AJAX_URL, REQUEST_HANDLER));
 $user_id = $_SESSION["id"];
 
-$handle = curl_init($url."?code=2&id_utilisateur=".$user_id."&numero_challenge=1");
+$handle = curl_init($url."?code=2&id_utilisateur=".$user_id."&challenge_id=1");
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);

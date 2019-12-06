@@ -76,7 +76,7 @@ public class RequestHandler implements HttpHandler {
                      * Détails de la requête de choix d'un challenge
                      * @in code : 2
                      * @in id_utilisateur : int
-                     * @in numero_challenge : int
+                     * @in challenge_id : int
                      * Si ok
                      * @out code : 500
                      * @out etat_jeu : JSONObject (ici, état initial)
@@ -85,12 +85,12 @@ public class RequestHandler implements HttpHandler {
                      * @out error_message : string
                      */
                     case CHOOSE_CHALLENGE:
-                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("numero_challenge")) {
+                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("challenge_id")) {
                             int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
-                            int numero_challenge = Integer.parseInt(parameters.get("numero_challenge"));
+                            int challenge_id = Integer.parseInt(parameters.get("challenge_id"));
 
                             req.addData("id_utilisateur", id_utilisateur);
-                            req.addData("numero_challenge", numero_challenge);
+                            req.addData("challenge_id", challenge_id);
 
                             logger.info("User has chosen a challenge");
 

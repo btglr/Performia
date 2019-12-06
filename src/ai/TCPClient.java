@@ -113,7 +113,7 @@ public class TCPClient {
 	public JSONObject chooseChallenge(int numeroChallenge) {
 		JSONObject jo = new JSONObject();
 		jo.put("id_utilisateur", userId);
-		jo.put("numero_challenge", numeroChallenge);
+		jo.put("challenge_id", numeroChallenge);
 
 		Message connexion = new Message(MessageCode.CHOOSE_CHALLENGE.getCode(), jo);
 		sendData(connexion);
