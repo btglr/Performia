@@ -17,11 +17,10 @@ if (!isset($_SESSION["id"])) {
 
 // Envoi au serveur HTTP que l'utilisateur a choisi ce challenge
 
-$url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
-$ajax_url = implode("/", array(HTTP_SERVER_AJAX_URL, REQUEST_HANDLER));
+$ajax_url = HTTP_REQUEST_URL;
 $user_id = $_SESSION["id"];
 
-$handle = curl_init($url."?code=2&id_utilisateur=".$user_id."&challenge_id=1");
+$handle = curl_init(HTTP_REQUEST_URL . "?code=2&id_utilisateur=" . $user_id . "&challenge_id=1");
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
