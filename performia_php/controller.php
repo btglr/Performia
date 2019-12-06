@@ -12,6 +12,11 @@ function challenge($id)
     $data = get_challenge($id);
     require 'views/challenge'.$id.'.php';
 }
+
+function admin() {
+    require 'views/admin.php';
+}
+
 function login($username,$pass)
 {
     $err=0;
