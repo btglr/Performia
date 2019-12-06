@@ -182,7 +182,7 @@ public class MessageManager implements Runnable {
 
 							// Demande de la liste des challenges
 							case GET_LIST_CHALLENGE:
-								jsonArray = getListChallenge(req);
+								jsonArray = getListChallenge();
 
 								if (jsonArray == null) {
 									response.setCode(ACTION_NOT_OK.getCode());
@@ -191,6 +191,25 @@ public class MessageManager implements Runnable {
 								else {
 									response.setCode(LIST_CHALLENGE.getCode());
 									response.addData("data", jsonArray);
+								}
+
+								break;
+
+							// Demande des détails d'un challenge
+							case GET_CHALLENGE_DETAILS:
+								jsonObject = getChallengeDetails(req);
+
+								if (jsonObject == null) {
+									response.setCode(ACTION_NOT_OK.getCode());
+								}
+
+								else if (!jsonObject.has("challenge_name")) {
+									response.setCode(WRONG_CHALLENGE.getCode());
+								}
+
+								else {
+									response.setCode(CHALLENGE_DETAILS.getCode());
+									response.addData("data", jsonObject);
 								}
 
 								break;
@@ -240,10 +259,10 @@ public class MessageManager implements Runnable {
 		try {
 			dbConnection = db.getConnection();
 		} catch (SQLException e) {
-			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the database is online.");
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the database is online.");
 			return -1;
 		} catch (JSONException e) {
-			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the configuration file exists.");
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
 			return -1;
 		}
 
@@ -369,8 +388,7 @@ public class MessageManager implements Runnable {
 		return s;
 	}
 
-	public JSONArray getListChallenge(Message requete) {
-		int idUser = requete.getData().getInt("id_utilisateur");
+	public JSONArray getListChallenge() {
 		PreparedStatement query;
 		ResultSet resultat = null;
 		JSONArray ar = new JSONArray();
@@ -382,16 +400,16 @@ public class MessageManager implements Runnable {
 		try {
 			dbConnection = db.getConnection();
 		} catch (SQLException e) {
-			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the database is online.");
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the database is online.");
 		} catch (JSONException e) {
-			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the configuration file exists.");
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
 		}
 
 		try {
 			query = dbConnection.prepareStatement("SELECT * FROM challenge");
 			resultat = query.executeQuery();
 		} catch (SQLException e){
-			System.err.println("An exception occurred while creating the connection to the dabatase. Please check that the database is online.");
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the database is online.");
 		}
 
 		while (true){
@@ -413,5 +431,36 @@ public class MessageManager implements Runnable {
 		}
 
 		return ar;
+	}
+
+	public JSONObject getChallengeDetails(Message requete) {
+		int challengeId = requete.getData().getInt("challenge_id");
+		PreparedStatement query;
+		ResultSet resultat;
+		JSONObject ob = null;
+		DBManager db = new DBManager();
+
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+			query = dbConnection.prepareStatement("SELECT * FROM challenge WHERE challenge_id = ?");
+			query.setInt(1, challengeId);
+			resultat = query.executeQuery();
+
+			ob = new JSONObject();
+
+			// Si le challenge ID était correct alors il y aura des résultats, sinon un JSONObject vide sera retourné
+			// indiquant qu'aucun challenge ne correspondait
+			if (resultat.next()) {
+				ob.put("challenge_name", resultat.getString("challenge_name"));
+				ob.put("challenge_description", resultat.getString("challenge_description"));
+			}
+		} catch (SQLException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the database is online.");
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+		}
+
+		return ob;
 	}
 }

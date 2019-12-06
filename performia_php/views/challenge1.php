@@ -1,8 +1,7 @@
 <?php
-session_start();
 
-if (!empty($data)) {
-	$challenge = $data->fetch();
+if (!empty($data) && array_key_exists("code", $data) && ($data["code"] >= 500) && $data["code"] < 1000) {
+	$challenge = $data["data"];
 	$title = $challenge['challenge_name'];
 	$css = "public/challenge.css";
 }

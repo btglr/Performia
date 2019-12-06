@@ -17,6 +17,7 @@ public enum MessageCode {
     GET_CHALLENGE_STATE(REQUEST, 4, "Request sent by the web interface regularly to get the challenge state"),
     WAIT_CHALLENGE_START(REQUEST, 5, "Request sent by the web interface/AI when waiting for the challenge to start under certain conditions"),
     GET_LIST_CHALLENGE(REQUEST, 6,"Request sent by the web interface to get the list of challenges"),
+    GET_CHALLENGE_DETAILS(REQUEST, 7, "Request sent by the web interface to get the details of a challenge"),
 
     // Responses
     INITIAL_CHALLENGE_STATE(RESPONSE, 500, "Answer sent by the HTTP server with the initial state of the challenge"),
@@ -29,6 +30,7 @@ public enum MessageCode {
     // Not used in the Java part, only the interface
     CHALLENGE_OVER(RESPONSE, 507, "Answer sent by the interface when it detects the game is over"),
     LIST_CHALLENGE(RESPONSE, 508, "Answer sent by the HTTP server with the list of challenges"),
+    CHALLENGE_DETAILS(RESPONSE, 509, "Answer sent by the HTTP server with the details of a challenge"),
 
     // Error responses
     ACTION_NOT_OK(RESPONSE, 1000, "Answer sent by the HTTP server if the action was not successful"),

@@ -1,16 +1,39 @@
 <?php
 require('./models/model.php');
 
-function list_challenge()
+function list_challenge($user_id)
 {
-    $data = get_challenge_list();
+    $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
+    $url .= "?code=6&id_utilisateur=" . $user_id;
+
+    $handle = curl_init($url);
+    curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+    $response = curl_exec($handle);
+
+    if ($response) {
+        $data = json_decode($response, true);
+    }
+
     require 'views/list_challenge.php';
 }
 
-function challenge($id)
+function challenge($challenge_id)
 {
-    $data = get_challenge($id);
-    require 'views/challenge'.$id.'.php';
+    $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
+    session_start();
+    $url .= "?code=7&id_utilisateur=" . $_SESSION["id"] . "&challenge_id=" . $challenge_id;
+
+    $handle = curl_init($url);
+    curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+    $response = curl_exec($handle);
+
+    if ($response) {
+        $data = json_decode($response, true);
+    }
+
+    require 'views/challenge'. $challenge_id .'.php';
 }
 
 function admin() {
@@ -39,7 +62,7 @@ function login($username,$pass)
             session_start();
             $_SESSION["user"] = $username;
             $_SESSION["id"] = $decoded["id_utilisateur"];
-            list_challenge();
+            list_challenge($_SESSION["id"]);
         }
 
         else {
