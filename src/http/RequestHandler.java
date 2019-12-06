@@ -186,6 +186,34 @@ public class RequestHandler implements HttpHandler {
 
                         break;
 
+                    /**
+                     * Détails de la requête de la liste des challeges
+                     * @in code : 6
+                     * @in id_utilisateur : int
+                     * Si ok
+                     * @out code : 508
+                     * @out list_challenges : JSONArray [{"challenge_id" : XX, "challenge_name" : "name", "challenge_description" : "description"},{...},...]
+                     * Si pas ok
+                     * @out code :
+                     */
+                    case GET_LIST_CHALLENGE:
+                        if (parameters.containsKey("id_utilisateur")) {
+                            int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
+
+                            req.addData("id_utilisateur", id_utilisateur);
+
+                            if ((requestAdded = requestQueue.addRequest(req))) {
+                                logger.info("Request was added to the RequestQueue");
+                            }
+                        }
+
+                        else {
+                            logger.info("Missing a parameter with request GET_LIST_CHALLENGE");
+                        }
+
+                        break;
+
+
                     case UNKNOWN:
                     default:
                         logger.info("Received an unknown request");
