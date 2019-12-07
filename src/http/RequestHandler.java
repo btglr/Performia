@@ -50,7 +50,7 @@ public class RequestHandler implements HttpHandler {
                      * @in password : string
                      * Si ok
                      * @out code : 503
-                     * @out id_utilisateur : int
+                     * @out user_id : int
                      * Si pas ok
                      * @out code : 1001
                      * @out error_message : string
@@ -79,7 +79,7 @@ public class RequestHandler implements HttpHandler {
                     /**
                      * Détails de la requête de choix d'un challenge
                      * @in code : 2
-                     * @in id_utilisateur : int
+                     * @in user_id : int
                      * @in challenge_id : int
                      * Si ok
                      * @out code : 500
@@ -89,11 +89,11 @@ public class RequestHandler implements HttpHandler {
                      * @out error_message : string
                      */
                     case CHOOSE_CHALLENGE:
-                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("challenge_id")) {
-                            int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
+                        if (parameters.containsKey("user_id") && parameters.containsKey("challenge_id")) {
+                            int user_id = Integer.parseInt(parameters.get("user_id"));
                             int challenge_id = Integer.parseInt(parameters.get("challenge_id"));
 
-                            req.addData("id_utilisateur", id_utilisateur);
+                            req.addData("user_id", user_id);
                             req.addData("challenge_id", challenge_id);
 
                             logger.info("User has chosen a challenge");
@@ -112,7 +112,7 @@ public class RequestHandler implements HttpHandler {
                     /**
                      * Détails de la requête envoyée lorsqu'un tour est joué
                      * @in code : 3
-                     * @in id_utilisateur : int
+                     * @in user_id : int
                      * @in colonne : int (le numéro de colonne dans lequel placer le disque)
                      * Si ok
                      * @out code : 501
@@ -122,11 +122,11 @@ public class RequestHandler implements HttpHandler {
                      * @out error_message : string
                      */
                     case PLAY_TURN:
-                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("colonne")) {
-                            int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
+                        if (parameters.containsKey("user_id") && parameters.containsKey("colonne")) {
+                            int user_id = Integer.parseInt(parameters.get("user_id"));
                             int colonne = Integer.parseInt(parameters.get("colonne"));
 
-                            req.addData("id_utilisateur", id_utilisateur);
+                            req.addData("user_id", user_id);
                             req.addData("colonne", colonne);
 
                             logger.info("User has made a move");
@@ -145,7 +145,7 @@ public class RequestHandler implements HttpHandler {
                     /**
                      * Détails de la requête de demande d'état du jeu (périodiquement, utilisée pour rafraîchir l'interface)
                      * @in code : 4
-                     * @in id_utilisateur : int
+                     * @in user_id : int
                      * Si ok
                      * @out code : 502
                      * @out etat_jeu : JSONObject
@@ -159,17 +159,17 @@ public class RequestHandler implements HttpHandler {
                     /**
                      * Attente de l'interface pour le démarrage du challenge
                      * @in code : 5
-                     * @in id_utilisateur : int
+                     * @in user_id : int
                      * Si ok
                      * @out code : 504
                      * Si pas ok
                      * @out code : 505
                      */
                     case WAIT_CHALLENGE_START:
-                        if (parameters.containsKey("id_utilisateur")) {
-                            int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
+                        if (parameters.containsKey("user_id")) {
+                            int user_id = Integer.parseInt(parameters.get("user_id"));
 
-                            req.addData("id_utilisateur", id_utilisateur);
+                            req.addData("user_id", user_id);
 
                             if (code == WAIT_CHALLENGE_START) {
                                 logger.info("Web interface is waiting for the game to start");
@@ -193,7 +193,7 @@ public class RequestHandler implements HttpHandler {
                     /**
                      * Détails de la requête de la liste des challeges
                      * @in code : 6
-                     * @in id_utilisateur : int
+                     * @in user_id : int
                      * Si ok
                      * @out code : 508
                      * @out list_challenges : JSONArray [{"challenge_id" : XX, "challenge_name" : "name", "challenge_description" : "description"},{...},...]
@@ -201,10 +201,10 @@ public class RequestHandler implements HttpHandler {
                      * @out code :
                      */
                     case GET_LIST_CHALLENGE:
-                        if (parameters.containsKey("id_utilisateur")) {
-                            int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
+                        if (parameters.containsKey("user_id")) {
+                            int user_id = Integer.parseInt(parameters.get("user_id"));
 
-                            req.addData("id_utilisateur", id_utilisateur);
+                            req.addData("user_id", user_id);
 
                             if ((requestAdded = requestQueue.addRequest(req))) {
                                 logger.info("Request was added to the RequestQueue");
@@ -220,7 +220,7 @@ public class RequestHandler implements HttpHandler {
                     /**
                      * Détails de la requête de la liste des challenges
                      * @in code : 7
-                     * @in id_utilisateur : int
+                     * @in user_id : int
                      * @in challenge_id : int
                      * Si ok
                      * @out code : 509
@@ -229,11 +229,11 @@ public class RequestHandler implements HttpHandler {
                      * @out code : 1002
                      */
                     case GET_CHALLENGE_DETAILS:
-                        if (parameters.containsKey("id_utilisateur") && parameters.containsKey("challenge_id")) {
-                            int id_utilisateur = Integer.parseInt(parameters.get("id_utilisateur"));
+                        if (parameters.containsKey("user_id") && parameters.containsKey("challenge_id")) {
+                            int user_id = Integer.parseInt(parameters.get("user_id"));
                             int challenge_id = Integer.parseInt(parameters.get("challenge_id"));
 
-                            req.addData("id_utilisateur", id_utilisateur);
+                            req.addData("user_id", user_id);
                             req.addData("challenge_id", challenge_id);
 
                             if ((requestAdded = requestQueue.addRequest(req))) {
@@ -256,7 +256,7 @@ public class RequestHandler implements HttpHandler {
                      * @in gender : int
                      * Si ok
                      * @out code : 510
-                     * @out id_utilisateur : int
+                     * @out user_id : int
                      * Si pas ok
                      * @out code : 1000
                      * @out code : 1002

@@ -23,7 +23,7 @@ $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> donnees recues invalides ?</p>";
 
 if (isset($_GET["url"])) {
-	$url = $_GET["url"] . "?code=4&id_utilisateur=" . $_SESSION["id"];
+	$url = $_GET["url"] . "?code=4&user_id=" . $_SESSION["id"];
 
 	$handle = curl_init($url);
 	curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);

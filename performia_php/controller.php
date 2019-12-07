@@ -4,7 +4,7 @@ require('./models/model.php');
 function list_challenge($user_id)
 {
     $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
-    $url .= "?code=6&id_utilisateur=" . $user_id;
+    $url .= "?code=6&user_id=" . $user_id;
 
     $handle = curl_init($url);
     curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
@@ -22,7 +22,7 @@ function challenge($challenge_id)
 {
     $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
     session_start();
-    $url .= "?code=7&id_utilisateur=" . $_SESSION["id"] . "&challenge_id=" . $challenge_id;
+    $url .= "?code=7&user_id=" . $_SESSION["id"] . "&challenge_id=" . $challenge_id;
 
     $handle = curl_init($url);
     curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
@@ -58,10 +58,10 @@ function login($username,$pass)
         $decoded = json_decode($response, true);
 
         // User is now connected
-        if (isset($decoded["id_utilisateur"])) {
+        if (isset($decoded["user_id"])) {
             session_start();
             $_SESSION["user"] = $username;
-            $_SESSION["id"] = $decoded["id_utilisateur"];
+            $_SESSION["id"] = $decoded["user_id"];
             list_challenge($_SESSION["id"]);
         }
 

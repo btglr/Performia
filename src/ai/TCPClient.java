@@ -83,7 +83,7 @@ public class TCPClient {
 			System.exit(-1);
 		}
 
-        userId = responseConnexion.getData().getInt("id_utilisateur");
+        userId = responseConnexion.getData().getInt("user_id");
 	}
 
     public int getUserId() {
@@ -112,7 +112,7 @@ public class TCPClient {
 
 	public JSONObject chooseChallenge(int numeroChallenge) {
 		JSONObject jo = new JSONObject();
-		jo.put("id_utilisateur", userId);
+		jo.put("user_id", userId);
 		jo.put("challenge_id", numeroChallenge);
 
 		Message connexion = new Message(MessageCode.CHOOSE_CHALLENGE.getCode(), jo);
@@ -129,7 +129,7 @@ public class TCPClient {
 
 	public JSONObject getChallengeState() {
         JSONObject jo = new JSONObject();
-        jo.put("id_utilisateur", userId);
+        jo.put("user_id", userId);
 
         Message message = new Message(MessageCode.GET_CHALLENGE_STATE.getCode(), jo);
         sendData(message);

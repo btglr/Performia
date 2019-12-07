@@ -20,7 +20,7 @@ if (!isset($_SESSION["id"])) {
 $ajax_url = HTTP_REQUEST_URL;
 $user_id = $_SESSION["id"];
 
-$handle = curl_init(HTTP_REQUEST_URL . "?code=2&id_utilisateur=" . $user_id . "&challenge_id=1");
+$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=1");
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
@@ -76,13 +76,13 @@ $content = <<<HTML
 		let intervalIDPlateau;
 	
 		$( document ).ready(function() {
-			let intervalID = setInterval(waitChallenge, 2000);
+			let intervalID = setInterval(waitChallenge, 100);
 			
 			function waitChallenge() {
 				$.ajax({
 					url: "$ajax_url",
 					type: "GET",
-					data: "code=5&id_utilisateur=$user_id",
+					data: "code=5&user_id=$user_id",
 					dataType: "json"
 				}).done(function(res) {
 					if (res["code"] === 504) {
@@ -142,7 +142,7 @@ $content = <<<HTML
 			$.ajax({
 				url: "$ajax_url",
 				type: "GET",
-				data: "code=3&id_utilisateur=$user_id&colonne=" + col
+				data: "code=3&user_id=$user_id&colonne=" + col
 			}).done(function() {
 				updatePlateau();
 			});

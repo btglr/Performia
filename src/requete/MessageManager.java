@@ -161,7 +161,7 @@ public class MessageManager implements Runnable {
 
 				if (id != -1) {
 					response.setCode(CONNECTION_OK.getCode());
-					response.addData("id_utilisateur", id);
+					response.addData("user_id", id);
 
 					try {
 						accountType = (accountType == -1) ? determinerTypeCompte(id) : accountType;
@@ -174,8 +174,8 @@ public class MessageManager implements Runnable {
 			}
 
 			else {
-				if (req.getData().has("id_utilisateur")) {
-					Participant p = getParticipantByID(req.getData().getInt("id_utilisateur"));
+				if (req.getData().has("user_id")) {
+					Participant p = getParticipantByID(req.getData().getInt("user_id"));
 
 					if (p == null) {
 						response.setCode(UNKNOWN_USER.getCode());
@@ -316,8 +316,8 @@ public class MessageManager implements Runnable {
 	}
 
 	private boolean checkCanChallengeStart(Message request) {
-		if (request.getData().has("id_utilisateur")) {
-			int user_id = request.getData().getInt("id_utilisateur");
+		if (request.getData().has("user_id")) {
+			int user_id = request.getData().getInt("user_id");
 			Salle s = getRoomByID(user_id);
 
 			return s != null && s.estPleine();
@@ -472,7 +472,7 @@ public class MessageManager implements Runnable {
 
 	private JSONObject actualisation(Message requete) {
 		/* Récupérer user*/
-		int idUser = requete.getData().getInt("id_utilisateur");
+		int idUser = requete.getData().getInt("user_id");
 
 		Participant p = getParticipantByID(idUser);
 
@@ -499,7 +499,7 @@ public class MessageManager implements Runnable {
 	}
 
 	private JSONObject choisirChallenge(Message requete) {
-		int idUser = requete.getData().getInt("id_utilisateur");
+		int idUser = requete.getData().getInt("user_id");
 		int challengeId = requete.getData().getInt("challenge_id");
 
 		Participant p = getParticipantByID(idUser);
@@ -538,7 +538,7 @@ public class MessageManager implements Runnable {
 	}
 
 	private JSONObject jouerTour(Message requete) {
-		int idUser = requete.getData().getInt("id_utilisateur");
+		int idUser = requete.getData().getInt("user_id");
 		Participant p = getParticipantByID(idUser);
 		Salle s = getRoomByID(idUser);
 
