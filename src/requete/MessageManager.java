@@ -181,7 +181,11 @@ public class MessageManager implements Runnable {
 						switch (code) {
 							// Le joueur pense si oui ou non son adversaire est une IA
 							case GUESS_IS_AI:
-
+								try {
+									userThinkChallengeIsAI(req.getData().getInt("user_id"), req.getData().getInt("user_id_2"), req.getData().getInt("is_AI"));
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
 								break;
 							// Choix d'un challenge
 							case CHOOSE_CHALLENGE:
@@ -312,7 +316,30 @@ public class MessageManager implements Runnable {
 			accountType = resultat.getInt(1);
 		}
 
+		db.disconnect();
+
 		return accountType;
+	}
+
+	private void userThinkChallengeIsAI(int id1, int id2, int isAI) throws SQLException {
+
+		DBManager db = DBManager.getInstance();
+
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return;
+		}
+
+		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO prediction (id_predicter, id_predicted, thinkAI) values (?,?,?)");
+		query.setInt(1, id1);
+		query.setInt(2, id2);
+		query.setBoolean(3, isAI != 0);
+		query.executeQuery();
+
+		db.disconnect();
 	}
 
 	private boolean checkCanChallengeStart(Message request) {
