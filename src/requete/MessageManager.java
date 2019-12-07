@@ -179,6 +179,10 @@ public class MessageManager implements Runnable {
 
 					else {
 						switch (code) {
+							// Le joueur pense si oui ou non son adversaire est une IA
+							case GUESS_IS_AI:
+
+								break;
 							// Choix d'un challenge
 							case CHOOSE_CHALLENGE:
 								jsonObject = choisirChallenge(req);

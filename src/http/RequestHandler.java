@@ -300,11 +300,20 @@ public class RequestHandler implements HttpHandler {
                         }
 
                         break;
+                    /**
+                     * Détails de la requête de la liste des challenges
+                     * @in code : 9
+                     * @in user_id : int (l'id joueur)
+                     * @in user_id_2 : int (l'id adversaire)
+                     * @in is_AI : int (1 = vrai, 0 = faux)
+                     * Si ok
+                     *
+                     **/
                     case GUESS_IS_AI:
-                        if (parameters.containsKey("id_user_1") && parameters.containsKey("is_AI") && parameters.containsKey("id_user_2")) {
+                        if (parameters.containsKey("user_id") && parameters.containsKey("is_AI") && parameters.containsKey("user_id_2")) {
                             int id_user_1 = 0, id_user_2 = 0, is_AI = -1;
                             try {
-                                id_user_1 = Integer.parseInt(parameters.get("id_user_1"));
+                                id_user_1 = Integer.parseInt(parameters.get("id_user"));
                                 id_user_2 = Integer.parseInt(parameters.get("id_user_2"));
                                 is_AI = Integer.parseInt(parameters.get("is_AI"));
                             }
@@ -312,7 +321,7 @@ public class RequestHandler implements HttpHandler {
                                 logger.log(Level.SEVERE, null, e);
                             }
                             if(id_user_1 != 0 && id_user_2 != 0 && is_AI != -1) {
-                                req.addData("id_user_1", id_user_1);
+                                req.addData("id_user", id_user_1);
                                 req.addData("id_user_2", id_user_2);
                                 req.addData("is_AI", id_user_1);
                                 if ((requestAdded = requestQueue.addRequest(req))) {
@@ -327,6 +336,7 @@ public class RequestHandler implements HttpHandler {
                         else {
                             logger.info("Missing a parameter with request GUESS_IS_AI");
                         }
+                        break;
                     case UNKNOWN:
                     default:
                         logger.info("Received an unknown request");
