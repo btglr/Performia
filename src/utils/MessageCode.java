@@ -19,6 +19,7 @@ public enum MessageCode {
     GET_LIST_CHALLENGE(REQUEST, 6,"Request sent by the web interface to get the list of challenges"),
     GET_CHALLENGE_DETAILS(REQUEST, 7, "Request sent by the web interface to get the details of a challenge"),
     REGISTER(REQUEST, 8, "Request sent by the web interface/AI to register"),
+    GUESS_IS_AI(REQUEST, 9, "Request sent by the web interface if the user think his challenger is an AI."),
 
     // Responses
     INITIAL_CHALLENGE_STATE(RESPONSE, 500, "Answer sent by the HTTP server with the initial state of the challenge"),

@@ -300,7 +300,33 @@ public class RequestHandler implements HttpHandler {
                         }
 
                         break;
+                    case GUESS_IS_AI:
+                        if (parameters.containsKey("id_user_1") && parameters.containsKey("is_AI") && parameters.containsKey("id_user_2")) {
+                            int id_user_1 = 0, id_user_2 = 0, is_AI = -1;
+                            try {
+                                id_user_1 = Integer.parseInt(parameters.get("id_user_1"));
+                                id_user_2 = Integer.parseInt(parameters.get("id_user_2"));
+                                is_AI = Integer.parseInt(parameters.get("is_AI"));
+                            }
+                            catch (Exception e) {
+                                logger.log(Level.SEVERE, null, e);
+                            }
+                            if(id_user_1 != 0 && id_user_2 != 0 && is_AI != -1) {
+                                req.addData("id_user_1", id_user_1);
+                                req.addData("id_user_2", id_user_2);
+                                req.addData("is_AI", id_user_1);
+                                if ((requestAdded = requestQueue.addRequest(req))) {
+                                    logger.info("Request was added to the RequestQueue");
+                                }
+                            }
+                            else {
+                                logger.info("Date parameter was incorrect with request GUESS_IS_AI");
+                            }
+                        }
 
+                        else {
+                            logger.info("Missing a parameter with request GUESS_IS_AI");
+                        }
                     case UNKNOWN:
                     default:
                         logger.info("Received an unknown request");
