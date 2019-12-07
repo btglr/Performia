@@ -9,12 +9,9 @@ import requete.ResponseQueue;
 import utils.MessageCode;
 import utils.QueryUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -272,9 +269,9 @@ public class RequestHandler implements HttpHandler {
 
                             DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.FRANCE);
 
-                            LocalDateTime birthdate = null;
+                            LocalDate birthdate = null;
                             try {
-                                birthdate = LocalDateTime.parse(parameters.get("birthdate"), f);
+                                birthdate = LocalDate.parse(parameters.get("birthdate"), f);
                             } catch (DateTimeParseException e) {
                                 logger.log(Level.SEVERE, null, e);
                             }
