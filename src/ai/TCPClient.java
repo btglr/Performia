@@ -34,7 +34,7 @@ public class TCPClient {
 		try {
 			Config config = new Config("config/config.json");
 
-			socket = new Socket("localhost", config.getInt("port_tcp"));
+			socket = new Socket(config.getString("ip"), config.getInt("port_tcp"));
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 		} catch (UnknownHostException e) {
