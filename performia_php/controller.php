@@ -73,11 +73,11 @@ function sign_up($username, $birthdate, $gender, $password, $password2){
             $gender = 3;
         $hashed_password = hash("sha1", $password);
 
-        $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
-        $url .= "?code=8&login=" . $username . "&password=" . $hashed_password."&birthdate=".$birthdate . "&gender=". $gender;
+        $url = HTTP_REQUEST_URL;
+        $url .= "?code=8&login=" . $username . "&password=" . $hashed_password."&birthdate=" . $birthdate . "&gender=" . $gender;
 
         $handle = curl_init($url);
-        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 
         $response = curl_exec($handle);
 
@@ -88,14 +88,15 @@ function sign_up($username, $birthdate, $gender, $password, $password2){
             if (isset($decoded["user_id"])) {
                 session_start();
                 $_SESSION["user"] = $username;
-                $_SESSION["id"] = $decoded["id_utilisateur"];
-                $_SESSION["type"] = 1;
-                list_challenge($_SESSION["id"]);
+                $_SESSION["id"] = $decoded["user_id"];
+                $_SESSION["type"] = $decoded["account_type"];
+
+                login($username, $password);
             }
 
             else {
-                $err = 1;
-                require("./views/login.php");
+                $err = 5;
+                require("./views/register.php");
             }
         }
 

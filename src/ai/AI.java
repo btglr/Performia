@@ -36,7 +36,6 @@ public class AI {
         boolean ongoingChallenge = true;
         int challengeID = 1;
         JSONObject info;
-        JSONObject result;
 
         tcpClient.connect(ia.getString("login"), ia.getString("password"));
 

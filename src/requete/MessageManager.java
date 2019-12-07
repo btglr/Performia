@@ -8,17 +8,13 @@ package requete;
 
 import challenge.*;
 
-import java.sql.Connection;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -446,7 +442,7 @@ public class MessageManager implements Runnable {
 			return -1;
 		}
 
-		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO user (username, password, birthdate, gender, type) VALUES(?, ?, ?, ?, ?)");
+		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO user (username, password, birthdate, gender, type) VALUES(?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		query.setString(1, login);
 		query.setString(2, password);
 		query.setDate(3, java.sql.Date.valueOf(birthdate));
@@ -455,7 +451,7 @@ public class MessageManager implements Runnable {
 		affectedRows = query.executeUpdate();
 
 		if (affectedRows == 0) {
-			throw new SQLException("An exception occurred while creating the user");
+			throw new SQLException("An exception occurred while creating the user: user already exists");
 		}
 
 		try (ResultSet generatedKeys = query.getGeneratedKeys()) {
