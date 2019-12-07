@@ -9,6 +9,7 @@ package requete;
 import challenge.*;
 
 import java.sql.Connection;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -418,7 +419,7 @@ public class MessageManager implements Runnable {
 	private int inscription(Message requete) throws SQLException {
 		String login, password;
 		int gender, accountType;
-		Date birthdate;
+		LocalDateTime birthdate;
 
 		int id = -1;
 		int affectedRows;
@@ -427,7 +428,7 @@ public class MessageManager implements Runnable {
 			login = requete.getData().getString("login");
 			password = requete.getData().getString("password");
 			gender = requete.getData().getInt("gender");
-			birthdate = (Date) requete.getData().get("birthdate");
+			birthdate = (LocalDateTime) requete.getData().get("birthdate");
 
 			// Si aucun argument n'a été passé à propos du type de compte alors par défaut, c'est un utilisateur lambda
 			accountType = (requete.getData().has("account_type")) ? requete.getData().getInt("account_type") : USER.getValue();
@@ -449,7 +450,7 @@ public class MessageManager implements Runnable {
 		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO user (username, password, birthdate, gender, type) VALUES(?, ?, ?, ?, ?)");
 		query.setString(1, login);
 		query.setString(2, password);
-		query.setString(3, birthdate.toString());
+		query.setDate(3, java.sql.Date.valueOf(birthdate.toLocalDate()));
 		query.setInt(4, gender);
 		query.setInt(5, accountType);
 		affectedRows = query.executeUpdate();

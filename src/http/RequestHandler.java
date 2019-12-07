@@ -11,7 +11,11 @@ import utils.QueryUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -265,12 +269,16 @@ public class RequestHandler implements HttpHandler {
                         if (parameters.containsKey("login") && parameters.containsKey("password") && parameters.containsKey("birthdate") && parameters.containsKey("gender")) {
                             String login = parameters.get("login");
                             String password = parameters.get("password");
-                            Date birthdate = null;
+
+                            DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.FRANCE);
+
+                            LocalDateTime birthdate = null;
                             try {
-                                birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(parameters.get("birthdate"));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
+                                birthdate = LocalDateTime.parse(parameters.get("birthdate"), f);
+                            } catch (DateTimeParseException e) {
+                                logger.log(Level.SEVERE, null, e);
                             }
+
                             int gender = Integer.parseInt(parameters.get("gender"));
 
                             if (birthdate != null) {
