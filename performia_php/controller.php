@@ -40,6 +40,67 @@ function admin() {
     require 'views/admin.php';
 }
 
+function register(){
+    require 'views/register.php';
+}
+function sign_up($username, $age, $gender, $password, $password2){
+
+    $err = 0;
+    setlocale(LC_TIME, ['fr', 'fra', 'fr_FR']);
+    $month = date('m');
+    $day = date('d');
+    $year = date('Y');
+
+    $today = $day.'-'.$month.'-'.$year;
+    $d1 =strtotime($today);
+    $d2 =strtotime($age);
+
+    if(strcmp($password,$password2)!=0 | $d2>$d1)
+    {
+        if ($d2>$d1)
+            $err = 4;
+        else
+            $err = 3;
+        require ('views/register.php');
+    }
+    else
+    {
+        if(strcmp($gender,'male') == 0)
+            $gender = 0;
+        else if(strcmp($gender,'female')==0)
+            $gender = 1;
+        else
+            $gender = 2;
+        $hashed_password = hash("sha1", $password);
+
+        $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
+        $url .= "?code=8&login=" . $username . "&password=" . $hashed_password."&birthdate=".$age . "&gender=". $gender;
+
+        $handle = curl_init($url);
+        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+        $response = curl_exec($handle);
+
+        if ($response) {
+            $decoded = json_decode($response, true);
+
+            // User is now connected
+            if (isset($decoded["user_id"])) {
+                session_start();
+                $_SESSION["user"] = $username;
+                $_SESSION["id"] = $decoded["user_id"];
+                $_SESSION["type"] = 3;
+                list_challenge($_SESSION["id"]);
+            }
+
+            else {
+                $err = 1;
+                require("./views/login.php");
+            }
+        }
+
+    }
+}
 function login($username,$pass)
 {
     $err=0;
