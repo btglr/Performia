@@ -265,18 +265,18 @@ public class RequestHandler implements HttpHandler {
                         if (parameters.containsKey("login") && parameters.containsKey("password") && parameters.containsKey("birthdate") && parameters.containsKey("gender")) {
                             String login = parameters.get("login");
                             String password = parameters.get("password");
-                            Date date = null;
+                            Date birthdate = null;
                             try {
-                                date = new SimpleDateFormat("dd-MM-yyyy").parse(parameters.get("birthdate"));
+                                birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(parameters.get("birthdate"));
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
                             int gender = Integer.parseInt(parameters.get("gender"));
 
-                            if (date != null) {
+                            if (birthdate != null) {
                                 req.addData("login", login);
                                 req.addData("password", password);
-                                req.addData("date", date);
+                                req.addData("birthdate", birthdate);
                                 req.addData("gender", gender);
                                 req.addData("account_type", USER.getValue());
 

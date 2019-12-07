@@ -38,7 +38,7 @@ public class ParameterFilter extends Filter {
         }
 
         // TODO faire en sorte d'accepter tous types de caractères (surtout dans le cas de mots de passe !)
-        String pattern = "([a-zA-Z_]+)=([a-zA-Z0-9]+)?&?";
+        String pattern = "([a-zA-Z_]+)=([a-zA-Z0-9\\-]+)?&?";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(query);
 

@@ -43,7 +43,7 @@ function admin() {
 function register(){
     require 'views/register.php';
 }
-function sign_up($username, $age, $gender, $password, $password2){
+function sign_up($username, $birthdate, $gender, $password, $password2){
 
     $err = 0;
     setlocale(LC_TIME, ['fr', 'fra', 'fr_FR']);
@@ -53,7 +53,7 @@ function sign_up($username, $age, $gender, $password, $password2){
 
     $today = $day.'-'.$month.'-'.$year;
     $d1 =strtotime($today);
-    $d2 =strtotime($age);
+    $d2 =strtotime($birthdate);
 
     if(strcmp($password,$password2)!=0 || $d2>$d1)
     {
@@ -66,15 +66,15 @@ function sign_up($username, $age, $gender, $password, $password2){
     else
     {
         if(strcmp($gender,'male') == 0)
-            $gender = 0;
-        else if(strcmp($gender,'female')==0)
             $gender = 1;
-        else
+        else if(strcmp($gender,'female')==0)
             $gender = 2;
+        else
+            $gender = 3;
         $hashed_password = hash("sha1", $password);
 
         $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
-        $url .= "?code=8&login=" . $username . "&password=" . $hashed_password."&birthdate=".$age . "&gender=". $gender;
+        $url .= "?code=8&login=" . $username . "&password=" . $hashed_password."&birthdate=".$birthdate . "&gender=". $gender;
 
         $handle = curl_init($url);
         curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
