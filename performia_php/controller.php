@@ -55,7 +55,7 @@ function sign_up($username, $age, $gender, $password, $password2){
     $d1 =strtotime($today);
     $d2 =strtotime($age);
 
-    if(strcmp($password,$password2)!=0 | $d2>$d1)
+    if(strcmp($password,$password2)!=0 || $d2>$d1)
     {
         if ($d2>$d1)
             $err = 4;

@@ -33,27 +33,27 @@ $today = $day.'/'.$month.'/'.$year;
                 <input name="username_register" type="text" placeholder="Username" id="username_register" />
             </div>
             <div class="wrap_input">
-                <input name="age_register" type="text" placeholder="Birthdate"  id="age_register" onclick="change_type()"/>
+                <input name="age_register" onfocus="(this.type='date')" onblur="(this.type='text')" placeholder="Birth date"  id="age_register" onclick="change_type()"/>
             </div>
             <div class="wrap_input">
                 <select name = 'gender_register' id ='gender_register' onclick="change_color()">
-                    <option value = "">Gender</option>
+                    <option value = "" disabled selected>Gender</option>
                     <option value = "male">Male</option>
                     <option value = "female">Female</option>
                     <option value = "other">Other</option>
                 </select>
             </div>
             <div class="wrap_input">
-                <input type="password" name="password_register" placeholder="Password_register" id="password_register" />
+                <input type="password" name="password_register" placeholder="Password" id="password_register" />
             </div>
             <div class="wrap_input">
                 <input type="password" name="password2_register" placeholder="Password verification" id="password2_register" />
             </div>
-            <?
-            if(isset($err) && $err != -1)
-            {?>
-                <div class="input_error"><?php echo ERROR_[$err];?> </div>
-            <?}?>
+            <?php
+            if(isset($err) && $err != -1) {
+                echo "<div class=\"input_error\">" . ERROR_[$err] . "</div>";
+            }
+            ?>
 
             <p><input type="submit" value="Sign up" name="ok" id="ok"/></p>
         </form>

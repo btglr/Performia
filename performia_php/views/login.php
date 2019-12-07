@@ -18,10 +18,11 @@ require './public/define.php';
         <div class="wrap_input">
             <input type="password" name="password" placeholder="Password" id="password" />
         </div>
-        <? if(isset($err) && $err != -1)
-         {?>
-            <div class="input_error"><?php echo ERROR_[$err];?> </div>
-         <?}?>
+        <?php
+        if(isset($err) && $err != -1) {
+            echo "<div class=\"input_error\">" . ERROR_[$err] . "</div>";
+        }
+        ?>
 
         <p><input type="submit" name = 'ok' value="Sign In"  id="'ok"/></p>
     </form>
