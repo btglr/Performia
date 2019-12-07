@@ -3,11 +3,12 @@ $title = 'Challenges List';
 
 ob_start();
 
-if (!empty($data)) {
+if (!empty($data) && array_key_exists("code", $data) && ($data["code"] >= 500) && $data["code"] < 1000) {
+    $data = $data["data"];
 
     echo '<div class="wrap_list">
 <div class="list_title">Challenges</div><ul class="challenge_list">';
-    while ($ch = $data->fetch())
+    foreach ($data as $ch)
     { ?>
 
             <li class="challenge_name">
@@ -21,9 +22,7 @@ if (!empty($data)) {
         <?php
     }
 
-       echo '</ul></div>';
-    $data->closeCursor();
-
+    echo '</ul></div>';
 }
 else
 {
