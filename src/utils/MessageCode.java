@@ -18,6 +18,7 @@ public enum MessageCode {
     WAIT_CHALLENGE_START(REQUEST, 5, "Request sent by the web interface/AI when waiting for the challenge to start under certain conditions"),
     GET_LIST_CHALLENGE(REQUEST, 6,"Request sent by the web interface to get the list of challenges"),
     GET_CHALLENGE_DETAILS(REQUEST, 7, "Request sent by the web interface to get the details of a challenge"),
+    REGISTER(REQUEST, 8, "Request sent by the web interface/AI to register"),
 
     // Responses
     INITIAL_CHALLENGE_STATE(RESPONSE, 500, "Answer sent by the HTTP server with the initial state of the challenge"),
@@ -31,6 +32,7 @@ public enum MessageCode {
     CHALLENGE_OVER(RESPONSE, 507, "Answer sent by the interface when it detects the game is over"),
     LIST_CHALLENGE(RESPONSE, 508, "Answer sent by the HTTP server with the list of challenges"),
     CHALLENGE_DETAILS(RESPONSE, 509, "Answer sent by the HTTP server with the details of a challenge"),
+    REGISTRATION_OK(RESPONSE, 510, "Answer sent by the HTTP server when a user successfully registered"),
 
     // Error responses
     ACTION_NOT_OK(RESPONSE, 1000, "Answer sent by the HTTP server if the action was not successful"),
@@ -40,6 +42,7 @@ public enum MessageCode {
     MISSING_PARAMETERS(RESPONSE, 1004, "Answer sent by the HTTP/TCP server if the request is missing parameters"),
     MISSING_REQUEST_CODE(RESPONSE, 1005, "Answer sent by the HTTP/TCP server if the request is missing its code"),
 	UNKNOWN_USER(RESPONSE, 1006, "Answer sent by the HTTP/TCP server if the user id is unknown or missing"),
+    REGISTRATION_ERROR(RESPONSE, 1007, "Answer sent by the HTTP server if the registration failed")
     ;
 
     private final MessageType messageType;

@@ -23,6 +23,7 @@ public class DBManager {
 
     /**
      * Récupère l'instance unique de DBManager
+     * Cette méthode ne nécessite pas d'être synchronisée car elle ne sera utilisée que par l'instance unique du MessageManager
      * @return l'instance de DBManager
      */
     public static DBManager getInstance() {

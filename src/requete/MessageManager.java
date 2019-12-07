@@ -11,6 +11,7 @@ import challenge.*;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
@@ -24,6 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import utils.MessageCode;
 
+import static utils.AccountType.AI;
+import static utils.AccountType.USER;
 import static utils.MessageCode.*;
 import static utils.MessageCode.getRequest;
 
@@ -94,26 +97,79 @@ public class MessageManager implements Runnable {
 			JSONObject jsonObject;
 			JSONArray jsonArray;
 
-			if (code == CONNECTION) {
+			if (code == CONNECTION || code == REGISTER) {
 				int id = -1;
-				try {
-					id = connexion(req);
-				} catch (SQLException e) {
-					logger.log(Level.SEVERE, null, e);
-				}
+				int accountType = -1;
 
-				if (id == -1) {
-					response.setCode(CONNECTION_ERROR.getCode());
-					response.addData("error_message", "Connection was not successful");
+				if (code == REGISTER) {
+					try {
+						id = inscription(req);
+					} catch (SQLException e) {
+						logger.log(Level.SEVERE, null, e);
+					}
 
-					logger.info("Connection was not successful");
+					if (id == -1) {
+						response.setCode(REGISTRATION_ERROR.getCode());
+						response.addData("error_message", "Registration was not successful");
+
+						logger.info("Registration was not successful");
+					}
+
+					else {
+						logger.info("User successfully registered");
+					}
 				}
 
 				else {
+					// Si la requête de connexion vient d'une IA on l'inscrit si elle ne l'est pas déjà
+					if (req.getData().has("account_type") && req.getData().getInt("account_type") == AI.getValue()) {
+						boolean existe = true;
+						try {
+							existe = verifierUtilisateur(req);
+						} catch (SQLException e) {
+							logger.log(Level.SEVERE, null, e);
+						}
+
+						if (!existe) {
+							try {
+								id = inscription(req);
+							} catch (SQLException e) {
+								logger.log(Level.SEVERE, null, e);
+							}
+						}
+
+						accountType = req.getData().getInt("account_type");
+					}
+
+					try {
+						id = connexion(req);
+					} catch (SQLException e) {
+						logger.log(Level.SEVERE, null, e);
+					}
+
+					if (id == -1) {
+						response.setCode(CONNECTION_ERROR.getCode());
+						response.addData("error_message", "Connection was not successful");
+
+						logger.info("Connection was not successful");
+					}
+
+					else {
+						logger.info("User successfully connected");
+					}
+				}
+
+				if (id != -1) {
 					response.setCode(CONNECTION_OK.getCode());
 					response.addData("id_utilisateur", id);
 
-					logger.info("User successfully connected");
+					try {
+						accountType = (accountType == -1) ? determinerTypeCompte(id) : accountType;
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+
+					response.addData("account_type", accountType);
 				}
 			}
 
@@ -234,6 +290,31 @@ public class MessageManager implements Runnable {
 		}
 	}
 
+	private int determinerTypeCompte(int id) throws SQLException {
+		ResultSet resultat;
+		int accountType = -1;
+
+		DBManager db = DBManager.getInstance();
+
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return -1;
+		}
+
+		PreparedStatement query = dbConnection.prepareStatement("SELECT type FROM user WHERE id=?");
+		query.setInt(1, id);
+		resultat = query.executeQuery();
+
+		if (resultat.next()) {
+			accountType = resultat.getInt(1);
+		}
+
+		return accountType;
+	}
+
 	private boolean checkCanChallengeStart(Message request) {
 		if (request.getData().has("id_utilisateur")) {
 			int user_id = request.getData().getInt("id_utilisateur");
@@ -245,8 +326,49 @@ public class MessageManager implements Runnable {
 		return false;
 	}
 
+	private boolean verifierUtilisateur(Message requete) throws SQLException {
+		String login, password;
+		ResultSet resultat;
+		boolean b = false;
+
+		try {
+			login = requete.getData().getString("login");
+			password = requete.getData().getString("password");
+		} catch (JSONException e) {
+			logger.log(Level.SEVERE, null, e);
+			return false;
+		}
+
+		DBManager db = DBManager.getInstance();
+
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return false;
+		}
+
+		PreparedStatement query = dbConnection.prepareStatement("SELECT COUNT(*) AS total FROM user WHERE username=? AND password=?");
+		query.setString(1, login);
+		query.setString(2, password);
+		resultat = query.executeQuery();
+
+		if (resultat.next()) {
+			b = resultat.getInt(1) == 1;
+		}
+
+		return b;
+	}
+
+	/**
+	 * Connecte une entité avec un couple login/password
+	 * @param requete la requête contenant les informations de connexion
+	 * @return l'id de l'utilisateur si celui-ci existe, -1 pour toute autre raison
+	 * @throws SQLException si la connexion n'a pas pu être effectuée à la base de données
+	 */
 	private int connexion(Message requete) throws SQLException {
-		String login = "", password = "";
+		String login, password;
 		int id = -1;
 		ResultSet resultat;
 
@@ -255,16 +377,14 @@ public class MessageManager implements Runnable {
 			password = requete.getData().getString("password");
 		} catch (JSONException e) {
 			logger.log(Level.SEVERE, null, e);
+			return -1;
 		}
 
-		DBManager db = new DBManager();
+		DBManager db = DBManager.getInstance();
 
 		Connection dbConnection;
 		try {
 			dbConnection = db.getConnection();
-		} catch (SQLException e) {
-			System.err.println("An exception occurred while creating the connection to the database. Please check that the database is online.");
-			return -1;
 		} catch (JSONException e) {
 			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
 			return -1;
@@ -284,6 +404,67 @@ public class MessageManager implements Runnable {
 
 		if (resultat.next()) {
 			id = -1; // Erreur plusieurs même login/mdp
+		}
+
+		return id;
+	}
+
+	/**
+	 * Inscrit une entité avec un couple login/password, un genre et une date de naissance
+	 * @param requete la requête contenant les informations d'inscription
+	 * @return l'id de l'utilisateur si celui-ci a été correctement créé, sinon -1
+	 * @throws SQLException si la connexion n'a pas pu être effectuée ou si l'ajout a échoué
+	 */
+	private int inscription(Message requete) throws SQLException {
+		String login, password;
+		int gender, accountType;
+		Date birthdate;
+
+		int id = -1;
+		int affectedRows;
+
+		try {
+			login = requete.getData().getString("login");
+			password = requete.getData().getString("password");
+			gender = requete.getData().getInt("gender");
+			birthdate = (Date) requete.getData().get("birthdate");
+
+			// Si aucun argument n'a été passé à propos du type de compte alors par défaut, c'est un utilisateur lambda
+			accountType = (requete.getData().has("account_type")) ? requete.getData().getInt("account_type") : USER.getValue();
+		} catch (JSONException e) {
+			logger.log(Level.SEVERE, null, e);
+			return -1;
+		}
+
+		DBManager db = DBManager.getInstance();
+
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return -1;
+		}
+
+		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO user (username, password, birthdate, gender, type) VALUES(?, ?, ?, ?, ?)");
+		query.setString(1, login);
+		query.setString(2, password);
+		query.setString(3, birthdate.toString());
+		query.setInt(4, gender);
+		query.setInt(5, accountType);
+		affectedRows = query.executeUpdate();
+
+		if (affectedRows == 0) {
+			throw new SQLException("An exception occurred while creating the user");
+		}
+
+		try (ResultSet generatedKeys = query.getGeneratedKeys()) {
+			if (generatedKeys.next()) {
+				id = generatedKeys.getInt(1);
+			}
+			else {
+				throw new SQLException("An exception occurred while creating the user");
+			}
 		}
 
 		return id;
@@ -408,7 +589,7 @@ public class MessageManager implements Runnable {
 		ResultSet resultat = null;
 		JSONArray ar = new JSONArray();
 
-		DBManager db = new DBManager();
+		DBManager db = DBManager.getInstance();
 
 		Connection dbConnection = null;
 
@@ -453,7 +634,7 @@ public class MessageManager implements Runnable {
 		PreparedStatement query;
 		ResultSet resultat;
 		JSONObject ob = null;
-		DBManager db = new DBManager();
+		DBManager db = DBManager.getInstance();
 
 		Connection dbConnection;
 		try {

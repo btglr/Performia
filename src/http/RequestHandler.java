@@ -9,10 +9,14 @@ import requete.ResponseQueue;
 import utils.MessageCode;
 import utils.QueryUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static utils.AccountType.*;
 import static utils.MessageCode.*;
 
 public class RequestHandler implements HttpHandler {
@@ -214,7 +218,7 @@ public class RequestHandler implements HttpHandler {
                         break;
 
                     /**
-                     * Détails de la requête de la liste des challeges
+                     * Détails de la requête de la liste des challenges
                      * @in code : 7
                      * @in id_utilisateur : int
                      * @in challenge_id : int
@@ -239,6 +243,55 @@ public class RequestHandler implements HttpHandler {
 
                         else {
                             logger.info("Missing a parameter with request GET_CHALLENGE_DETAILS");
+                        }
+
+                        break;
+
+                    /**
+                     * Détails de la requête d'inscription
+                     * @in code : 8
+                     * @in login : string
+                     * @in password : sha1
+                     * @in birthdate : date
+                     * @in gender : int
+                     * Si ok
+                     * @out code : 510
+                     * @out id_utilisateur : int
+                     * Si pas ok
+                     * @out code : 1000
+                     * @out code : 1002
+                     */
+                    case REGISTER:
+                        if (parameters.containsKey("login") && parameters.containsKey("password") && parameters.containsKey("birthdate") && parameters.containsKey("gender")) {
+                            String login = parameters.get("login");
+                            String password = parameters.get("password");
+                            Date date = null;
+                            try {
+                                date = new SimpleDateFormat("dd-MM-yyyy").parse(parameters.get("birthdate"));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            int gender = Integer.parseInt(parameters.get("gender"));
+
+                            if (date != null) {
+                                req.addData("login", login);
+                                req.addData("password", password);
+                                req.addData("date", date);
+                                req.addData("gender", gender);
+                                req.addData("account_type", USER.getValue());
+
+                                if ((requestAdded = requestQueue.addRequest(req))) {
+                                    logger.info("Request was added to the RequestQueue");
+                                }
+                            }
+
+                            else {
+                                logger.info("Date parameter was incorrect with request REGISTER");
+                            }
+                        }
+
+                        else {
+                            logger.info("Missing a parameter with request REGISTER");
                         }
 
                         break;
@@ -280,7 +333,9 @@ public class RequestHandler implements HttpHandler {
                 }
 
                 else {
-                    jsonResponse.put("code", MISSING_PARAMETERS.getCode());
+                    if (!jsonResponse.has("code")) {
+                        jsonResponse.put("code", MISSING_PARAMETERS.getCode());
+                    }
                 }
             }
 
