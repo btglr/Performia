@@ -76,7 +76,7 @@ $content = <<<HTML
 		let intervalIDPlateau;
 	
 		$( document ).ready(function() {
-			let intervalID = setInterval(waitChallenge, 100);
+			let intervalID = setInterval(waitChallenge, 250);
 			
 			function waitChallenge() {
 				$.ajax({
