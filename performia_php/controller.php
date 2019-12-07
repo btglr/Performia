@@ -89,7 +89,7 @@ function sign_up($username, $age, $gender, $password, $password2){
                 session_start();
                 $_SESSION["user"] = $username;
                 $_SESSION["id"] = $decoded["id_utilisateur"];
-                $_SESSION["type"] = 3;
+                $_SESSION["type"] = 1;
                 list_challenge($_SESSION["id"]);
             }
 
@@ -123,7 +123,7 @@ function login($username,$pass)
             session_start();
             $_SESSION["user"] = $username;
             $_SESSION["id"] = $decoded["id_utilisateur"];
-            $_SESSIONS["type"] = $decoded["type"];
+            $_SESSIONS["type"] = $decoded["account_type"];
             list_challenge($_SESSION["id"]);
         }
 
