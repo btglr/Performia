@@ -34,7 +34,7 @@ public class TCPClient {
 		try {
 			Config config = new Config("config/config.json");
 
-			socket = new Socket("localhost", config.getInt("port_tcp"));
+			socket = new Socket(config.getString("ip"), config.getInt("port_tcp"));
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 		} catch (UnknownHostException e) {
@@ -83,7 +83,7 @@ public class TCPClient {
 			System.exit(-1);
 		}
 
-        userId = responseConnexion.getData().getInt("id_utilisateur");
+        userId = responseConnexion.getData().getInt("user_id");
 	}
 
     public int getUserId() {
@@ -112,8 +112,8 @@ public class TCPClient {
 
 	public JSONObject chooseChallenge(int numeroChallenge) {
 		JSONObject jo = new JSONObject();
-		jo.put("id_utilisateur", userId);
-		jo.put("numero_challenge", numeroChallenge);
+		jo.put("user_id", userId);
+		jo.put("challenge_id", numeroChallenge);
 
 		Message connexion = new Message(MessageCode.CHOOSE_CHALLENGE.getCode(), jo);
 		sendData(connexion);
@@ -129,7 +129,7 @@ public class TCPClient {
 
 	public JSONObject getChallengeState() {
         JSONObject jo = new JSONObject();
-        jo.put("id_utilisateur", userId);
+        jo.put("user_id", userId);
 
         Message message = new Message(MessageCode.GET_CHALLENGE_STATE.getCode(), jo);
         sendData(message);
@@ -143,18 +143,28 @@ public class TCPClient {
         return response.getData();
     }
 
-	public JSONObject playTurn(JSONObject action) {
-		Message message = new Message(MessageCode.PLAY_TURN.getCode(), action);
+    public void sendTurn(JSONObject action)
+    {
+        Message message = new Message(MessageCode.PLAY_TURN.getCode(),action);
+        sendData(message);
+    }
 
-		sendData(message);
-		Message response = retrieveData();
+    public JSONObject receiveTurn()
+    {
+        Message response = retrieveData();
 
-		if (response.getCode() != MessageCode.ACTION_OK.getCode()) {
-			logger.info("Incorrect move");
-			System.exit(-1);
-		}
-		return response.getData();
-	}
+        if (response.getCode() != MessageCode.ACTION_OK.getCode()) {
+            logger.info("Incorrect move");
+            System.exit(-1);
+        }
+        return response.getData();
+    }
+
+    public JSONObject playTurn(JSONObject action) {
+        sendTurn(action);
+
+        return receiveTurn();
+    }
 
 	public void closeSocket() {
 		try {

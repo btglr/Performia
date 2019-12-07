@@ -36,7 +36,6 @@ public class AI {
         boolean ongoingChallenge = true;
         int challengeID = 1;
         JSONObject info;
-        JSONObject result;
 
         tcpClient.connect(ia.getString("login"), ia.getString("password"));
 
@@ -59,7 +58,7 @@ public class AI {
             if (tcpClient.getUserId() == info.getInt("id_player") && ongoingChallenge) {
                 // Choose randomly (smart AI)
                 choice = randomlyChoose(grid);
-                response.put("id_utilisateur", tcpClient.getUserId());
+                response.put("user_id", tcpClient.getUserId());
                 response.put("colonne", choice);
 
                 // Play turn

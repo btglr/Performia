@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 public class Connect4Test extends TestCase {
 
-	public void testJouerCoupInterieur() {
+	/*public void testJouerCoupInterieur() {
 		Connect4 c = new Connect4();
 
 		JSONObject coup = new JSONObject();
@@ -91,6 +91,6 @@ public class Connect4Test extends TestCase {
 
 		assertTrue("La partie est terminée", c.estFini());
 	}
-
+*/
 
 }

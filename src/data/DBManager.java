@@ -1,6 +1,9 @@
 package data;
 
 import org.json.JSONException;
+import requete.MessageManager;
+import requete.RequestQueue;
+import requete.ResponseQueue;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,19 +13,29 @@ import java.sql.SQLException;
  * Created by Kévin DUPONT on 13/10/2019.
  */
 
+/**
+ * Classe singleton qui permet de gérer les connexions à la base de données
+ */
 public class DBManager {
-
+    private static volatile DBManager instance = new DBManager();
     private static Config cfg = new Config("config/database.json");
     private Connection connection;
 
+    /**
+     * Récupère l'instance unique de DBManager
+     * Cette méthode ne nécessite pas d'être synchronisée car elle ne sera utilisée que par l'instance unique du MessageManager
+     * @return l'instance de DBManager
+     */
+    public static DBManager getInstance() {
+        return instance;
+    }
+
     public Connection getConnection() throws SQLException {
-        if (isConnected()) {
-            return this.connection;
-        } else {
+        if (!isConnected()) {
             disconnect();
             connect();
-            return this.connection;
         }
+        return this.connection;
     }
 
     public void connect() throws SQLException, JSONException {

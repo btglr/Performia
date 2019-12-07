@@ -7,7 +7,7 @@ require './public/define.php';
     <div class ="login_title">
         Welcome in PERFORMIA
     </div>
-    <form name = "connection" action="index.php?action=sign_up" method="post">
+    <form name = "connection" action="index.php?action=sign_in" method="post">
 
 
 
@@ -18,13 +18,16 @@ require './public/define.php';
         <div class="wrap_input">
             <input type="password" name="password" placeholder="Password" id="password" />
         </div>
-        <? if(isset($err) && $err != -1)
-         {?>
-            <div class="input_error"><? echo ERROR_[$err];?> </div>
-         <?}?>
+        <?php
+        if(isset($err) && $err != -1) {
+            echo "<div class=\"input_error\">" . ERROR_[$err] . "</div>";
+        }
+        ?>
 
-        <p><input type="submit" value="Login" /></p>
+        <p><input type="submit" name = 'ok' value="Sign In"  id="'ok"/></p>
     </form>
+    <input type="submit" value="Sign up" name ="ok" id="ok"
+           onclick="window.location='index.php?action=sign_up';" />
 </div>
 
 

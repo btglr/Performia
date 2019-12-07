@@ -27,6 +27,6 @@ function get_challenge($id_challenge)
 }
 function db_connect()
 {
-    $db = new PDO('mysql:host=mysql;dbname=performia;charset=utf8', 'performia', 'performia');
+    $db = new PDO('mysql:host=database-1.cunwf0ixerw5.us-east-1.rds.amazonaws.com;dbname=performia;charset=utf8', 'performia', 'performia');
     return $db;
 }

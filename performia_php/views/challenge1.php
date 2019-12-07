@@ -1,8 +1,7 @@
 <?php
-session_start();
 
-if (!empty($data)) {
-	$challenge = $data->fetch();
+if (!empty($data) && array_key_exists("code", $data) && ($data["code"] >= 500) && $data["code"] < 1000) {
+	$challenge = $data["data"];
 	$title = $challenge['challenge_name'];
 	$css = "public/challenge.css";
 }
@@ -18,11 +17,10 @@ if (!isset($_SESSION["id"])) {
 
 // Envoi au serveur HTTP que l'utilisateur a choisi ce challenge
 
-$url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
-$ajax_url = implode("/", array(HTTP_SERVER_AJAX_URL, REQUEST_HANDLER));
+$ajax_url = HTTP_REQUEST_URL;
 $user_id = $_SESSION["id"];
 
-$handle = curl_init($url."?code=2&id_utilisateur=".$user_id."&numero_challenge=1");
+$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=1");
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
@@ -51,7 +49,7 @@ $content = <<<HTML
 			<button id="refresh">Actualiser le plateau</button>
 		<br>
 		<br>
-			<a href="index.php"><button id="return">Quitter</button></a>
+			<a href="index.php?action=sign_out"><button id="return">Quitter</button></a>
 	</div>
 	<div class="rulesbox">
 		<h1>Règles</h1>
@@ -78,13 +76,13 @@ $content = <<<HTML
 		let intervalIDPlateau;
 	
 		$( document ).ready(function() {
-			let intervalID = setInterval(waitChallenge, 2000);
+			let intervalID = setInterval(waitChallenge, 250);
 			
 			function waitChallenge() {
 				$.ajax({
 					url: "$ajax_url",
 					type: "GET",
-					data: "code=5&id_utilisateur=$user_id",
+					data: "code=5&user_id=$user_id",
 					dataType: "json"
 				}).done(function(res) {
 					if (res["code"] === 504) {
@@ -144,7 +142,7 @@ $content = <<<HTML
 			$.ajax({
 				url: "$ajax_url",
 				type: "GET",
-				data: "code=3&id_utilisateur=$user_id&colonne=" + col
+				data: "code=3&user_id=$user_id&colonne=" + col
 			}).done(function() {
 				updatePlateau();
 			});
