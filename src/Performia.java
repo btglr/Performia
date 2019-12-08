@@ -1,6 +1,7 @@
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import data.Config;
+import http.CommandHandler;
 import http.ParameterFilter;
 import http.RequestHandler;
 import requete.*;
@@ -32,10 +33,13 @@ public class Performia {
         HttpContext request = server.createContext("/request", new RequestHandler());
         request.getFilters().add(new ParameterFilter());
 
+        HttpContext command = server.createContext("/command", new CommandHandler());
+        command.getFilters().add(new ParameterFilter());
+
         server.setExecutor(null);
         server.start();
 
-        Logger.getLogger(Performia.class.getName()).log(Level.INFO, "HTTP Server started. Press CTRL+C to stop.");
+        Logger.getLogger(Performia.class.getName()).log(Level.INFO, "Performia backend has been started. Press CTRL+C to stop.");
 
         Thread serveurTCP = new Thread(new ServeurTCP(config.getInt("port_tcp")));
         serveurTCP.start();
