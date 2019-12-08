@@ -83,7 +83,9 @@ public class TCPClient {
 	public void connect(String login, String password, int account_type) {
 		JSONObject jo = new JSONObject();
 		jo.put("login", login);
-		jo.put("password", encryptPassword(password));
+		// Mot de passe pré-encrypté
+		jo.put("password", password);
+//		jo.put("password", encryptPassword(password));
 		jo.put("account_type", account_type);
 
 		Message connexion = new Message(MessageCode.CONNECTION.getCode(), jo);

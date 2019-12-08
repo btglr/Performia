@@ -48,6 +48,7 @@ public class Connect4 {
                 logger.info("Socket client has connected");
             } catch (IOException ex) {
                 logger.log(Level.SEVERE, null, ex);
+                System.exit(-1);
             }
 
             BufferedReader input = null;
@@ -57,47 +58,48 @@ public class Connect4 {
                 output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socketClient.getOutputStream())), true);
             } catch (IOException e) {
                 logger.log(Level.SEVERE, null, e);
+                System.exit(-1);
             }
 
-            if (input != null) {
-                String message = null;
+            String message = null;
+
+            try {
+                message = input.readLine();
+            } catch (IOException e) {
+                logger.info("Socket client has disconnected");
+            }
+
+            if (message != null && !message.equals("")) {
+                logger.info("Received message");
 
                 try {
-                    message = input.readLine();
-                } catch (IOException e) {
-                    logger.info("Socket client has disconnected");
+                    req = Message.fromJSON(new JSONObject(message));
+                } catch (JSONException ex) {
+                    logger.log(Level.SEVERE, null, ex);
                 }
 
-                if (message != null && !message.equals("")) {
-                    logger.info("Received message");
+                if (req != null) {
+                    logger.info("Request was properly formed");
 
-                    try {
-                        req = Message.fromJSON(new JSONObject(message));
-                    } catch (JSONException ex) {
-                        logger.log(Level.SEVERE, null, ex);
+                    JSONObject obj = req.getData();
+
+                    if (obj.has("login") && obj.has("password") && obj.has("host") && obj.has("port") && obj.has("account_type")) {
+                        String login = obj.getString("login");
+                        String password = obj.getString("password");
+                        String host = obj.getString("host");
+                        int port = obj.getInt("port");
+                        int account_type = obj.getInt("account_type");
+
+                        logger.info("Starting new Connect4 thread");
+                        connect4 = new ThreadConnect4(socketClient, login, password, host, port, account_type);
+                        Thread t = new Thread(connect4);
+                        t.start();
+
+                        output.println("OK");
                     }
 
-                    if (req != null) {
-                        logger.info("Request was properly formed");
-
-                        JSONObject obj = req.getData();
-
-                        if (obj.has("login") && obj.has("password") && obj.has("host") && obj.has("port") && obj.has("account_type")) {
-                            String login = obj.getString("login");
-                            String password = obj.getString("password");
-                            String host = obj.getString("host");
-                            int port = obj.getInt("port");
-                            int account_type = obj.getInt("account_type");
-
-                            logger.info("Starting new Connect4 thread");
-                            connect4 = new ThreadConnect4(socketClient, login, password, host, port, account_type);
-                            Thread t = new Thread(connect4);
-                            t.start();
-                        }
-
-                        else {
-                            logger.info("Request missing parameters");
-                        }
+                    else {
+                        logger.info("Request missing parameters");
                     }
                 }
             }
