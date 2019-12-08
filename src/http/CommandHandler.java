@@ -25,14 +25,16 @@ public class CommandHandler  implements HttpHandler {
         @SuppressWarnings("unchecked")
         Map<String, String> parameters = (Map<String, String>) exchange.getAttribute("parameters");
 
-        logger.info("Received command with parameters " + query);
-
         if (parameters != null) {
+            logger.info("Received command with parameters " + parameters);
+
             if (parameters.containsKey("host") && parameters.containsKey("port") && parameters.containsKey("login") && parameters.containsKey("password")) {
                 String host = parameters.get("host");
-                int port = Integer.parseInt(parameters.get("host"));
+                int port = Integer.parseInt(parameters.get("port"));
                 String login = parameters.get("login");
                 String password = parameters.get("password");
+
+                logger.info("All parameters are correct");
 
                 Config config = new Config("config/config.json");
 
@@ -40,6 +42,7 @@ public class CommandHandler  implements HttpHandler {
                 PrintWriter out;
                 BufferedReader in;
                 try {
+                    logger.info("Starting socket");
                     socket = new Socket(host, port);
                     in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
@@ -51,7 +54,11 @@ public class CommandHandler  implements HttpHandler {
                     req.addData("port", config.getInt("port_tcp"));
                     req.addData("account_type", AI.getValue());
 
+                    logger.info("Sending command to AI");
+
                     out.println(req.toJSON());
+
+                    logger.info("Waiting for response");
                     String result = in.readLine();
 
                     if (result.equalsIgnoreCase("ok")) {
@@ -65,6 +72,7 @@ public class CommandHandler  implements HttpHandler {
             }
         }
 
+        logger.info("Sending HTTP response to origin");
         String response = jsonResponse.toString();
         QueryUtils.sendHTTPResponse(exchange, response);
     }

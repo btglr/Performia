@@ -184,7 +184,19 @@ function request_start_ai($id, $login, $password, $host, $port) {
         $handle = curl_init(HTTP_COMMAND_URL . "?id=" . $id . "&login=" . $login . "&password=" . sha1($password) . "&host=" . $host . "&port=" . $port);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 
-        curl_exec($handle);
+        $response = curl_exec($handle);
+
+        if ($response) {
+            $decoded = json_decode($response, true);
+
+            if (isset($decoded["status"]) && $decoded["status"] == "started") {
+                echo "Your instance of this AI has been started.";
+            }
+
+            else {
+                echo "Failed to start the AI.";
+            }
+        }
     }
 }
 

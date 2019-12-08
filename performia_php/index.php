@@ -78,7 +78,7 @@ try {
         }
 
         else if (strcmp($_GET['action'], 'start_ai') == 0) {
-            if (isset($_POST["ai_id"]) && isset($_POST["ai_login"]) && isset($_POST["ai_password"]) && isset($_POST[$_POST["ai_id"]])) {
+            if (isset($_POST["ai_id"]) && isset($_POST["ai_login"]) && isset($_POST["ai_password"]) && isset($_POST[intval($_POST["ai_id"])])) {
                 $err = -1;
 
                 $exploded_host_port = explode("_", $_POST[$_POST["ai_id"]]);

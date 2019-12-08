@@ -110,7 +110,7 @@ public class ThreadConnect4 implements Runnable {
                 }
 
                 try {
-                    sleep(250);
+                    sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
