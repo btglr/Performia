@@ -182,8 +182,8 @@ public class MessageManager implements Runnable {
                                 // Le labo cherche à avoir les ia
                                 try {
                                     if(determinerTypeCompte(user_id) == 2) {
-                                        int[] AIs = getIAFrom(user_id);
-                                        if(AIs != null && AIs.length != 0) {
+										ArrayList<Integer> AIs = getIAFrom(user_id);
+										if(AIs != null && AIs.size() != 0) {
                                             JSONArray arrayPlayers = new JSONArray();
                                             for (int ai : AIs) {
                                                 arrayPlayers.put(getStatsForThisAI(ai));
@@ -429,39 +429,33 @@ public class MessageManager implements Runnable {
 
         db.disconnect();
 
-
-
         return new JSONObject().put("name_ai", name).put("nb_win", nb_win).put("nb_played", nb_partie).put("nb_prediction", nb_prediction);
-
     }
 
-    private int[] getIAFrom(int user_id) throws SQLException {
-        ResultSet resultat;
-        DBManager db = DBManager.getInstance();
-        Connection dbConnection;
-        try {
-            dbConnection = db.getConnection();
-        } catch (JSONException e) {
-            System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
-            return null;
-        }
+	private ArrayList<Integer> getIAFrom(int user_id) throws SQLException {
+		ResultSet resultat;
+		DBManager db = DBManager.getInstance();
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return null;
+		}
 
-        PreparedStatement query = dbConnection.prepareStatement("SELECT id FROM user WHERE id_labo=?");
-        query.setInt(1, user_id);
-        resultat = query.executeQuery();
+		PreparedStatement query = dbConnection.prepareStatement("SELECT id FROM user WHERE id_labo=?");
+		query.setInt(1, user_id);
+		resultat = query.executeQuery();
 
-        int[] ids = new int[resultat.getMetaData().getColumnCount()-1];
-        int nb_ia = resultat.getMetaData().getColumnCount()-1;
-        if (resultat.next()) {
-            for(int i = 0; i < nb_ia; i++) {
-                ids[i] = resultat.getInt(1);
-            }
-        }
+		ArrayList<Integer> AIs = new ArrayList<>();
+		while (resultat.next()) {
+			AIs.add(resultat.getInt(1));
+		}
 
-        db.disconnect();
+		db.disconnect();
 
-        return ids;
-    }
+		return AIs;
+	}
 
 	private JSONArray getAITypes() throws SQLException {
 		PreparedStatement query;

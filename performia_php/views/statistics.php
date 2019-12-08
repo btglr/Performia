@@ -33,8 +33,8 @@ echo "<div class='wrap_list_stat'>
         foreach($data as $ai)
         {
             $name = str_replace($search," ",$ai['name_ai'], $count);
-            $victoire = (int)((int)$ai['nb_win'] *100 / (int)$ai['nb_played']);
-            $decouverte = (int)((int)$ai['nb_prediction'] *100 / (int)$ai['nb_played']);
+            $victoire = $ai['nb_played'] == 0 ? 0 : (int)((int)$ai['nb_win'] *100 / (int)$ai['nb_played']);
+            $decouverte = $ai['nb_played'] == 0 ? 0 : (int)((int)$ai['nb_prediction'] *100 / (int)$ai['nb_played']);
 
             echo" <tr>
                     <td>
