@@ -98,7 +98,7 @@ public class Reflex extends Challenge implements Runnable{
 		}
 	}
 	
-	void updateScore(int indiceParticipant, int scoreAdd) {
+	private void updateScore(int indiceParticipant, int scoreAdd) {
 		this.score[indiceParticipant]+= scoreAdd;
 	}
 
@@ -114,7 +114,7 @@ public class Reflex extends Challenge implements Runnable{
 		}
 		if(pos_player != -1){
 //			System.out.println(pos_player);
-			if(this.grille[case_select] == true){
+			if(this.grille[case_select]){
 				this.change_round = 1;
 				this.grille[case_select] = false;
 				this.updateScore(pos_player, 5);
@@ -161,15 +161,15 @@ public class Reflex extends Challenge implements Runnable{
 		return (i != this.players.length);
 	}
 	
-	void setTour(int newTour) {
+	private void setTour(int newTour) {
 		this.tour = newTour;
 	}
 	
-	int getTour() {
+	private int getTour() {
 		return this.tour;
 	}
 	
-	void display_grid() {
+	private void display_grid() {
 		for(int i =0; i < 5*5 ; i++){
 			if(i%5 == 0) {
 				System.out.println("");
@@ -179,7 +179,7 @@ public class Reflex extends Challenge implements Runnable{
 		}
 	}
 	
-	void setRandomTrue(){
+	private void setRandomTrue(){
 		Random r = new Random();
         int indice = r.nextInt(20);
         //Sleep entre 3 et 10 secondes (0:7 +3 => [3;10]) 
@@ -197,11 +197,11 @@ public class Reflex extends Challenge implements Runnable{
         
 	}
 	
-	void set_change_round(int val) {
+	private void set_change_round(int val) {
 		this.change_round = val;
 	}
 	
-	void display_score() {
+	private void display_score() {
 		System.out.println("\n\n1 : "+this.score[0]);
 		System.out.println("2 : "+this.score[1]);
 		System.out.println("3 : "+this.score[2]);
@@ -213,15 +213,15 @@ public class Reflex extends Challenge implements Runnable{
 	
 	public static void main(String[] args) {
 		Participant[] p = new Participant[4];
-		p[0] = new Participant(1);
-		p[1] = new Participant(2);
-		p[2] = new Participant(3);
-		p[3] = new Participant(4);
+		p[0] = new Participant(1, 0,0,0);
+		p[1] = new Participant(2,0,0,0);
+		p[2] = new Participant(3,0,0,0);
+		p[3] = new Participant(4,0,0,0);
 		
 		Reflex r = new Reflex(p);
 		
 		
-		while(r.estFini() == false){
+		while(!r.estFini()){
 			
 			System.out.println("\n\nround : "+ (r.getTour()+1));
 			

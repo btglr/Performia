@@ -217,6 +217,7 @@ public class MessageManager implements Runnable {
 								else {
 									response.setCode(ACTION_OK.getCode());
 									response.addData("data", jsonObject);
+									p.turnPlayed();
 								}
 
 								break;
@@ -228,10 +229,41 @@ public class MessageManager implements Runnable {
 								if (jsonObject == null) {
 									response.setCode(USER_NOT_PLAYING.getCode());
 								}
-
 								else {
 									response.setCode(CHALLENGE_STATE.getCode());
 									response.addData("data", jsonObject);
+									p.canPlay();
+									// Si la partie est finie, on enregistre dans la BDD le match
+									if(jsonObject.getBoolean("fini")) {
+										Salle s = getRoomByID(req.getData().getInt("user_id"));
+										if (s != null) {
+											// Si c'est 4 joueurs
+											JSONArray arrayPlayers = new JSONArray();
+											arrayPlayers = jsonObject.getJSONArray("players");
+											int id1 = arrayPlayers.getJSONObject(0).getInt("id");
+											int id2 = arrayPlayers.getJSONObject(1).getInt("id");
+											int mean_time_player1 = arrayPlayers.getJSONObject(0).getInt("timeAverageByTurn");
+											int mean_time_player2 = arrayPlayers.getJSONObject(1).getInt("timeAverageByTurn");
+											if(s.getJoueurs().length == 2) {
+												try {
+													match_finish2player(id1, id2, false, (int) s.finPartie(), mean_time_player1, mean_time_player2, id1);
+												} catch (SQLException e) {
+													e.printStackTrace();
+												}
+											}
+											if(s.getJoueurs().length == 4) {
+												int id3 = arrayPlayers.getJSONObject(2).getInt("id");
+												int id4 = arrayPlayers.getJSONObject(3).getInt("id");
+												int mean_time_player3 = arrayPlayers.getJSONObject(0).getInt("timeAverageByTurn");
+												int mean_time_player4 = arrayPlayers.getJSONObject(1).getInt("timeAverageByTurn");
+												try {
+													match_finish4player(id1, id2, id3, id4, false, (int) s.finPartie(), mean_time_player1, mean_time_player2, mean_time_player3, mean_time_player4, id1);
+												} catch (SQLException e) {
+													e.printStackTrace();
+												}
+											}
+										}
+									}
 								}
 
 								break;
@@ -241,7 +273,12 @@ public class MessageManager implements Runnable {
 								boolean canStart = checkCanChallengeStart(req);
 
 								response.setCode(canStart ? CHALLENGE_CAN_START.getCode() : CHALLENGE_CANNOT_START.getCode());
-
+								if(canStart) {
+									Salle s = getRoomByID(req.getData().getInt("user_id"));
+									if(s != null) {
+										s.debutPartie();
+									}
+								}
 								break;
 
 							// Demande de la liste des challenges
@@ -342,6 +379,58 @@ public class MessageManager implements Runnable {
 		db.disconnect();
 	}
 
+	private void match_finish4player(int id1, int id2, int id3, int id4, boolean matchnul, int match_time, int mean_time_player1, int mean_time_player2, int mean_time_player3,  int mean_time_player4, int id_winner) throws SQLException {
+		DBManager db = DBManager.getInstance();
+
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return;
+		}
+
+		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO `match` (id_player_1, id_player_2, id_player_3, id_player_4, matchnul, match_time, mean_time_player1, mean_time_player2, mean_time_player3, mean_time_player4, id_winner) values (?,?,?,?,?,?,?,?,?,?,?)");
+		query.setInt(1, id1);
+		query.setInt(2, id2);
+		query.setInt(3, id3);
+		query.setInt(4, id4);
+		query.setBoolean(5, matchnul);
+		query.setInt(6, match_time);
+		query.setInt(7, mean_time_player1);
+		query.setInt(8, mean_time_player2);
+		query.setInt(9, mean_time_player3);
+		query.setInt(10, mean_time_player4);
+		query.setInt(11, id_winner);
+		query.executeQuery();
+
+		db.disconnect();
+	}
+
+	private void match_finish2player(int id1, int id2, boolean matchnul, int match_time, int mean_time_player1, int mean_time_player2, int id_winner) throws SQLException {
+		DBManager db = DBManager.getInstance();
+
+		Connection dbConnection;
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return;
+		}
+
+		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO `match` (id_player_1, id_player_2, matchnul, match_time, mean_time_player1, mean_time_player2,  id_winner) values (?,?,?,?,?,?,?)");
+		query.setInt(1, id1);
+		query.setInt(2, id2);
+		query.setBoolean(3, matchnul);
+		query.setInt(4, match_time);
+		query.setInt(5, mean_time_player1);
+		query.setInt(6, mean_time_player2);
+		query.setInt(7, id_winner);
+		query.executeQuery();
+
+		db.disconnect();
+	}
+
 	private boolean checkCanChallengeStart(Message request) {
 		if (request.getData().has("user_id")) {
 			int user_id = request.getData().getInt("user_id");
@@ -426,7 +515,7 @@ public class MessageManager implements Runnable {
 		if (resultat.next()) {
 			id = resultat.getInt(1);
 
-			participants.add(new Participant(id));
+			participants.add(new Participant(id, 0, 0, 0));
 		}
 
 		if (resultat.next()) {

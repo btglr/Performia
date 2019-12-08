@@ -15,6 +15,8 @@ public class Salle {
     private int nbJoueursConnectes;
     // Nombre de joueurs maximum
     private int nbJoueursMax;
+    // Temps de la partie
+    private long tempsPartie;
 
     public Salle() {
         this(null);
@@ -64,5 +66,14 @@ public class Salle {
 
     public boolean estPleine() {
         return this.nbJoueursConnectes == this.nbJoueursMax;
+    }
+
+    public void debutPartie() {
+        tempsPartie = System.currentTimeMillis();
+    }
+
+    public long finPartie() {
+        // On divise par 1000 pour avoir le temps en seconde
+        return (int)((System.currentTimeMillis() - tempsPartie)/1000);
     }
 }
