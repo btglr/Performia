@@ -6,13 +6,18 @@ public class Participant {
     private int id;
     private int timeAverageByTurn;
     private int countPlayTurn;
-    private int lastTime;
+    private long lastTime;
 
     public Participant(int id, int countPlayTurn, int timeAverageByTurn, int lastTime) {
         this.id = id;
         this.countPlayTurn = countPlayTurn;
         this.timeAverageByTurn = timeAverageByTurn;
-        this.lastTime = lastTime;
+        if(lastTime > 0) {
+            this.lastTime = lastTime;
+        }
+        else {
+            this.lastTime = (int)System.currentTimeMillis()/1000;
+        }
     }
 
     public int getId() {
@@ -35,7 +40,7 @@ public class Participant {
     public void canPlay() {
         // condition pour éviter l'actualisation h24
         if(lastTime <= 0) {
-            lastTime = (int) System.currentTimeMillis() / 1000;
+            lastTime = System.currentTimeMillis() / 1000;
         }
     }
 
@@ -43,7 +48,7 @@ public class Participant {
     public void turnPlayed() {
         int average = this.timeAverageByTurn*this.countPlayTurn;
         this.countPlayTurn++;
-        this.timeAverageByTurn = (average + ((int)System.currentTimeMillis()/1000) - lastTime)/countPlayTurn;
+        this.timeAverageByTurn = (int) ((average + ((int)System.currentTimeMillis()/1000) - lastTime)/countPlayTurn);
         //on le mets à 0 pour la prochaine vérif
         this.lastTime = 0;
     }

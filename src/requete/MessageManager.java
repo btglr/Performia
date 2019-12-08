@@ -184,8 +184,8 @@ public class MessageManager implements Runnable {
                                 // Le labo cherche à avoir les ia
                                 try {
                                     if(determinerTypeCompte(user_id) == 2) {
-                                        int[] AIs = getIAFrom(user_id);
-                                        if(AIs != null && AIs.length != 0) {
+                                        ArrayList<Integer> AIs = getIAFrom(user_id);
+                                        if(AIs != null && AIs.size() != 0) {
                                             JSONArray arrayPlayers = new JSONArray();
                                             for (int ai : AIs) {
                                                 arrayPlayers.put(getStatsForThisAI(ai));
@@ -376,17 +376,18 @@ public class MessageManager implements Runnable {
         query.setInt(4, ai);
         resultat = query.executeQuery();
 
-        int nb_partie = resultat.getMetaData().getColumnCount()-1;
+        int nb_partie = 0;
         int nb_win = 0;
-        if (resultat.next()) {
-            for(int i = 0; i < nb_partie; i++) {
-                if(resultat.getInt(1) == ai) {
-                    nb_win++;
-                }
-            }
-        }
 
-        /* Le nom de l'IA */
+		while (resultat.next()) {
+			nb_partie++;
+			if(resultat.getInt(1) == ai) {
+				nb_win++;
+			}
+		}
+
+
+		/* Le nom de l'IA */
         query = dbConnection.prepareStatement("SELECT username FROM user WHERE id=?");
         query.setInt(1, ai);
         resultat = query.executeQuery();
@@ -408,7 +409,7 @@ public class MessageManager implements Runnable {
 
     }
 
-    private int[] getIAFrom(int user_id) throws SQLException {
+    private ArrayList<Integer> getIAFrom(int user_id) throws SQLException {
         ResultSet resultat;
         DBManager db = DBManager.getInstance();
         Connection dbConnection;
@@ -423,17 +424,14 @@ public class MessageManager implements Runnable {
         query.setInt(1, user_id);
         resultat = query.executeQuery();
 
-        int[] ids = new int[resultat.getMetaData().getColumnCount()-1];
-        int nb_ia = resultat.getMetaData().getColumnCount()-1;
-        if (resultat.next()) {
-            for(int i = 0; i < nb_ia; i++) {
-                ids[i] = resultat.getInt(1);
-            }
+		ArrayList<Integer> AIs = new ArrayList<>();
+        while (resultat.next()) {
+            AIs.add(resultat.getInt(1));
         }
 
         db.disconnect();
 
-        return ids;
+        return AIs;
     }
 
     private int determinerTypeCompte(int id) throws SQLException {
