@@ -2,70 +2,75 @@
 require('controller.php');
 require './public/define.php';
 
-try {
-    if (isset($_GET['action'])) {
-        if (strcmp($_GET['action'], 'sign_in') == 0) {
-            if(isset($_POST['username'])&& (!empty($_POST['username'])))
+try
+{
+    if (isset($_GET['action']))
+    {
+        if (strcmp($_GET['action'], 'sign_in') == 0)
+        {
+            if (isset($_POST['username']) && (!empty($_POST['username'])))
             {
-                if(isset($_POST['password'])&&(!empty($_POST['password']))) {
+                if (isset($_POST['password']) && (!empty($_POST['password'])))
+                {
                     $err = -1;
+                    echo($_POST['username'] . ' ' . $_POST['password']);
                     login($_POST['username'], $_POST['password']);
-                }
-                else
+                } else
                 {
                     $err = 0;
                     require('views/login.php');
 
                 }
-            }
-            else if (isset($_POST['ok']))
+            } else if (isset($_POST['ok']))
             {
 
                 $err = 0;
                 require('views/login.php');
 
-            }
-            else
+            } else
             {
                 $err = -1;
-                require ('views/login.php');
+                require('views/login.php');
             }
 
-        }
-
-        else if(strcmp($_GET['action'],'challenge') == 0) {
-            if(isset($_GET['id']) && $_GET['id'] > 0) {
+        } else if (strcmp($_GET['action'], 'challenge') == 0)
+        {
+            if (isset($_GET['id']) && $_GET['id'] > 0)
+            {
                 challenge($_GET['id']);
             }
-        }
-
-        else if (strcmp($_GET['action'], 'admin') == 0) {
+        } else if (strcmp($_GET['action'], 'statistique') == 0)
+        {
+            statistics();
+        } else if (strcmp($_GET['action'], 'list_challenge') == 0)
+        {
+            list_challenge($_SESSION['id']);
+        } else if (strcmp($_GET['action'], 'admin') == 0)
+        {
             admin();
-        }
-        else if (strcmp($_GET['action'], 'sign_up') == 0)
+        } else if (strcmp($_GET['action'], 'sign_up') == 0)
         {
 
-            if(isset($_POST['username_register']) && (!empty($_POST['username_register'])) && isset($_POST['age_register'])&& (!empty($_POST['age_register'])) && isset($_POST['gender_register'])&& (!empty($_POST['gender_register'])) && isset($_POST['password_register']) && (!empty($_POST['password_register'])) && isset($_POST['password2_register'])&& (!empty($_POST['password2_register'])))
+            if (isset($_POST['username_register']) && (!empty($_POST['username_register'])) && isset($_POST['age_register']) && (!empty($_POST['age_register'])) && isset($_POST['gender_register']) && (!empty($_POST['gender_register'])) && isset($_POST['password_register']) && (!empty($_POST['password_register'])) && isset($_POST['password2_register']) && (!empty($_POST['password2_register'])))
             {
                 $err = -1;
-                sign_up($_POST['username_register'],$_POST['age_register'], $_POST['gender_register'], $_POST['password_register'], $_POST['password2_register']);
-            }
-            else if (isset($_POST['ok'])){
+                sign_up($_POST['username_register'], $_POST['age_register'], $_POST['gender_register'], $_POST['password_register'], $_POST['password2_register']);
+            } else if (isset($_POST['ok']))
+            {
                 $err = 0;
                 require("views/register.php");
-            }
-            else
+            } else
             {
                 require("views/register.php");
             }
 
         }
-    }
-    else {
+    } else
+    {
         $err = -1;
         require('views/login.php');
     }
-}
-catch(Exception $e) {
+} catch (Exception $e)
+{
     echo 'Error : ' . $e->getMessage();
 }
