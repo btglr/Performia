@@ -91,11 +91,13 @@ public class Reflex extends Challenge implements Runnable{
 
 	@Override
 	public boolean estFini() {
-		if(this.tour != 20){
-			return false;
-		}else{
-			return true;
+		boolean fin = false;
+		if(this.tour >= 20) {
+			fin = true;
+			this.setWinners();
 		}
+
+		return fin;
 	}
 	
 	private void updateScore(int indiceParticipant, int scoreAdd) {
@@ -195,6 +197,20 @@ public class Reflex extends Challenge implements Runnable{
         this.grille[indice] =true;
         this.display_grid();
         
+	}
+
+	void setWinners() {
+		int indMax = 0;
+		boolean egalite = false;
+		for(int i = 0; i < this.players.length; i++) {
+			if(this.score[i] > this.score[indMax]) {
+				indMax = i;
+			}
+			if(i != 0 && this.score[i] == this.score[indMax]) {
+				egalite = true;
+			}
+		}
+		if(!egalite) this.winner = this.players[indMax].getId();
 	}
 	
 	private void set_change_round(int val) {

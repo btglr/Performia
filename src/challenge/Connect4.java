@@ -200,6 +200,13 @@ public class Connect4 extends Challenge {
 			if (gr[i][0] == 0) complet = false;
 		}
 		if (complet) fini = true;
+		if(fini) {
+			if(!complet) {
+				if (this.id_player == this.players[0].getId()) this.winner = this.players[0].getId();
+				else this.winner = this.players[1].getId();
+			}
+
+		}
 	}
 
 	public boolean jouerCoup(JSONObject colonne) {

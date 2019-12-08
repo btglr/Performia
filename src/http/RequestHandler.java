@@ -301,12 +301,11 @@ public class RequestHandler implements HttpHandler {
 
                         break;
                     /**
-                     * Détails de la requête de la liste des challenges
+                     * Détails de la requête pour que l'user dise si c'est une AI ou non
                      * @in code : 9
                      * @in user_id : int (l'id joueur)
                      * @in user_id_2 : int (l'id adversaire)
                      * @in is_AI : int (1 = vrai, 0 = faux)
-                     * Si ok
                      *
                      **/
                     case GUESS_IS_AI:
@@ -314,7 +313,7 @@ public class RequestHandler implements HttpHandler {
                             int id_user_1 = 0, id_user_2 = 0, is_AI = -1;
                             try {
                                 id_user_1 = Integer.parseInt(parameters.get("user_id"));
-                                id_user_2 = Integer.parseInt(parameters.get("user_id"));
+                                id_user_2 = Integer.parseInt(parameters.get("user_id_2"));
                                 is_AI = Integer.parseInt(parameters.get("is_AI"));
                             }
                             catch (Exception e) {
@@ -335,6 +334,35 @@ public class RequestHandler implements HttpHandler {
 
                         else {
                             logger.info("Missing a parameter with request GUESS_IS_AI");
+                        }
+                        break;
+                    /**
+                     * Détails de la requête pour obtenir les stats de leur IA
+                     * @in code : 10
+                     * @in user_id : int (l'id joueur)
+                     **/
+                    case GET_STATS:
+                        if (parameters.containsKey("user_id")) {
+                            int user_id = 0;
+                            try {
+                                user_id = Integer.parseInt(parameters.get("user_id"));
+                            }
+                            catch (Exception e) {
+                                logger.log(Level.SEVERE, null, e);
+                            }
+                            if(user_id != 0) {
+                                req.addData("user_id", user_id);
+                                if ((requestAdded = requestQueue.addRequest(req))) {
+                                    logger.info("Request was added to the RequestQueue");
+                                }
+                            }
+                            else {
+                                logger.info("Date parameter was incorrect with request GET_STATS");
+                            }
+                        }
+
+                        else {
+                            logger.info("Missing a parameter with request GET_STATS");
                         }
                         break;
                     case UNKNOWN:

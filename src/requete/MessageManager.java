@@ -90,7 +90,7 @@ public class MessageManager implements Runnable {
 
 			MessageCode code = getRequest(req.getCode());
 			Message response = new Message();
-			JSONObject jsonObject;
+			JSONObject jsonObject = null;
 			JSONArray jsonArray;
 
 			if (code == CONNECTION || code == REGISTER) {
@@ -179,6 +179,33 @@ public class MessageManager implements Runnable {
 
 					else {
 						switch (code) {
+                            case GET_STATS:
+                                int user_id = req.getData().getInt("user_id");
+                                // Le labo cherche à avoir les ia
+                                try {
+                                    if(determinerTypeCompte(user_id) == 2) {
+                                        int[] AIs = getIAFrom(user_id);
+                                        if(AIs != null && AIs.length != 0) {
+                                            JSONArray arrayPlayers = new JSONArray();
+                                            for (int ai : AIs) {
+                                                arrayPlayers.put(getStatsForThisAI(ai));
+                                            }
+                                            jsonObject = new JSONObject();
+                                            jsonObject.put("AIs", arrayPlayers);
+                                            response.addData("data", jsonObject);
+                                            response.setCode(SEND_STATS.getCode());
+                                        }
+                                        else {
+                                            response.setCode(NO_STATS.getCode());
+                                        }
+                                    }
+                                    else {
+                                        response.setCode(UNKNOWN_USER.getCode());
+                                    }
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
 							// Le joueur pense si oui ou non son adversaire est une IA
 							case GUESS_IS_AI:
 								try {
@@ -246,7 +273,7 @@ public class MessageManager implements Runnable {
 											int mean_time_player2 = arrayPlayers.getJSONObject(1).getInt("timeAverageByTurn");
 											if(s.getJoueurs().length == 2) {
 												try {
-													match_finish2player(id1, id2, false, (int) s.finPartie(), mean_time_player1, mean_time_player2, id1);
+													match_finish2player(id1, id2, (int) s.finPartie(), mean_time_player1, mean_time_player2, s.getChallenge().getWinners());
 												} catch (SQLException e) {
 													e.printStackTrace();
 												}
@@ -257,7 +284,7 @@ public class MessageManager implements Runnable {
 												int mean_time_player3 = arrayPlayers.getJSONObject(0).getInt("timeAverageByTurn");
 												int mean_time_player4 = arrayPlayers.getJSONObject(1).getInt("timeAverageByTurn");
 												try {
-													match_finish4player(id1, id2, id3, id4, false, (int) s.finPartie(), mean_time_player1, mean_time_player2, mean_time_player3, mean_time_player4, id1);
+													match_finish4player(id1, id2, id3, id4, (int) s.finPartie(), mean_time_player1, mean_time_player2, mean_time_player3, mean_time_player4, s.getChallenge().getWinners());
 												} catch (SQLException e) {
 													e.printStackTrace();
 												}
@@ -331,7 +358,79 @@ public class MessageManager implements Runnable {
 		}
 	}
 
-	private int determinerTypeCompte(int id) throws SQLException {
+    private JSONObject getStatsForThisAI(int ai) throws SQLException {
+        ResultSet resultat;
+        DBManager db = DBManager.getInstance();
+        Connection dbConnection;
+        try {
+            dbConnection = db.getConnection();
+        } catch (JSONException e) {
+            System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+            return null;
+        }
+
+
+        /* Partie sur les parties */
+        PreparedStatement query = dbConnection.prepareStatement("SELECT id_winner FROM `match` WHERE id_player_1=? OR id_player_2=? OR id_player_3=? OR id_player_4=?");
+        query.setInt(1, ai);
+        query.setInt(2, ai);
+        query.setInt(3, ai);
+        query.setInt(4, ai);
+        resultat = query.executeQuery();
+
+        int nb_partie = resultat.getMetaData().getColumnCount()-1;
+        int nb_win = 0;
+        if (resultat.next()) {
+            for(int i = 0; i < nb_partie; i++) {
+                if(resultat.getInt(1) == ai) {
+                    nb_win++;
+                }
+            }
+        }
+
+        /* Partie sur les prédictions où on récupère le nmbre de prédiction exacte */
+        query = dbConnection.prepareStatement("SELECT id_prediction FROM prediction WHERE id_predicted=? AND thinkAI=1");
+        query.setInt(1,ai);
+        resultat = query.executeQuery();
+        int nb_prediction = resultat.getMetaData().getColumnCount()-1;
+
+        db.disconnect();
+
+
+
+        return new JSONObject().put("id_ai", ai).put("nb_win", nb_win).put("nb_played", nb_partie).put("nb_prediction", nb_prediction);
+
+    }
+
+    private int[] getIAFrom(int user_id) throws SQLException {
+        ResultSet resultat;
+        DBManager db = DBManager.getInstance();
+        Connection dbConnection;
+        try {
+            dbConnection = db.getConnection();
+        } catch (JSONException e) {
+            System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+            return null;
+        }
+
+        PreparedStatement query = dbConnection.prepareStatement("SELECT id FROM user WHERE id_labo=?");
+        query.setInt(1, user_id);
+        resultat = query.executeQuery();
+
+        int[] ids = new int[resultat.getMetaData().getColumnCount()-1];
+        int nb_ia = resultat.getMetaData().getColumnCount()-1;
+        if (resultat.next()) {
+            for(int i = 0; i < nb_ia; i++) {
+                ids[i] = resultat.getInt(1);
+            }
+        }
+
+        db.disconnect();
+
+        return ids;
+    }
+
+    private int determinerTypeCompte(int id) throws SQLException {
 		ResultSet resultat;
 		int accountType = -1;
 
@@ -379,7 +478,7 @@ public class MessageManager implements Runnable {
 		db.disconnect();
 	}
 
-	private void match_finish4player(int id1, int id2, int id3, int id4, boolean matchnul, int match_time, int mean_time_player1, int mean_time_player2, int mean_time_player3,  int mean_time_player4, int id_winner) throws SQLException {
+	private void match_finish4player(int id1, int id2, int id3, int id4, int match_time, int mean_time_player1, int mean_time_player2, int mean_time_player3,  int mean_time_player4, int id_winner) throws SQLException {
 		DBManager db = DBManager.getInstance();
 
 		Connection dbConnection;
@@ -390,24 +489,23 @@ public class MessageManager implements Runnable {
 			return;
 		}
 
-		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO `match` (id_player_1, id_player_2, id_player_3, id_player_4, matchnul, match_time, mean_time_player1, mean_time_player2, mean_time_player3, mean_time_player4, id_winner) values (?,?,?,?,?,?,?,?,?,?,?)");
+		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO `match` (id_player_1, id_player_2, id_player_3, id_player_4, match_time, mean_time_player1, mean_time_player2, mean_time_player3, mean_time_player4, id_winner) values (?,?,?,?,?,?,?,?,?,?)");
 		query.setInt(1, id1);
 		query.setInt(2, id2);
 		query.setInt(3, id3);
 		query.setInt(4, id4);
-		query.setBoolean(5, matchnul);
-		query.setInt(6, match_time);
-		query.setInt(7, mean_time_player1);
-		query.setInt(8, mean_time_player2);
-		query.setInt(9, mean_time_player3);
-		query.setInt(10, mean_time_player4);
-		query.setInt(11, id_winner);
+		query.setInt(5, match_time);
+		query.setInt(6, mean_time_player1);
+		query.setInt(7, mean_time_player2);
+		query.setInt(8, mean_time_player3);
+		query.setInt(9, mean_time_player4);
+		query.setInt(10, id_winner);
 		query.executeQuery();
 
 		db.disconnect();
 	}
 
-	private void match_finish2player(int id1, int id2, boolean matchnul, int match_time, int mean_time_player1, int mean_time_player2, int id_winner) throws SQLException {
+	private void match_finish2player(int id1, int id2, int match_time, int mean_time_player1, int mean_time_player2, int id_winner) throws SQLException {
 		DBManager db = DBManager.getInstance();
 
 		Connection dbConnection;
@@ -418,14 +516,13 @@ public class MessageManager implements Runnable {
 			return;
 		}
 
-		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO `match` (id_player_1, id_player_2, matchnul, match_time, mean_time_player1, mean_time_player2,  id_winner) values (?,?,?,?,?,?,?)");
+		PreparedStatement query = dbConnection.prepareStatement("INSERT INTO `match` (id_player_1, id_player_2, match_time, mean_time_player1, mean_time_player2,  id_winner) values (?,?,?,?,?,?)");
 		query.setInt(1, id1);
 		query.setInt(2, id2);
-		query.setBoolean(3, matchnul);
-		query.setInt(4, match_time);
-		query.setInt(5, mean_time_player1);
-		query.setInt(6, mean_time_player2);
-		query.setInt(7, id_winner);
+		query.setInt(3, match_time);
+		query.setInt(4, mean_time_player1);
+		query.setInt(5, mean_time_player2);
+		query.setInt(6, id_winner);
 		query.executeQuery();
 
 		db.disconnect();

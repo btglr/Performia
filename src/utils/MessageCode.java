@@ -20,6 +20,7 @@ public enum MessageCode {
     GET_CHALLENGE_DETAILS(REQUEST, 7, "Request sent by the web interface to get the details of a challenge"),
     REGISTER(REQUEST, 8, "Request sent by the web interface/AI to register"),
     GUESS_IS_AI(REQUEST, 9, "Request sent by the web interface if the user think his challenger is an AI."),
+    GET_STATS(REQUEST, 10, "Request sent by the web interface to get the stats on their AI"),
 
     // Responses
     INITIAL_CHALLENGE_STATE(RESPONSE, 500, "Answer sent by the HTTP server with the initial state of the challenge"),
@@ -34,6 +35,8 @@ public enum MessageCode {
     LIST_CHALLENGE(RESPONSE, 508, "Answer sent by the HTTP server with the list of challenges"),
     CHALLENGE_DETAILS(RESPONSE, 509, "Answer sent by the HTTP server with the details of a challenge"),
     REGISTRATION_OK(RESPONSE, 510, "Answer sent by the HTTP server when a user successfully registered"),
+    NO_STATS(RESPONSE, 511, "Answer sent by the HTTP server with no stats"),
+    SEND_STATS(RESPONSE, 512, "Answer sent by the HTTP server with the details of stats"),
 
     // Error responses
     ACTION_NOT_OK(RESPONSE, 1000, "Answer sent by the HTTP server if the action was not successful"),
