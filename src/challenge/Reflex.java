@@ -1,5 +1,7 @@
 package challenge;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -91,15 +93,34 @@ public class Reflex extends Challenge implements Runnable{
 
 	@Override
 	public boolean estFini() {
-		if(this.tour != 20){
-			return false;
-		}else{
-			return true;
+		boolean fin = false;
+		if(this.tour >= 20) {
+			fin = true;
+			this.setWinners();
 		}
+		
+		return fin;
 	}
 	
 	void updateScore(int indiceParticipant, int scoreAdd) {
 		this.score[indiceParticipant]+= scoreAdd;
+	}
+	
+	void setWinners() {
+		ArrayList<Integer> indMax = new ArrayList<Integer>();
+		indMax.add(0);
+		for(int i = 0; i < this.players.length; i++) {
+			if(this.score[i] > this.score[indMax.get(0)]) {
+				indMax = new ArrayList<Integer>();
+				indMax.add(i);
+			}
+			if(this.score[i] == this.score[indMax.get(0)]) {
+				indMax.add(i);
+			}
+		}
+		for(int i = 0; i < indMax.size(); i++) {
+			this.winners.add(this.players[indMax.get(i)]);
+		}
 	}
 
 	@Override

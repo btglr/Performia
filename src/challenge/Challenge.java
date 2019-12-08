@@ -1,5 +1,7 @@
 package challenge;
 
+import java.util.ArrayList;
+
 import org.json.JSONObject;
 
 public abstract class Challenge {
@@ -7,10 +9,12 @@ public abstract class Challenge {
 	protected boolean fini;
 	protected Participant[] players;
 	protected int id_player; //J1 ou J2
+	protected ArrayList<Participant> winners;
 
 	public Challenge(String nom) {
 		this.nom = nom;
 		this.fini = false;
+		this.winners = new ArrayList<Participant>();
 	}
 
 	/**
@@ -50,4 +54,8 @@ public abstract class Challenge {
 	 * @return vrai ou faux si un joueur a bien été ajouté
 	 */
 	public abstract boolean addPlayer(Participant p);
+
+	public ArrayList<Participant> getWinners() {
+		return winners;
+	}
 }
