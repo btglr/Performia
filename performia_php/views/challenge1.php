@@ -74,6 +74,8 @@ $content = <<<HTML
 		$( document ).ready(function() {
 			let intervalID = setInterval(waitChallenge, 250);
 			
+			var cpt = 0;
+			var s = "";
 			function waitChallenge() {
 				$.ajax({
 					url: "$ajax_url",
@@ -89,7 +91,13 @@ $content = <<<HTML
 						intervalIDPlateau = setInterval(updatePlateau, 1000);
 					}
 					else {
-						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent...</h2>");
+						cpt++;
+						if(cpt == 4) cpt = 1;
+						if(cpt == 1) s = ".";
+						if(cpt == 2) s = ". .";
+						if(cpt == 3) s = ". . .";
+
+						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent</h2><h2 class='waiting-opponent'>" + s + " </h2>");
 						console.log("Challenge cannot start");
 					}
 				});
