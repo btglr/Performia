@@ -72,10 +72,10 @@ $content = <<<HTML
 		let intervalIDPlateau;
 	
 		$( document ).ready(function() {
-			let intervalID = setInterval(waitChallenge, 250);
+			let intervalID = setInterval(waitChallenge, 500);
 			
-			var cpt = 0;
-			var s = "";
+			let cpt = 0;
+			let s = "";
 			function waitChallenge() {
 				$.ajax({
 					url: "$ajax_url",
@@ -92,10 +92,10 @@ $content = <<<HTML
 					}
 					else {
 						cpt++;
-						if(cpt == 4) cpt = 1;
-						if(cpt == 1) s = ".";
-						if(cpt == 2) s = ". .";
-						if(cpt == 3) s = ". . .";
+						if(cpt === 4) cpt = 1;
+						if(cpt === 1) s = ".";
+						if(cpt === 2) s = ". .";
+						if(cpt === 3) s = ". . .";
 
 						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent</h2><h2 class='waiting-opponent'>" + s + " </h2>");
 						console.log("Challenge cannot start");
