@@ -3,8 +3,11 @@ package challenge;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 public class Salle {
+    private static final Logger logger = Logger.getLogger(Salle.class.getName());
+
     // Compteur d'instances (atomique pour le multi-thread)
     private static final AtomicInteger count = new AtomicInteger(0);
     // ID de la salle
@@ -62,6 +65,8 @@ public class Salle {
     }
 
     public boolean estPleine() {
+        logger.info("Number of connected players: " + nbJoueursConnectes.get() + "/" + this.nbJoueursMax);
+
         return nbJoueursConnectes.get() == this.nbJoueursMax;
     }
 
