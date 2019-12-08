@@ -20,7 +20,7 @@ if (!isset($_SESSION["id"])) {
 $ajax_url = HTTP_REQUEST_URL;
 $user_id = $_SESSION["id"];
 
-$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=1");
+$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=2");
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
@@ -42,13 +42,8 @@ $content = <<<HTML
 		<hr width="40%" color="-webkit-linear-gradient(left, #b721ff, #21d4fd);" align="left">
 			<p>Votre but ?</p>
 			<p>Deviner a l'issue de la partie si vous avez joué contre un vrai joueur !</p>
-			<button id="guess">→</button>
 			<hr width="40%" color="-webkit-linear-gradient(left, #b721ff, #21d4fd);" align="left">
 			<button id="stats">Statistiques</button>
-			<p>
-			<button id="refresh">Actualiser le plateau</button>
-		<br>
-		<br>
 			<a href="index.php?action=sign_out"><button id="return">Quitter</button></a>
 	</div>
 	<div class="rulesbox">
