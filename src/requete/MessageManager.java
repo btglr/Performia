@@ -61,10 +61,6 @@ public class MessageManager implements Runnable {
 		return r;
 	}
 
-	public static Object getLock() {
-		return lock;
-	}
-
 	public void run() {
 		Message req;
 
