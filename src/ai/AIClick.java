@@ -8,18 +8,6 @@ import org.json.JSONObject;
 import requete.Message;
 
 public class AIClick {
-    private static int randomlyChoose(int[] grille) {
-        int res;
-
-        res = (int)(Math.random() * 7);
-        while (grille[res] != 0) {
-            res = (int)(Math.random() * 7);
-            System.out.println("Res = " + res);
-        }
-
-        return res;
-    }
-
     public static void main(String[] args) {
         // Login + password JSON
         Config ia = new Config("config/ia.json");
@@ -58,8 +46,8 @@ public class AIClick {
                 response.put("case", choice);
 
                 try {
-                    // Attente entre 0,5 et 2,5s
-                    sleep((long) (500 + (Math.random() * 2500)));
+                    // Attente entre 0,2 et 2s
+                    sleep((long) (200 + (Math.random() * 2000)));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
