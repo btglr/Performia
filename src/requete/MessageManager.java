@@ -190,9 +190,7 @@ public class MessageManager implements Runnable {
                                             for (int ai : AIs) {
                                                 arrayPlayers.put(getStatsForThisAI(ai));
                                             }
-                                            jsonObject = new JSONObject();
-                                            jsonObject.put("AIs", arrayPlayers);
-                                            response.addData("data", jsonObject);
+                                            response.addData("data", arrayPlayers);
                                             response.setCode(SEND_STATS.getCode());
                                         }
                                         else {
