@@ -35,16 +35,16 @@
                 <div class="border"></div>
             </li>
             <li class="menu_item">
-                <div class="link"><a href="./index.php?action=list_challenge">Challenges</a></div>
-                <div class="border"></div>
-            </li>
-            <li class="menu_item">
                 <div class="link"><a href="./index.php?action=admin">Admin</a></div>
                 <div class="border"></div>
             </li>
             <?php
         }
         ?>
+            <li class="menu_item">
+                <div class="link"><a href="./index.php?action=list_challenge">Challenges</a></div>
+                <div class="border"></div>
+            </li>
             <li class="menu_item">
                 <div class="link"><a href="./index.php?action=sign_out">Log out</a></div>
                 <div class="border"></div>
