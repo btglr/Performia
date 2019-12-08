@@ -268,7 +268,7 @@ public class MessageManager implements Runnable {
 									p.canPlay();
 									// Si la partie est finie, on enregistre dans la BDD le match
 									if(jsonObject.getBoolean("fini")) {
-										Salle s = getRoomByID(req.getData().getInt("user_id"));
+										Salle s = getRoomByID(req.getData().getInt("room_id"));
 										if (s != null) {
 											// Si c'est 4 joueurs
 											JSONArray arrayPlayers = new JSONArray();
