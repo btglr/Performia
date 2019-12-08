@@ -1,12 +1,15 @@
 <?php
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> serveur http injoignable ?</p>
 		<p>     -> donnees recues invalides ?</p>";
 
 if(isset($_GET["url"])) {
-	$url = $_GET["url"] . "?code=4&user_id=1";
+	$url = $_GET["url"] . "?code=4&user_id=" . $_SESSION["id"];
 
 	$handle = curl_init($url);
 	curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
