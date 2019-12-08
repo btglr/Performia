@@ -20,6 +20,10 @@ public class ThreadConnect4 implements Runnable {
     private int account_type;
     private String lastMessage = null;
     private final String waitTurnMessage = "Waiting for my turn";
+    
+    private ArrayList<Integer> threeAligned;
+    private ArrayList<Integer> twoAligned;
+    private ArrayList<Integer> oneAligned;
 
     public ThreadConnect4(Socket socketClient, String login, String password, String javaServerHost, int javaServerPort, int account_type) {
         this.login = login;
@@ -40,6 +44,108 @@ public class ThreadConnect4 implements Runnable {
 
         return res;
     }
+	
+	//ajouter i (colonne à choisir) à un des tableaux
+	private void ajouterTab(int compteur,int i) {
+		if(compteur==3) {
+			threeAligned.add(i);
+		}else if(compteur==2) {
+			twoAligned.add(i);
+		}else if(compteur==1) {
+			oneAligned.add(i);
+		}
+	}
+	
+	private int semiRandomChoice(int grille[]) {
+		int firstEmpty,j,res,compteur=0;
+		threeAligned = new ArrayList<Integer>();
+		twoAligned = new ArrayList<Integer>();
+		oneAligned = new ArrayList<Integer>();
+		
+		//parcours des colonnes pour connaitre les differentes possibilites
+		for(int i=0; i<6; i++) {
+			firstEmpty = i;
+			
+			//reucuperation de la premiere case vide de la colonne
+			while(firstEmpty+7<grille.length && grille[firstEmpty+7]==0) {
+				firstEmpty+=7;
+			}
+
+			//test sur les cases en dessous
+			j = firstEmpty+7;
+			while(j<grille.length) {
+				compteur++;
+				j+=7;
+			}
+			ajouterTab(compteur,i);
+			compteur=0;
+			
+			//test sur les cases a gauche 
+			j = firstEmpty-1;
+			while(j>=firstEmpty-3 && j%7 == firstEmpty%7 && grille[j]!=0) {
+				compteur++;
+				j--;
+			}
+			ajouterTab(compteur,i);
+			compteur=0;
+			
+			//test sur les cases a droite 
+			j = firstEmpty+1;
+			while(j<=firstEmpty+3 && j%7 == firstEmpty%7 && grille[j]!=0) {
+				compteur++;
+				j++;
+			}
+			ajouterTab(compteur,i);
+			compteur=0;
+			
+			//test sur les diagonales
+			//haut gauche
+			j=firstEmpty-7;
+			while(j-1 > 0 && grille[j-1]!=0) {
+				compteur++;
+				j=j-7;
+			}
+			ajouterTab(compteur,i);
+			compteur=0;
+			//haut droite
+			j=firstEmpty-7;
+			while(j+1 > 0 && grille[j+1]!=0) {
+				compteur++;
+				j=j-7;
+			}
+			ajouterTab(compteur,i);
+			compteur=0;
+			//bas gauche
+			j=firstEmpty+7;
+			while(j-1 < grille.length && grille[j-1]!=0) {
+				compteur++;
+				j=j+7;
+			}
+			ajouterTab(compteur,i);
+			compteur=0;
+			//bas droite
+			j=firstEmpty+7;
+			while(j+1 < grille.length && grille[j+1]!=0) {
+				compteur++;
+				j=j+7;
+			}
+			ajouterTab(compteur,i);
+			compteur=0;
+		}
+		
+		//tirage aleatoire parmi les possibilites
+		if(!threeAligned.isEmpty()) {
+			res = threeAligned.get((int)(Math.random() * threeAligned.size()));
+		} else if(!twoAligned.isEmpty()) {
+			res = twoAligned.get((int)(Math.random() * twoAligned.size()));
+		} else if(!oneAligned.isEmpty()) {
+			res = oneAligned.get((int)(Math.random() * oneAligned.size()));
+		} else {
+			res = (int)(Math.random() * 7);
+		}
+		
+		return res;
+	}
 
     @Override
     public void run() {
@@ -86,7 +192,7 @@ public class ThreadConnect4 implements Runnable {
 
             if (tcpClient.getUserId() == info.getInt("id_player") && ongoingChallenge) {
                 // Choose randomly (smart AI)
-                choice = randomlyChoose(gridArray);
+                choice = semiRandomChoice(gridArray);
                 response.put("user_id", tcpClient.getUserId());
                 response.put("room_id", tcpClient.getRoomId());
                 response.put("colonne", choice);
