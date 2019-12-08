@@ -28,7 +28,7 @@
 }
 
 .challengebox {
- 	float: left;
+    float: left;
     position: relative;
     margin-left:5%;
     margin-right: 5%;
@@ -63,7 +63,7 @@
 }
 
 .rulesbox {
-	display: inline-block;
+    display: inline-block;
     margin-top:0.5%;
     margin-left:5%;
     margin-right: 5%;
@@ -86,27 +86,104 @@ h2.waiting-opponent {
 }
 
 body {
-	background-color:#DFDCDB;
+    background-color:#DFDCDB;
 }
 
 button {
-	background-color: #008CBA;
-	border: none;
-	color: white;
-	padding: 15px 32px;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	font-size: 16px;
-	-webkit-transition-duration: 0.4s;
-  	transition-duration: 0.4s;
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
 }
 
 button:hover {
-	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
 #return {
-	background-color: #f44336;
+    background-color: #f44336;
+}
+.menu .item{
+    width: 250px;
+    margin: auto;
+    margin-top: 100px;
+
+}
+.menu .item a{
+    text-decoration: none;
+    color: #555555;
+}
+.menu .item a:visited{
+    text-decoration: none;
+    color: #555555;
+}
+
+.menu .item li .link{
+    width: 100%;
+}
+.menu .item li
+{
+    list-style: none;
+    font-family: Poppins-Medium;
+    margin :15px 0;
+
+}
+.menu .item .border{
+    height: 2px;
+    width: 100%;
+    background: #adadad;
+}
+.menu .item li:hover +.border {
+    background: -webkit-linear-gradient(left, #21d4fd, #b721ff);
+    background: -o-linear-gradient(left, #21d4fd, #b721ff);
+    background: -moz-linear-gradient(left, #21d4fd, #b721ff);
+    background: linear-gradient(left, #21d4fd, #b721ff);
+}
+.menu .item li .link:hover + .border{
+    background: -webkit-linear-gradient(left, #21d4fd, #b721ff);
+    background: -o-linear-gradient(left, #21d4fd, #b721ff);
+    background: -moz-linear-gradient(left, #21d4fd, #b721ff);
+    background: linear-gradient(left, #21d4fd, #b721ff);
+}
+input[name ="menu"]
+{
+    position: absolute ;
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    margin:25px;
+    background-image: url("pictures/menu.png");
+    background-size: cover;
+    background-color: transparent;
+    font-family: Poppins-Regular;
+
+    border: none;
+
+    display: block;
     float: right;
+    padding: 0 5px;
+    top: 0;
+    left: 0;
+}
+.menu
+{
+    position: absolute;
+    display: none;
+    height: 100%;
+    width: 350px;
+    background-color: #fff;
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -o-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    top: 0;
+    left: 0;
+    z-index: 1;
 }

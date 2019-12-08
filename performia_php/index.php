@@ -38,7 +38,19 @@ try {
                 challenge($_GET['id']);
             }
         }
+        else if (strcmp($_GET['action'], 'list_challenge') == 0) {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
 
+            if (isset($_SESSION["id"])) {
+                list_challenge($_SESSION["id"]);
+            }
+        }
+        else if (strcmp($_GET['action'],'statistique')==0)
+        {
+            stats();
+        }
         else if (strcmp($_GET['action'], 'admin') == 0) {
             admin();
         }
