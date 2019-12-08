@@ -12,16 +12,17 @@ if (!empty($data) && array_key_exists("code", $data) && ($data["code"] >= 500) &
 
 $ajax_url = HTTP_REQUEST_URL;
 $user_id = $_SESSION["id"];
+$room_id = -1;
 
-$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=1");
+$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=2");
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
 
-if($response == FALSE) {
-	$json = 0;
-} else {
-    $json = file_get_contents($url);
+if ($response) {
+    $json = json_decode($response, true);
+
+    $room_id = $json["room_id"];
 }
 
 $content = <<<HTML
@@ -54,7 +55,7 @@ $content = <<<HTML
 				$.ajax({
 					url: "$ajax_url",
 					type: "GET",
-					data: "code=5&user_id=$user_id",
+					data: "code=5&user_id=$user_id&room_id=$room_id",
 					dataType: "json"
 				}).done(function(res) {
 					if (res["code"] === 504) {
@@ -65,7 +66,7 @@ $content = <<<HTML
 						intervalIDPlateau = setInterval(updatePlateau, 1000);
 					}
 					else {
-						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent...</h2>");
+						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for opponents...</h2>");
 						console.log("Challenge cannot start");
 					}
 				});
@@ -83,7 +84,7 @@ $content = <<<HTML
 		function updatePlateau() {
 			$.ajax({
 			  url: "challenges/reflex/reflex.php",
-			  data: "url=$url"
+			  data: "url=$ajax_url?room_id=$room_id",
 			}).done(function(res) {
 			 	 $("#challenge").replaceWith(res);
 			  console.log('update done');
@@ -94,9 +95,9 @@ $content = <<<HTML
 		function choose_case(c){
 			console.log("case select : ",c);
 			$.ajax({
-			  url: "$url",
+			  url: "$ajax_url",
 			  type: "GET",
-			  data: "code=3&user_id=$user_id&case=" + c
+			  data: "code=3&user_id=$user_id&room_id=$room_id&case=" + c
 			});
 			updatePlateau()
 		}
