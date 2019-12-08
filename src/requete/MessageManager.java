@@ -308,7 +308,7 @@ public class MessageManager implements Runnable {
 
 								response.setCode(canStart ? CHALLENGE_CAN_START.getCode() : CHALLENGE_CANNOT_START.getCode());
 								if(canStart) {
-									Salle s = getRoomByID(req.getData().getInt("user_id"));
+									Salle s = getRoomByID(req.getData().getInt("room_id"));
 									if(s != null) {
 										s.debutPartie();
 									}
