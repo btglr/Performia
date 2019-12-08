@@ -305,6 +305,22 @@ public class RequestHandler implements HttpHandler {
 
                         break;
 
+                    case GET_AI_LIST:
+                        if (parameters.containsKey("user_id")) {
+                            int user_id = Integer.parseInt(parameters.get("user_id"));
+                            req.addData("user_id", user_id);
+
+                            if ((requestAdded = requestQueue.addRequest(req))) {
+                                logger.info("Request was added to the RequestQueue");
+                            }
+                        }
+
+                        else {
+                            logger.info("Missing a parameter with request GET_AI_LIST");
+                        }
+
+                        break;
+
                     case UNKNOWN:
                     default:
                         logger.info("Received an unknown request");

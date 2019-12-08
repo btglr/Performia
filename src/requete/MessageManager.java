@@ -11,7 +11,6 @@ import challenge.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import data.DBManager;
@@ -161,7 +160,7 @@ public class MessageManager implements Runnable {
 					try {
 						accountType = (accountType == -1) ? determinerTypeCompte(id) : accountType;
 					} catch (SQLException e) {
-						e.printStackTrace();
+						logger.log(Level.SEVERE, null, e);
 					}
 
 					response.addData("account_type", accountType);
@@ -277,6 +276,24 @@ public class MessageManager implements Runnable {
 								}
 
 								break;
+
+							case GET_AI_LIST:
+								try {
+									jsonArray = getAITypes();
+
+									if (jsonArray == null) {
+										response.setCode(ACTION_NOT_OK.getCode());
+									}
+
+									else {
+										response.setCode(AI_TYPES.getCode());
+										response.addData("data", jsonArray);
+									}
+
+								} catch (SQLException e) {
+									logger.log(Level.SEVERE, null, e);
+								}
+								break;
 						}
 					}
 				}
@@ -292,6 +309,47 @@ public class MessageManager implements Runnable {
 				logger.info("Response was added to the ResponseQueue");
 			}
 		}
+	}
+
+	private JSONArray getAITypes() throws SQLException {
+		PreparedStatement query;
+		ResultSet resultat;
+		JSONArray ar = new JSONArray();
+
+		DBManager db = DBManager.getInstance();
+
+		Connection dbConnection;
+
+		try {
+			dbConnection = db.getConnection();
+		} catch (JSONException e) {
+			System.err.println("An exception occurred while creating the connection to the database. Please check that the configuration file exists.");
+			return null;
+		}
+
+		query = dbConnection.prepareStatement("SELECT * FROM ai");
+		resultat = query.executeQuery();
+
+		while (true) {
+			try {
+				if (!resultat.next()) break;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			JSONObject ob = new JSONObject();
+
+			try {
+				ob.put("ai_id", resultat.getInt("id"));
+				ob.put("ai_name", resultat.getString("name"));
+				ob.put("ai_host", resultat.getString("host"));
+				ob.put("ai_port", resultat.getInt("port"));
+				ar.put(ob);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return ar;
 	}
 
 	private int determinerTypeCompte(int id) throws SQLException {
