@@ -77,7 +77,7 @@ public class Reflex {
                         int port = obj.getInt("port");
                         int account_type = obj.getInt("account_type");
 
-                        logger.info("Starting new Connect4 thread");
+                        logger.info("Starting new Reflex thread");
                         reflex = new ThreadReflex(socketClient, login, password, host, port, account_type);
                         Thread t = new Thread(reflex);
                         t.start();

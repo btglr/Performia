@@ -4,6 +4,7 @@ import ai.TCPClient;
 import data.Config;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import utils.MessageCode;
 
 import java.net.Socket;
 import java.util.logging.Logger;
@@ -43,7 +44,31 @@ public class ThreadReflex implements Runnable {
 
         /*Demande de challenge au serveur et recuperation de l'ID*/
         JSONObject initialGameState = tcpClient.chooseChallenge(challengeID);
-        info = initialGameState.getJSONObject("data");
+
+        if (initialGameState.getInt("code") == MessageCode.ROOM_NOT_FULL.getCode()) {
+            // Il manque un joueur, on attend qu'il arrive
+            logger.info("Waiting for opponent...");
+
+            boolean canStart;
+            do {
+                try {
+                    // Attente de 0.5s
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                canStart = tcpClient.waitChallengeStart();
+            } while (!canStart);
+
+            info = tcpClient.getChallengeState().getJSONObject("data");
+        }
+
+        else {
+            info = initialGameState.getJSONObject("data");
+        }
+
+        logger.info("Challenge can start");
 
         while (ongoingChallenge) {
             JSONObject response = new JSONObject();
