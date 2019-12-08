@@ -47,10 +47,14 @@ $content = <<<HTML
 		<p>Le principe du jeu est de frapper à l'aide d'un marteau sur le plus grand nombre de taupes parmi celles qui sortent pour un temps très limité et aléatoirement des trous situés sur un terrain de jeu.</p>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 	<script>
 		$( document ).ready(function() {
 		    let intervalID = setInterval(waitChallenge, 250);
 			
+			var cpt = 0;
+			var s = "";
 			function waitChallenge() {
 				$.ajax({
 					url: "$ajax_url",
@@ -66,7 +70,13 @@ $content = <<<HTML
 						intervalIDPlateau = setInterval(updatePlateau, 1000);
 					}
 					else {
-						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for opponents...</h2>");
+						cpt++;
+						if(cpt == 4) cpt = 1;
+						if(cpt == 1) s = ".";
+						if(cpt == 2) s = ". .";
+						if(cpt == 3) s = ". . .";
+
+						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent</h2><h2 class='waiting-opponent'>" + s + " </h2>");
 						console.log("Challenge cannot start");
 					}
 				});
@@ -85,9 +95,17 @@ $content = <<<HTML
 			$.ajax({
 			  url: "challenges/reflex/reflex.php",
 			  data: "url=$ajax_url?room_id=$room_id",
+			  dataType: "json"
 			}).done(function(res) {
-			 	 $("#challenge").replaceWith(res);
-			  console.log('update done');
+			 	 if (res["code"] === 507) {
+					clearInterval(intervalIDPlateau);
+
+				if (res["id_player"] != -1) {
+				    $("<div class='modal'><p>Fin du jeu!</p></div>").appendTo("body").modal();
+				}
+			}
+			$("#challenge").replaceWith(res["php"]);
+			console.log('update done');
 			});
 		}
 

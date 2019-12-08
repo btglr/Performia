@@ -1,12 +1,16 @@
 <?php
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+if(session_status() == PHP_SESSION_NONE) {
+	session_start();
 }
 
 $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> serveur http injoignable ?</p>
 		<p>     -> donnees recues invalides ?</p>";
+
+// Connection error
+$code = 1001;
+$id_player = -1;
 
 if(isset($_GET["url"])) {
 	$url = $_GET["url"] . "?code=4&user_id=" . $_SESSION["id"];
@@ -15,13 +19,27 @@ if(isset($_GET["url"])) {
 	curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
 	$response = curl_exec($handle);
-	if($response == FALSE) {
-		$json = "0";
-	} else {
-		$json = file_get_contents($url);
+	$json = json_decode($response,true);
+
+	if (array_key_exists("data", $json)) {
+		if (array_key_exists("fini", $json["data"]) && $json["data"]["fini"] === true) {
+		    $code = 507;
+		    $id_player = $json["data"]["id_player"];
+		}
+		else {
+		    $code = 502;
+        }
+	$data = $json;
+	$score1 = 0;
+	$score2 = 0;
+	$score3 = 0;
+	$score4 = 0;
+	if(array_key_exists("score",$json["data"])) {	
+		$score1 = $json["data"]["score"][0];
+		$score2 = $json["data"]["score"][1];
+		$score3 = $json["data"]["score"][2];
+		$score4 = $json["data"]["score"][0];
 	}
-if($json != "0" && strcmp($json,"") != 0)  {
-	$data = json_decode(json_encode($json));
 	$html = <<<HTML
 		<div class="container">
 			<div class="game-container">
@@ -91,10 +109,10 @@ if($json != "0" && strcmp($json,"") != 0)  {
 					<h2>Score : </h2>
 				</div>
 				<div class="playerscore">
-					<p>J1 : <strong>Pas</strong> points</p>
-					<p>J2 : <strong>encore</strong> points</p>
-					<p>J3 : <strong>implementé</strong> points</p>
-					<p>J4 : <strong>!</strong> points</p>
+					<p>J1 : <strong>{$score1}</strong> points</p>
+					<p>J2 : <strong>{$score2}</strong> points</p>
+					<p>J3 : <strong>{$score3}</strong> points</p>
+					<p>J4 : <strong>{$score4}</strong> points</p>
 				</div>
 			</div>
 		</div>
@@ -102,7 +120,7 @@ if($json != "0" && strcmp($json,"") != 0)  {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 	<script type="text/javascript">
-		var data = $json;
+		var data = $response;
 		var game = data["data"];
 
 		$( document ).ready(function() {
@@ -134,4 +152,13 @@ HTML;
 	$php = $html;
 	}
 }
-echo $php;
+$result = array(
+    "code" => $code,
+    "php" => $php
+);
+
+if ($id_player !== -1) {
+    $result["id_player"] = $id_player;
+}
+
+echo json_encode($result);
