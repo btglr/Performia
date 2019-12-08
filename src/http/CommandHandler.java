@@ -3,7 +3,9 @@ package http;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import data.Config;
+import org.json.JSONObject;
 import requete.Message;
+import utils.QueryUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -18,6 +20,7 @@ public class CommandHandler  implements HttpHandler {
 
     public void handle(HttpExchange exchange) {
         String query = exchange.getAttribute("query").toString();
+        JSONObject jsonResponse = new JSONObject();
 
         @SuppressWarnings("unchecked")
         Map<String, String> parameters = (Map<String, String>) exchange.getAttribute("parameters");
@@ -35,8 +38,10 @@ public class CommandHandler  implements HttpHandler {
 
                 Socket socket;
                 PrintWriter out;
+                BufferedReader in;
                 try {
                     socket = new Socket(host, port);
+                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
                     Message req = new Message();
@@ -47,6 +52,11 @@ public class CommandHandler  implements HttpHandler {
                     req.addData("account_type", AI.getValue());
 
                     out.println(req.toJSON());
+                    String result = in.readLine();
+
+                    if (result.equalsIgnoreCase("ok")) {
+                        jsonResponse.put("status", "started");
+                    }
                 } catch (UnknownHostException e) {
                     System.err.println("Erreur sur l'hôte : " + e);
                 } catch (IOException e) {
@@ -54,5 +64,8 @@ public class CommandHandler  implements HttpHandler {
                 }
             }
         }
+
+        String response = jsonResponse.toString();
+        QueryUtils.sendHTTPResponse(exchange, response);
     }
 }
