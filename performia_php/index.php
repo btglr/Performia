@@ -37,8 +37,11 @@ try {
             if(isset($_GET['id']) && $_GET['id'] > 0) {
                 challenge($_GET['id']);
             }
-        }
-        else if (strcmp($_GET['action'], 'list_challenge') == 0) {
+        } else if (strcmp($_GET['action'], 'statistique') == 0)
+        {
+            statistics();
+        } else if (strcmp($_GET['action'], 'list_challenge') == 0)
+        {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
@@ -46,12 +49,8 @@ try {
             if (isset($_SESSION["id"])) {
                 list_challenge($_SESSION["id"]);
             }
-        }
-        else if (strcmp($_GET['action'],'statistique')==0)
+        } else if (strcmp($_GET['action'], 'admin') == 0)
         {
-            stats();
-        }
-        else if (strcmp($_GET['action'], 'admin') == 0) {
             admin();
         }
         else if (strcmp($_GET['action'], 'sign_up') == 0)

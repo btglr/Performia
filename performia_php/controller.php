@@ -1,24 +1,6 @@
 <?php
 require('./models/model.php');
 
-function stats()
-{
-    $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
-    session_start();
-    $url .= "?code=10&id_utilisateur=" . $_SESSION["id"];
-
-    $handle = curl_init($url);
-    curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
-
-    $response = curl_exec($handle);
-
-    if ($response) {
-        $data = json_decode($response, true);
-    }
-
-    require 'views/statistics.php';
-}
-
 function list_challenge($user_id)
 {
     $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
@@ -73,6 +55,23 @@ function challenge($challenge_id)
     }
 
     require 'views/challenge' . $challenge_id . '.php';
+}
+
+function statistics()
+{
+    $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
+    session_start();
+    $url .= "?code=10&id_utilisateur=" . $_SESSION["id"];
+
+    $handle = curl_init($url);
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
+
+    $response = curl_exec($handle);
+
+    if ($response) {
+        $data = json_decode($response, true);
+    }
+    require 'views/statistics.php';
 }
 
 function admin()

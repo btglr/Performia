@@ -1,10 +1,9 @@
 <?php
-
 function get_user_info($username)
 {
     $db = db_connect();
     $req = $db->prepare('SELECT id, username, password FROM user WHERE username = :user');
-    $req->bindValue(':user', $username,PDO::PARAM_STR);
+    $req->bindValue(':user', $username, PDO::PARAM_STR);
     $req->execute();
     return $req;
 }
@@ -12,10 +11,11 @@ function get_user_info($username)
 function get_challenge_list()
 {
     $db = db_connect();
-    $req =$db->query('SELECT * FROM challenge ');
+    $req = $db->query('SELECT * FROM challenge ');
 
     return $req;
 }
+
 function get_challenge($id_challenge)
 {
     $db = db_connect();
@@ -25,6 +25,7 @@ function get_challenge($id_challenge)
 
     return $req;
 }
+
 function db_connect()
 {
     $db = new PDO('mysql:host=database-1.cunwf0ixerw5.us-east-1.rds.amazonaws.com;dbname=performia;charset=utf8', 'performia', 'performia');
