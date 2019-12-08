@@ -121,12 +121,14 @@ public class MessageManager implements Runnable {
 					if (req.getData().has("account_type") && req.getData().getInt("account_type") == AI.getValue()) {
 						boolean existe = true;
 						try {
+							logger.info("Checking that the AI account doesn't already exist");
 							existe = verifierUtilisateur(req);
 						} catch (SQLException e) {
 							logger.log(Level.SEVERE, null, e);
 						}
 
 						if (!existe) {
+							logger.info("AI account doesn't exist, creating");
 							try {
 								id = inscription(req);
 							} catch (SQLException e) {
@@ -138,6 +140,7 @@ public class MessageManager implements Runnable {
 					}
 
 					try {
+						logger.info("Trying to connect");
 						id = connexion(req);
 					} catch (SQLException e) {
 						logger.log(Level.SEVERE, null, e);
@@ -345,7 +348,7 @@ public class MessageManager implements Runnable {
 			return false;
 		}
 
-		PreparedStatement query = dbConnection.prepareStatement("SELECT COUNT(*) AS total FROM user WHERE username=? AND password=?");
+		PreparedStatement query = dbConnection.prepareStatement("SELECT COUNT(*) FROM user WHERE username=? AND password=?");
 		query.setString(1, login);
 		query.setString(2, password);
 		resultat = query.executeQuery();
@@ -422,8 +425,12 @@ public class MessageManager implements Runnable {
 		try {
 			login = requete.getData().getString("login");
 			password = requete.getData().getString("password");
-			gender = requete.getData().getInt("gender");
-			birthdate = (LocalDate) requete.getData().get("birthdate");
+
+			// Si aucun genre n'a été renseigné alors on le met à "autre"
+			gender = (requete.getData().has("gender")) ? requete.getData().getInt("gender") : 3;
+
+			// Si aucune date anniversaire n'a été renseignée alors on prend la date du jour
+			birthdate = (requete.getData().has("birthdate")) ? (LocalDate) requete.getData().get("birthdate") : LocalDate.now();
 
 			// Si aucun argument n'a été passé à propos du type de compte alors par défaut, c'est un utilisateur lambda
 			accountType = (requete.getData().has("account_type")) ? requete.getData().getInt("account_type") : USER.getValue();
@@ -478,6 +485,10 @@ public class MessageManager implements Runnable {
 
 			if (s != null) {
 				/* Envoyer l'état de jeu*/
+
+				if (s.getChallenge().estFini()) {
+					s.fermer();
+				}
 
 				return s.getChallenge().toJson();
 			}
@@ -555,6 +566,10 @@ public class MessageManager implements Runnable {
 			}
 		}
 
+		if (s.getChallenge().estFini()) {
+			s.fermer();
+		}
+
 		return s.getChallenge().toJson();
 	}
 
@@ -572,7 +587,7 @@ public class MessageManager implements Runnable {
 		Salle s = null;
 
 		for (Salle tmp : rooms) {
-			if (tmp != null && tmp.getNbJoueursConnectes() < 2) {
+			if (tmp != null && tmp.getNbJoueursConnectes() < 2 && !tmp.estFermee()) {
 				s = tmp;
 			}
 		}

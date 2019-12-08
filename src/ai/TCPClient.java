@@ -16,7 +16,6 @@ import java.util.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import data.Config;
 import org.json.JSONObject;
 import requete.Message;
 import utils.MessageCode;
@@ -30,11 +29,9 @@ public class TCPClient {
 
 	private int userId;
 
-	public TCPClient() {
+	public TCPClient(String host, int port) {
 		try {
-			Config config = new Config("config/config.json");
-
-			socket = new Socket(config.getString("ip"), config.getInt("port_tcp"));
+			socket = new Socket(host, port);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 		} catch (UnknownHostException e) {
@@ -69,10 +66,23 @@ public class TCPClient {
 		return result;
 	}
 
-	public void connect(String login, String password) {
+	public boolean waitChallengeStart() {
+		JSONObject jo = new JSONObject();
+		jo.put("user_id", userId);
+
+		Message message = new Message(MessageCode.WAIT_CHALLENGE_START.getCode(), jo);
+		sendData(message);
+
+		Message response = retrieveData();
+
+		return response.getCode() == MessageCode.CHALLENGE_CAN_START.getCode();
+	}
+
+	public void connect(String login, String password, int account_type) {
 		JSONObject jo = new JSONObject();
 		jo.put("login", login);
 		jo.put("password", encryptPassword(password));
+		jo.put("account_type", account_type);
 
 		Message connexion = new Message(MessageCode.CONNECTION.getCode(), jo);
 		sendData(connexion);
@@ -119,7 +129,9 @@ public class TCPClient {
 		sendData(connexion);
 
 		Message responseConnexion = retrieveData();
-		if (responseConnexion.getCode() != MessageCode.INITIAL_CHALLENGE_STATE.getCode()) {
+
+		// Si la réponse n'est pas soit l'état du challenge initial, soit un message nous indiquant qu'il manque un joueur alors c'est une erreur et on quitte
+		if (responseConnexion.getCode() != MessageCode.INITIAL_CHALLENGE_STATE.getCode() && responseConnexion.getCode() != MessageCode.ROOM_NOT_FULL.getCode()) {
 			logger.info("Choosing a challenge failed");
 			System.exit(-1);
 		}
