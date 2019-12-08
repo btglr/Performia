@@ -34,19 +34,6 @@ public class ThreadConnect4 implements Runnable {
         this.account_type = account_type;
     }
 
-    private int randomlyChoose(JSONArray grille) {
-        int res;
-
-        res = (int) (Math.random() * 7);
-        while (grille.getInt(res) != 0) {
-            res = (int) (Math.random() * 7);
-            System.out.println("Res = " + res);
-        }
-
-        return res;
-    }
-
-
     //ajouter i (colonne à choisir) à un des tableaux
     private void ajouterTab(int compteur,int i) {
         if(compteur==3) {
@@ -57,7 +44,6 @@ public class ThreadConnect4 implements Runnable {
             oneAligned.add(i);
         }
     }
-
 
     private int semiRandomChoice(JSONArray gridArray) {
         int firstEmpty,j,res,compteur=0;
