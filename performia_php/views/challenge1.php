@@ -19,17 +19,18 @@ if (!isset($_SESSION["id"])) {
 
 $ajax_url = HTTP_REQUEST_URL;
 $user_id = $_SESSION["id"];
+$room_id = -1;
 
-$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=2");
+$handle = curl_init(HTTP_REQUEST_URL . "?code=2&user_id=" . $user_id . "&challenge_id=1");
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
 
-/*if($response == FALSE) {
-	$json = 0;
-} else {
-    $json = file_get_contents($url);
-}*/
+if ($response) {
+    $json = json_decode($response, true);
+
+    $room_id = $json["room_id"];
+}
 
 $content = <<<HTML
 	<div class="challengebox">
@@ -77,7 +78,7 @@ $content = <<<HTML
 				$.ajax({
 					url: "$ajax_url",
 					type: "GET",
-					data: "code=5&user_id=$user_id",
+					data: "code=5&user_id=$user_id&room_id=$room_id",
 					dataType: "json"
 				}).done(function(res) {
 					if (res["code"] === 504) {
@@ -106,7 +107,7 @@ $content = <<<HTML
 		function updatePlateau() {
 			$.ajax({
 				url: "challenges/connect4/connect4.php",
-				data: "url=$url",
+				data: "url=$ajax_url?room_id=$room_id",
 				dataType: "json"
 			}).done(function(res) {
 			    if (res["code"] === 507) {
@@ -137,7 +138,7 @@ $content = <<<HTML
 			$.ajax({
 				url: "$ajax_url",
 				type: "GET",
-				data: "code=3&user_id=$user_id&colonne=" + col
+				data: "code=3&user_id=$user_id&colonne=" + col + "&room_id=$room_id"
 			}).done(function() {
 				updatePlateau();
 			});

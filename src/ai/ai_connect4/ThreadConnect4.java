@@ -89,6 +89,7 @@ public class ThreadConnect4 implements Runnable {
                 // Choose randomly (smart AI)
                 choice = randomlyChoose(gridArray);
                 response.put("user_id", tcpClient.getUserId());
+                response.put("room_id", tcpClient.getRoomId());
                 response.put("colonne", choice);
                 try {
                     // Attente entre 1 et 5s

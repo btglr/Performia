@@ -123,11 +123,13 @@ public class RequestHandler implements HttpHandler {
                      * @out error_message : string
                      */
                     case PLAY_TURN:
-                        if (parameters.containsKey("user_id") && parameters.containsKey("colonne")) {
+                        if (parameters.containsKey("user_id") && parameters.containsKey("colonne") && parameters.containsKey("room_id")) {
                             int user_id = Integer.parseInt(parameters.get("user_id"));
                             int colonne = Integer.parseInt(parameters.get("colonne"));
+                            int room_id = Integer.parseInt(parameters.get("room_id"));
 
                             req.addData("user_id", user_id);
+                            req.addData("room_id", room_id);
                             req.addData("colonne", colonne);
 
                             logger.info("User has made a move");
@@ -167,10 +169,12 @@ public class RequestHandler implements HttpHandler {
                      * @out code : 505
                      */
                     case WAIT_CHALLENGE_START:
-                        if (parameters.containsKey("user_id")) {
+                        if (parameters.containsKey("user_id") && parameters.containsKey("room_id")) {
                             int user_id = Integer.parseInt(parameters.get("user_id"));
+                            int room_id = Integer.parseInt(parameters.get("room_id"));
 
                             req.addData("user_id", user_id);
+                            req.addData("room_id", room_id);
 
                             if (code == WAIT_CHALLENGE_START) {
                                 logger.info("Web interface is waiting for the game to start");

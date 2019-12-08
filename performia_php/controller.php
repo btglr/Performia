@@ -37,11 +37,9 @@ function list_challenge($user_id)
 
 function challenge($challenge_id)
 {
-    $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
     session_start();
-    $url .= "?code=7&user_id=" . $_SESSION["id"] . "&challenge_id=" . $challenge_id;
 
-    $handle = curl_init($url);
+    $handle = curl_init(HTTP_REQUEST_URL . "?code=7&user_id=" . $_SESSION["id"] . "&challenge_id=" . $challenge_id);
     curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
     $response = curl_exec($handle);

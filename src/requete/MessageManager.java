@@ -186,17 +186,26 @@ public class MessageManager implements Runnable {
 							case CHOOSE_CHALLENGE:
 								jsonObject = choisirChallenge(req);
 
-								if (jsonObject == null) {
-									response.setCode(ROOM_NOT_FULL.getCode());
-								}
-
-								else if (jsonObject.has("code") && jsonObject.getInt("code") == WRONG_CHALLENGE.getCode()) {
-									response.setCode(WRONG_CHALLENGE.getCode());
+								if (jsonObject.has("code")) {
+									if (jsonObject.getInt("code") == WRONG_CHALLENGE.getCode()) {
+										response.setCode(WRONG_CHALLENGE.getCode());
+									}
+									else if (jsonObject.getInt("code") == ROOM_NOT_FULL.getCode()) {
+										response.setCode(ROOM_NOT_FULL.getCode());
+										response.addData("room_id", jsonObject.getInt("room_id"));
+									}
+									else {
+										response.setCode(UNKNOWN.getCode());
+									}
 								}
 
 								else {
 									response.setCode(INITIAL_CHALLENGE_STATE.getCode());
+									int roomId = jsonObject.getInt("room_id");
+									jsonObject.remove("room_id");
+
 									response.addData("data", jsonObject);
+									response.addData("room_id", roomId);
 								}
 
 								break;
@@ -315,9 +324,9 @@ public class MessageManager implements Runnable {
 	}
 
 	private boolean checkCanChallengeStart(Message request) {
-		if (request.getData().has("user_id")) {
-			int user_id = request.getData().getInt("user_id");
-			Salle s = getRoomByID(user_id);
+		if (request.getData().has("room_id")) {
+			int room_id = request.getData().getInt("room_id");
+			Salle s = getRoomByID(room_id);
 
 			return s != null && s.estPleine();
 		}
@@ -474,18 +483,21 @@ public class MessageManager implements Runnable {
 	}
 
 	private JSONObject actualisation(Message requete) {
-		/* Récupérer user*/
 		int idUser = requete.getData().getInt("user_id");
+		int idRoom = requete.getData().getInt("room_id");
 
 		Participant p = getParticipantByID(idUser);
 
 		if (p != null) {
-			/* Récupérer le challenge*/
-			Salle s = getRoomByID(idUser);
+			Salle s = getRoomByID(idRoom);
 
-			if (s != null) {
-				/* Envoyer l'état de jeu*/
+			if (s == null) {
+				logger.info("Given room ID doesn't exist or is incorrect");
+				return null;
+			}
 
+			// Si la salle contient bien l'id du joueur qui a fait la requête
+			if (s.getJoueurs().contains(idUser)) {
 				if (s.getChallenge().estFini()) {
 					s.fermer();
 				}
@@ -494,7 +506,7 @@ public class MessageManager implements Runnable {
 			}
 
 			else {
-				logger.info("User is not in a game room");
+				logger.info("User is not in this game room");
 			}
 		}
 
@@ -509,17 +521,18 @@ public class MessageManager implements Runnable {
 		int idUser = requete.getData().getInt("user_id");
 		int challengeId = requete.getData().getInt("challenge_id");
 
+		// Ne peut être null ici, vérification antérieure
 		Participant p = getParticipantByID(idUser);
 		Salle s = findAvailableRoom();
 
 		if (s == null) {
 			switch (challengeId) {
 				case 1:
-					s = new Salle(new Connect4(p));
+					s = new Salle(new Connect4(p), 2);
 					break;
 
 				case 2:
-					s = new Salle(new Reflex(p));
+					s = new Salle(new Reflex(p), 4);
 					break;
 
 				default:
@@ -536,21 +549,27 @@ public class MessageManager implements Runnable {
 		s.addJoueur(idUser);
 
 		if (s.estPleine()) {
-			return s.getChallenge().toJson();
+			return s.getChallenge().toJson().put("room_id", s.getId());
 		}
 
 		else {
-			return null;
+			return new JSONObject().put("code", ROOM_NOT_FULL.getCode()).put("room_id", s.getId());
 		}
 	}
 
 	private JSONObject jouerTour(Message requete) {
 		int idUser = requete.getData().getInt("user_id");
+		int idRoom = requete.getData().getInt("room_id");
 		Participant p = getParticipantByID(idUser);
-		Salle s = getRoomByID(idUser);
+		Salle s = getRoomByID(idRoom);
 
 		if (p == null || s == null) {
 		    logger.info("No player found with the provided id");
+			return null;
+		}
+
+		// Si le joueur qui essaye de jouer un tour n'est pas celui qui est présent dans la salle de challenge
+		if (!s.getJoueurs().contains(idUser)) {
 			return null;
 		}
 
@@ -577,17 +596,25 @@ public class MessageManager implements Runnable {
 		return participants.stream().filter(participant -> (participant.getId()==id)).findFirst().orElse(null);
 	}
 
-	private Salle getRoomByID(int user_id) {
+/*	private Salle getRoomByID(int user_id) {
 		return rooms.stream()
-				.filter(salle -> (Arrays.stream(salle.getJoueurs()))
+				.filter(salle -> (Arrays.stream(salle.getJoueurs().toArray()))
 				.filter(id -> id==user_id).findFirst().isPresent()).findFirst().orElse(null);
+	}*/
+
+	private Salle getRoomByID(int room_id) {
+		if (room_id >= 0 && room_id < rooms.size()) {
+			return rooms.get(room_id);
+		}
+
+		return null;
 	}
 
 	private Salle findAvailableRoom() {
 		Salle s = null;
 
 		for (Salle tmp : rooms) {
-			if (tmp != null && tmp.getNbJoueursConnectes() < 2 && !tmp.estFermee()) {
+			if (tmp != null && !tmp.estPleine() && !tmp.estFermee()) {
 				s = tmp;
 			}
 		}

@@ -14,22 +14,22 @@ public class Salle {
     // Les IDs des joueurs présents dans la salle
     private List<Integer> joueurs;
     // Nombre de joueurs présents dans la salle
-    private static final AtomicInteger nbJoueursConnectes = new AtomicInteger(0);
+    private final AtomicInteger nbJoueursConnectes = new AtomicInteger(0);
     // Nombre de joueurs maximum
     private int nbJoueursMax;
     // Indique si la salle est fermée (partie terminée)
     private boolean fermee;
 
-    public Salle() {
+    /*public Salle() {
         this(null);
     }
 
     public Salle(Challenge challenge) {
         this(challenge, 2);
-    }
+    }*/
 
     public Salle(Challenge challenge, int nbJoueursMax) {
-        this.nbJoueursMax = Math.max(nbJoueursMax, 2);
+        this.nbJoueursMax = Math.min(nbJoueursMax, 4);
         this.challenge = challenge;
 
         this.joueurs = new ArrayList<>(this.nbJoueursMax);
@@ -38,7 +38,8 @@ public class Salle {
             this.joueurs.add(-1);
         }
 
-        this.id = count.incrementAndGet();
+        this.id = count.getAndIncrement();
+        this.fermee = false;
     }
 
     public void addJoueur(int joueurId) {

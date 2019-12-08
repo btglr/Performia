@@ -28,6 +28,7 @@ public class TCPClient {
 	private BufferedReader in = null;
 
 	private int userId;
+	private int roomId;
 
 	public TCPClient(String host, int port) {
 		try {
@@ -69,6 +70,7 @@ public class TCPClient {
 	public boolean waitChallengeStart() {
 		JSONObject jo = new JSONObject();
 		jo.put("user_id", userId);
+		jo.put("room_id", roomId);
 
 		Message message = new Message(MessageCode.WAIT_CHALLENGE_START.getCode(), jo);
 		sendData(message);
@@ -136,12 +138,17 @@ public class TCPClient {
 			System.exit(-1);
 		}
 
+		if (responseConnexion.getData().has("room_id")) {
+			roomId = responseConnexion.getData().getInt("room_id");
+		}
+
 		return responseConnexion.getData();
 	}
 
 	public JSONObject getChallengeState() {
         JSONObject jo = new JSONObject();
         jo.put("user_id", userId);
+        jo.put("room_id", roomId);
 
         Message message = new Message(MessageCode.GET_CHALLENGE_STATE.getCode(), jo);
         sendData(message);
@@ -157,7 +164,7 @@ public class TCPClient {
 
     public void sendTurn(JSONObject action)
     {
-        Message message = new Message(MessageCode.PLAY_TURN.getCode(),action);
+        Message message = new Message(MessageCode.PLAY_TURN.getCode(), action);
         sendData(message);
     }
 
@@ -188,5 +195,9 @@ public class TCPClient {
 		} catch (IOException ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
+	}
+
+	public int getRoomId() {
+		return roomId;
 	}
 }
