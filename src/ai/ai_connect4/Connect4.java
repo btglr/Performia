@@ -30,7 +30,7 @@ public class Connect4 {
         Socket socketClient = null;
         ThreadConnect4 connect4;
 
-        Message test = new Message();
+/*        Message test = new Message();
         test.setCode(800);
         test.addData("login", "connect4_random");
         test.addData("password", "connect4_random");
@@ -38,7 +38,7 @@ public class Connect4 {
         test.addData("port", 30000);
         test.addData("account_type", AI.getValue());
 
-        System.out.println("test.toJSON() = " + test.toJSON());
+        System.out.println("test.toJSON() = " + test.toJSON());*/
 
         while (!stop) {
             Message req = null;
@@ -72,7 +72,7 @@ public class Connect4 {
                     logger.info("Received message");
 
                     try {
-                        req = Message.fromJSON(new JSONObject(test.toJSON().toString()));
+                        req = Message.fromJSON(new JSONObject(message));
                     } catch (JSONException ex) {
                         logger.log(Level.SEVERE, null, ex);
                     }
