@@ -73,6 +73,7 @@ public class Reflex extends Challenge implements Runnable{
 		json.put("grille", this.grille);
 		json.put("score", this.score);
 		json.put("round", this.tour);
+		json.put("fini", this.fini);
 
 		return json;
 	}
@@ -85,7 +86,7 @@ public class Reflex extends Challenge implements Runnable{
 		for(int i =0; i <p.length; i++){
 			p[i] = Participant.fromJson(arrayPlayers.getJSONObject(i));
 		}
-		
+		this.fini = json.getBoolean("fini");
 		return new Reflex(grille, p);
 	}
 

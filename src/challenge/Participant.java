@@ -34,7 +34,7 @@ public class Participant {
     // On commence à compter à partir de quand c'est son tour
     public void canPlay() {
         // condition pour éviter l'actualisation h24
-        if(lastTime == 0) {
+        if(lastTime <= 0) {
             lastTime = (int) System.currentTimeMillis() / 1000;
         }
     }
