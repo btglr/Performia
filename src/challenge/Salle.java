@@ -15,6 +15,8 @@ public class Salle {
     private int nbJoueursConnectes;
     // Nombre de joueurs maximum
     private int nbJoueursMax;
+    // Indique si la salle est fermée (partie terminée)
+    private boolean fermee;
 
     public Salle() {
         this(null);
@@ -64,5 +66,13 @@ public class Salle {
 
     public boolean estPleine() {
         return this.nbJoueursConnectes == this.nbJoueursMax;
+    }
+
+    public boolean estFermee() {
+        return fermee;
+    }
+
+    public void fermer() {
+        this.fermee = true;
     }
 }
