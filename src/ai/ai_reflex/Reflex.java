@@ -1,4 +1,4 @@
-package ai.ai_connect4;
+package ai.ai_reflex;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,13 +10,13 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Connect4 {
-    private static final Logger logger = Logger.getLogger(Connect4.class.getName());
+public class Reflex {
+    private static final Logger logger = Logger.getLogger(Reflex.class.getName());
 
     public static void main(String[] args) {
         ServerSocket serverSocket;
         try {
-            serverSocket = new ServerSocket(40000);
+            serverSocket = new ServerSocket(40001);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, null, ex);
             return;
@@ -25,7 +25,7 @@ public class Connect4 {
         boolean stop = false;
 
         Socket socketClient = null;
-        ThreadConnect4 connect4;
+        ThreadReflex reflex;
 
         while (!stop) {
             Message req = null;
@@ -78,8 +78,8 @@ public class Connect4 {
                         int account_type = obj.getInt("account_type");
 
                         logger.info("Starting new Connect4 thread");
-                        connect4 = new ThreadConnect4(socketClient, login, password, host, port, account_type);
-                        Thread t = new Thread(connect4);
+                        reflex = new ThreadReflex(socketClient, login, password, host, port, account_type);
+                        Thread t = new Thread(reflex);
                         t.start();
 
                         output.println("OK");

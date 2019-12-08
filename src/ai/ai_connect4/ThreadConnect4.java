@@ -53,8 +53,7 @@ public class ThreadConnect4 implements Runnable {
         JSONObject initialGameState = tcpClient.chooseChallenge(challengeID);
 
         if (initialGameState.getInt("code") == MessageCode.ROOM_NOT_FULL.getCode()) {
-            // Il manque des joueurs, on attend qu'ils arrivent
-
+            // Il manque un joueur, on attend qu'il arrive
             logger.info("Waiting for opponent...");
 
             boolean canStart;

@@ -1,17 +1,37 @@
-package ai;
+package ai.ai_reflex;
 
-import static java.lang.Thread.sleep;
-
+import ai.TCPClient;
 import data.Config;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import requete.Message;
 
-public class AIClick {
-    public static void main(String[] args) {
+import java.net.Socket;
+import java.util.logging.Logger;
+
+import static java.lang.Thread.sleep;
+
+public class ThreadReflex implements Runnable {
+    private static final Logger logger = Logger.getLogger(ThreadReflex.class.getName());
+
+    private String login;
+    private String password;
+    private String javaServerHost;
+    private int javaServerPort;
+    private int account_type;
+    private String lastMessage = null;
+
+    public ThreadReflex(Socket socketClient, String login, String password, String javaServerHost, int javaServerPort, int account_type) {
+        this.login = login;
+        this.password = password;
+        this.javaServerHost = javaServerHost;
+        this.javaServerPort = javaServerPort;
+        this.account_type = account_type;
+    }
+
+    @Override
+    public void run() {
         // Login + password JSON
-        Config ia = new Config("config/ia.json");
-        TCPClient tcpClient = new TCPClient();
+        TCPClient tcpClient = new TCPClient(this.javaServerHost, this.javaServerPort);
         int choice = 0;
         boolean[] grid;
         boolean ongoingChallenge = true;
@@ -19,7 +39,7 @@ public class AIClick {
         int challengeID = 2;
         JSONObject info;
 
-        tcpClient.connect(ia.getString("login"), ia.getString("password"));
+        tcpClient.connect(this.login, this.password, this.account_type);
 
         /*Demande de challenge au serveur et recuperation de l'ID*/
         JSONObject initialGameState = tcpClient.chooseChallenge(challengeID);
@@ -31,17 +51,16 @@ public class AIClick {
             ongoingChallenge = !info.getBoolean("fini");
             JSONArray gridArray = info.getJSONArray("grille");
             grid = new boolean[gridArray.length()];
+
             // On remplit la grille
             for (int i = 0; i < gridArray.length(); ++i) {
                 grid[i] = gridArray.getBoolean(i);
-                if(grid[i]) {
+                if (grid[i]) {
                     choice = i;
                 }
             }
 
             if (tcpClient.getUserId() == info.getInt("id_player") && ongoingChallenge) {
-                // Choose randomly (smart AI)
-
                 response.put("user_id", tcpClient.getUserId());
                 response.put("case", choice);
 
@@ -54,9 +73,7 @@ public class AIClick {
 
                 // Play turn
                 info = tcpClient.playTurn(response).getJSONObject("data");
-            }
-
-            else {
+            } else {
                 // Ask for the state of the challenge to check if the other player has made a move
                 info = tcpClient.getChallengeState().getJSONObject("data");
             }
