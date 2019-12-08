@@ -251,14 +251,14 @@ public class MessageManager implements Runnable {
 											int id2 = arrayPlayers.getJSONObject(1).getInt("id");
 											int mean_time_player1 = arrayPlayers.getJSONObject(0).getInt("timeAverageByTurn");
 											int mean_time_player2 = arrayPlayers.getJSONObject(1).getInt("timeAverageByTurn");
-											if(s.getJoueurs().length == 2) {
+											if(s.getJoueurs().size() == 2) {
 												try {
 													match_finish2player(id1, id2, false, (int) s.finPartie(), mean_time_player1, mean_time_player2, id1);
 												} catch (SQLException e) {
 													e.printStackTrace();
 												}
 											}
-											if(s.getJoueurs().length == 4) {
+											if(s.getJoueurs().size() == 4) {
 												int id3 = arrayPlayers.getJSONObject(2).getInt("id");
 												int id4 = arrayPlayers.getJSONObject(3).getInt("id");
 												int mean_time_player3 = arrayPlayers.getJSONObject(0).getInt("timeAverageByTurn");
