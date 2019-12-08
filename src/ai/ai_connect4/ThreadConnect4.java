@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import utils.MessageCode;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import static java.lang.Thread.sleep;
@@ -56,7 +57,7 @@ public class ThreadConnect4 implements Runnable {
 		}
 	}
 	
-	private int semiRandomChoice(int grille[]) {
+	private int semiRandomChoice(JSONArray gridArray) {
 		int firstEmpty,j,res,compteur=0;
 		threeAligned = new ArrayList<Integer>();
 		twoAligned = new ArrayList<Integer>();
@@ -67,13 +68,13 @@ public class ThreadConnect4 implements Runnable {
 			firstEmpty = i;
 			
 			//reucuperation de la premiere case vide de la colonne
-			while(firstEmpty+7<grille.length && grille[firstEmpty+7]==0) {
+			while(firstEmpty+7<gridArray.length() && gridArray.getInt(firstEmpty+7)==0) {
 				firstEmpty+=7;
 			}
 
 			//test sur les cases en dessous
 			j = firstEmpty+7;
-			while(j<grille.length) {
+			while(j<gridArray.length()) {
 				compteur++;
 				j+=7;
 			}
@@ -82,7 +83,7 @@ public class ThreadConnect4 implements Runnable {
 			
 			//test sur les cases a gauche 
 			j = firstEmpty-1;
-			while(j>=firstEmpty-3 && j%7 == firstEmpty%7 && grille[j]!=0) {
+			while(j>=firstEmpty-3 && j%7 == firstEmpty%7 && gridArray.getInt(j)!=0) {
 				compteur++;
 				j--;
 			}
@@ -91,7 +92,7 @@ public class ThreadConnect4 implements Runnable {
 			
 			//test sur les cases a droite 
 			j = firstEmpty+1;
-			while(j<=firstEmpty+3 && j%7 == firstEmpty%7 && grille[j]!=0) {
+			while(j<=firstEmpty+3 && j%7 == firstEmpty%7 && gridArray.getInt(j)!=0) {
 				compteur++;
 				j++;
 			}
@@ -101,7 +102,7 @@ public class ThreadConnect4 implements Runnable {
 			//test sur les diagonales
 			//haut gauche
 			j=firstEmpty-7;
-			while(j-1 > 0 && grille[j-1]!=0) {
+			while(j-1 > 0 && gridArray.getInt(j-1)!=0) {
 				compteur++;
 				j=j-7;
 			}
@@ -109,7 +110,7 @@ public class ThreadConnect4 implements Runnable {
 			compteur=0;
 			//haut droite
 			j=firstEmpty-7;
-			while(j+1 > 0 && grille[j+1]!=0) {
+			while(j+1 > 0 && gridArray.getInt(j+1)!=0) {
 				compteur++;
 				j=j-7;
 			}
@@ -117,7 +118,7 @@ public class ThreadConnect4 implements Runnable {
 			compteur=0;
 			//bas gauche
 			j=firstEmpty+7;
-			while(j-1 < grille.length && grille[j-1]!=0) {
+			while(j-1 < gridArray.length() && gridArray.getInt(j-1)!=0) {
 				compteur++;
 				j=j+7;
 			}
@@ -125,7 +126,7 @@ public class ThreadConnect4 implements Runnable {
 			compteur=0;
 			//bas droite
 			j=firstEmpty+7;
-			while(j+1 < grille.length && grille[j+1]!=0) {
+			while(j+1 < gridArray.length() && gridArray.getInt(j+1)!=0) {
 				compteur++;
 				j=j+7;
 			}
