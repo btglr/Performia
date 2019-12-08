@@ -270,7 +270,9 @@ public class MessageManager implements Runnable {
 									// Si la partie est finie, on enregistre dans la BDD le match
 									if(jsonObject.getBoolean("fini")) {
 										Salle s = getRoomByID(req.getData().getInt("room_id"));
-										if (s != null) {
+										if (s != null && !s.isSave()) {
+											// Si c'est 4 joueurs
+											s.setSave(true);
 											// Si c'est 4 joueurs
 											JSONArray arrayPlayers = new JSONArray();
 											arrayPlayers = jsonObject.getJSONArray("players");
@@ -395,23 +397,23 @@ public class MessageManager implements Runnable {
         }
 
 
-        /* Partie sur les parties */
-        PreparedStatement query = dbConnection.prepareStatement("SELECT id_winner FROM `match` WHERE id_player_1=? OR id_player_2=? OR id_player_3=? OR id_player_4=?");
-        query.setInt(1, ai);
-        query.setInt(2, ai);
-        query.setInt(3, ai);
-        query.setInt(4, ai);
-        resultat = query.executeQuery();
+		/* Partie sur les parties */
+		PreparedStatement query = dbConnection.prepareStatement("SELECT id_winner FROM `match` WHERE id_player_1=? OR id_player_2=? OR id_player_3=? OR id_player_4=?");
+		query.setInt(1, ai);
+		query.setInt(2, ai);
+		query.setInt(3, ai);
+		query.setInt(4, ai);
+		resultat = query.executeQuery();
 
-        int nb_partie = resultat.getMetaData().getColumnCount()-1;
-        int nb_win = 0;
-        if (resultat.next()) {
-            for(int i = 0; i < nb_partie; i++) {
-                if(resultat.getInt(1) == ai) {
-                    nb_win++;
-                }
-            }
-        }
+		int nb_partie = 0;
+		int nb_win = 0;
+
+		while (resultat.next()) {
+			nb_partie++;
+			if(resultat.getInt(1) == ai) {
+				nb_win++;
+			}
+		}
 
         /* Le nom de l'IA */
         query = dbConnection.prepareStatement("SELECT username FROM user WHERE id=?");
@@ -426,8 +428,6 @@ public class MessageManager implements Runnable {
         query.setInt(1,ai);
         resultat = query.executeQuery();
         int nb_prediction = resultat.getMetaData().getColumnCount()-1;
-
-        db.disconnect();
 
         return new JSONObject().put("name_ai", name).put("nb_win", nb_win).put("nb_played", nb_partie).put("nb_prediction", nb_prediction);
     }
@@ -451,8 +451,6 @@ public class MessageManager implements Runnable {
 		while (resultat.next()) {
 			AIs.add(resultat.getInt(1));
 		}
-
-		db.disconnect();
 
 		return AIs;
 	}
@@ -520,8 +518,6 @@ public class MessageManager implements Runnable {
 			accountType = resultat.getInt(1);
 		}
 
-		db.disconnect();
-
 		return accountType;
 	}
 
@@ -542,8 +538,6 @@ public class MessageManager implements Runnable {
 		query.setInt(2, id2);
 		query.setBoolean(3, isAI != 0);
 		query.executeUpdate();
-
-		db.disconnect();
 	}
 
 	private void match_finish4player(int id1, int id2, int id3, int id4, int match_time, int mean_time_player1, int mean_time_player2, int mean_time_player3,  int mean_time_player4, int id_winner) throws SQLException {
@@ -569,8 +563,6 @@ public class MessageManager implements Runnable {
 		query.setInt(9, mean_time_player4);
 		query.setInt(10, id_winner);
 		query.executeUpdate();
-
-		db.disconnect();
 	}
 
 	private void match_finish2player(int id1, int id2, int match_time, int mean_time_player1, int mean_time_player2, int id_winner) throws SQLException {
@@ -592,8 +584,6 @@ public class MessageManager implements Runnable {
 		query.setInt(5, mean_time_player2);
 		query.setInt(6, id_winner);
 		query.executeUpdate();
-
-		db.disconnect();
 	}
 
 	private boolean checkCanChallengeStart(Message request) {
