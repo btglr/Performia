@@ -29,14 +29,15 @@ public class AI_Thread extends Thread{
 	Thread t;
 	int id;
 	TCPClient tcpClient;
-	JSONObject data;
+	JSONObject msg;
+	JSONObject grille;
 	
 	/*================================<CONSTRUCTEUR>================================*/
-	public AI_Thread(int i,TCPClient tcpClient)
+	public AI_Thread(JSONObject data,TCPClient tcpClient)
 	{
-		this.data = new JSONObject();
-		data.put("id_utilisateur", tcpClient.getUserId());
-		data.put("case", i);
+		this.msg = new JSONObject();
+		msg.put("id_player", tcpClient.getUserId());
+		this.grille = data.getJSONArray("grille");
 		this.start();
 		this.tcpClient = tcpClient;
 	}
@@ -44,12 +45,16 @@ public class AI_Thread extends Thread{
 	/*================================<FONCTION>================================*/
 	public void run(){
 		try {
+			int i = 0 ;
+			while( !grille.getBoolean(i) )
+				i++;
 			// Attente entre 100 et 200 ms 
 			sleep((long) (100 + (Math.random() * 100)));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		tcpClient.sendTurn(data);
+		msg.put("case",i);
+		tcpClient.sendTurn(msg);
 	}
 }
 

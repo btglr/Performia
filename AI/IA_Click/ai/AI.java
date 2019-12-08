@@ -48,15 +48,14 @@ public class AI{
         info = initialGameState.getJSONObject("data");
 		
 		/*--------------------------------<PARTIE>--------------------------------*/
-		while (!info.getJSONObject("data").getBoolean("fini"))
+		while (!info.getBoolean("fini"))
 		{
 			// reception de la case 
             info = tcpClient.receiveTurn();
 			
 			// Lancer Thread
-			AI_Thread thrd = new AI_Thread(info.getInt("case"),tcpClient);
+			AI_Thread thrd = new AI_Thread(info,tcpClient);
 			info = tcpClient.receiveTurn();
-			
         }
 		
 		/*--------------------------------<FIN>--------------------------------*/
