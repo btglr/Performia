@@ -19,6 +19,14 @@ if (!defined("REQUEST_HANDLER")) {
 	define("REQUEST_HANDLER", "request");
 }
 
+if (!defined("COMMAND_HANDLER")) {
+    define("COMMAND_HANDLER", "command");
+}
+
 if (!defined("HTTP_REQUEST_URL")) {
     define("HTTP_REQUEST_URL", implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER)));
+}
+
+if (!defined("HTTP_COMMAND_URL")) {
+    define("HTTP_COMMAND_URL", implode("/", array(HTTP_SERVER_URL, COMMAND_HANDLER)));
 }

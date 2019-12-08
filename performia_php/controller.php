@@ -1,13 +1,14 @@
 <?php
 require('./models/model.php');
 
-function stats() {
+function stats()
+{
     $url = implode("/", array(HTTP_SERVER_URL, REQUEST_HANDLER));
     session_start();
     $url .= "?code=10&id_utilisateur=" . $_SESSION["id"];
 
     $handle = curl_init($url);
-    curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 
     $response = curl_exec($handle);
 
@@ -24,7 +25,7 @@ function list_challenge($user_id)
     $url .= "?code=6&user_id=" . $user_id;
 
     $handle = curl_init($url);
-    curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 
     $response = curl_exec($handle);
 
@@ -35,12 +36,15 @@ function list_challenge($user_id)
     require 'views/list_challenge.php';
 }
 
-function challenge($challenge_id)
+function get_ai_types()
 {
-    session_start();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 
-    $handle = curl_init(HTTP_REQUEST_URL . "?code=7&user_id=" . $_SESSION["id"] . "&challenge_id=" . $challenge_id);
-    curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+    $data = null;
+    $handle = curl_init(HTTP_REQUEST_URL . "?code=11&user_id=" . $_SESSION["id"]);
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 
     $response = curl_exec($handle);
 
@@ -48,17 +52,43 @@ function challenge($challenge_id)
         $data = json_decode($response, true);
     }
 
-    require 'views/challenge'. $challenge_id .'.php';
+    if ($data) {
+        $data = $data["data"];
+    }
+
+    return $data;
 }
 
-function admin() {
+function challenge($challenge_id)
+{
+    session_start();
+
+    $handle = curl_init(HTTP_REQUEST_URL . "?code=7&user_id=" . $_SESSION["id"] . "&challenge_id=" . $challenge_id);
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
+
+    $response = curl_exec($handle);
+
+    if ($response) {
+        $data = json_decode($response, true);
+    }
+
+    require 'views/challenge' . $challenge_id . '.php';
+}
+
+function admin()
+{
+    $ai_types = get_ai_types();
+
     require 'views/admin.php';
 }
 
-function register(){
+function register()
+{
     require 'views/register.php';
 }
-function sign_up($username, $birthdate, $gender, $password, $password2){
+
+function sign_up($username, $birthdate, $gender, $password, $password2)
+{
 
     $err = 0;
     setlocale(LC_TIME, ['fr', 'fra', 'fr_FR']);
@@ -66,30 +96,27 @@ function sign_up($username, $birthdate, $gender, $password, $password2){
     $day = date('d');
     $year = date('Y');
 
-    $today = $day.'-'.$month.'-'.$year;
-    $d1 =strtotime($today);
-    $d2 =strtotime($birthdate);
+    $today = $day . '-' . $month . '-' . $year;
+    $d1 = strtotime($today);
+    $d2 = strtotime($birthdate);
 
-    if(strcmp($password,$password2)!=0 || $d2>$d1)
-    {
-        if ($d2>$d1)
+    if (strcmp($password, $password2) != 0 || $d2 > $d1) {
+        if ($d2 > $d1)
             $err = 4;
         else
             $err = 3;
-        require ('views/register.php');
-    }
-    else
-    {
-        if(strcmp($gender,'male') == 0)
+        require('views/register.php');
+    } else {
+        if (strcmp($gender, 'male') == 0)
             $gender = 1;
-        else if(strcmp($gender,'female')==0)
+        else if (strcmp($gender, 'female') == 0)
             $gender = 2;
         else
             $gender = 3;
         $hashed_password = hash("sha1", $password);
 
         $url = HTTP_REQUEST_URL;
-        $url .= "?code=8&login=" . $username . "&password=" . $hashed_password."&birthdate=" . $birthdate . "&gender=" . $gender;
+        $url .= "?code=8&login=" . $username . "&password=" . $hashed_password . "&birthdate=" . $birthdate . "&gender=" . $gender;
 
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
@@ -107,9 +134,7 @@ function sign_up($username, $birthdate, $gender, $password, $password2){
                 $_SESSION["type"] = $decoded["account_type"];
 
                 login($username, $password);
-            }
-
-            else {
+            } else {
                 $err = 5;
                 require("./views/register.php");
             }
@@ -117,9 +142,10 @@ function sign_up($username, $birthdate, $gender, $password, $password2){
 
     }
 }
-function login($username,$pass)
+
+function login($username, $pass)
 {
-    $err=0;
+    $err = 0;
 
     $hashed_password = hash("sha1", $pass);
 
@@ -127,7 +153,7 @@ function login($username,$pass)
     $url .= "?code=1&login=" . $username . "&password=" . $hashed_password;
 
     $handle = curl_init($url);
-    curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 
     $response = curl_exec($handle);
 
@@ -141,16 +167,29 @@ function login($username,$pass)
             $_SESSION["id"] = $decoded["user_id"];
             $_SESSION["type"] = $decoded["account_type"];
             list_challenge($_SESSION["id"]);
-        }
-
-        else {
+        } else {
             $err = 1;
             require("./views/login.php");
         }
     }
 }
 
-function sign_out() {
+function request_start_ai($id, $login, $password, $host, $port) {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Type = 2 est un labo
+    if (isset($_SESSION["id"]) && isset($_SESSION["type"]) && $_SESSION["type"] == 2) {
+        $handle = curl_init(HTTP_COMMAND_URL . "?id=" . $id . "&login=" . $login . "&password=" . sha1($password) . "&host=" . $host . "&port=" . $port);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
+
+        curl_exec($handle);
+    }
+}
+
+function sign_out()
+{
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }

@@ -18,19 +18,19 @@
     src: url('../fonts/poppins/Poppins-SemiBold.ttf');
 }
 
-html,body{
+html, body {
     background: #f0f0f0;
     margin: 0;
     height: 100%;
     width: 100%;
 }
-input[name ="menu"]
-{
-    position: absolute ;
+
+input[name ="menu"] {
+    position: absolute;
     z-index: 1000;
     width: 40px;
     height: 40px;
-    margin:25px;
+    margin: 25px;
     background-image: url("pictures/menu.png");
     background-size: cover;
     background-color: transparent;
@@ -44,8 +44,8 @@ input[name ="menu"]
     top: 0;
 
 }
-.menu
-{
+
+.menu {
     position: absolute;
     display: none;
     height: 100%;
@@ -58,10 +58,10 @@ input[name ="menu"]
     -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
     top: 0;
 }
-.login
-{
+
+.login, .admin {
     position: relative;
-    margin-left:auto;
+    margin-left: auto;
     margin-right: auto;
     top: 50%;
     transform: translateY(-50%);
@@ -78,8 +78,11 @@ input[name ="menu"]
     -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
 }
 
-.login_title
-{
+.admin {
+    width: 600px;
+}
+
+.login_title, .admin_title {
     display: block;
     font-family: Poppins-Bold;
     font-size: 30px;
@@ -89,8 +92,7 @@ input[name ="menu"]
     margin-bottom: 100px;
 }
 
-.login .wrap_input
-{
+.login .wrap_input, .admin .wrap_input {
     width: 100%;
     position: relative;
     border-bottom: 2px solid #adadad;
@@ -98,30 +100,30 @@ input[name ="menu"]
 
 }
 
-.login .wrap_input select
-{
+.login .wrap_input select, .admin .wrap_input select {
     width: 100%;
     position: relative;
     border: none;
     background: transparent;
-    -webkit-appearance : none; /* Pour avoir le contrôle de l'apparence sur WebKit/Chromium */
-    -moz-appearance : none;
+    -webkit-appearance: none; /* Pour avoir le contrôle de l'apparence sur WebKit/Chromium */
+    -moz-appearance: none;
     color: #9e9e9e;
     margin: 10px 0px;
 
 }
-.login .wrap_input input[type = "date"]
-{
+
+.login .wrap_input input[type = "date"] {
     width: 100%;
     position: relative;
     border: none;
     background: transparent;
-    -webkit-appearance : none; /* Pour avoir le contrôle de l'apparence sur WebKit/Chromium */
-    -moz-appearance : none;
+    -webkit-appearance: none; /* Pour avoir le contrôle de l'apparence sur WebKit/Chromium */
+    -moz-appearance: none;
     color: #555555;
 
 }
-.login form input {
+
+.login form input, .admin form input {
     font-family: Poppins-Regular;
     font-size: 15px;
     color: #555555;
@@ -135,10 +137,10 @@ input[name ="menu"]
     background: transparent;
     padding: 0 5px;
 }
+
 /*_________________________________*/
 
-.login form .focus_input
-{
+.login form .focus_input, .admin form .focus_input {
     position: absolute;
     display: block;
     width: 100%;
@@ -150,7 +152,7 @@ input[name ="menu"]
 
 /*___________________________________*/
 
-.login form input[type="submit"] {
+.login form input[type="submit"], .admin form input[type="submit"] {
 
     font-family: Poppins-Regular;
     font-size: 14px;
@@ -187,8 +189,8 @@ input[name ="menu"]
     background: linear-gradient(left, #b721ff, #21d4fd);
 
 }
-.login form input[type ="submit"]:hover
-{
+
+.login form input[type ="submit"]:hover, .admin form input[type="submit"]:hover {
     text-decoration: none;
     cursor: pointer;
     color: white;
@@ -199,8 +201,7 @@ input[name ="menu"]
 }
 
 
-.login input[type = "submit"]
-{
+.login input[type = "submit"], .admin input[type="submit"] {
     font-family: Poppins-Regular;
     font-size: 15px;
     color: #555555;
@@ -215,21 +216,22 @@ input[name ="menu"]
     background: transparent;
     padding: 0 5px;
 }
-.login .input_error
-{
+
+.login .input_error, .admin .input_error {
     font-family: Poppins-Regular;
     font-size: 12px;
     text-transform: uppercase;
 
     color: darkred;
 }
-.wrap_list{
+
+.wrap_list {
     width: 400px;
     background: #fff;
     border-radius: 10px;
     overflow: hidden;
     padding: 77px 55px 33px 55px;
-    margin:50px auto 50px auto;
+    margin: 50px auto 50px auto;
 
     box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
     -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
@@ -237,30 +239,31 @@ input[name ="menu"]
     -o-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
     -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
 }
-.wrap_list ul
-{
+
+.wrap_list ul {
     list-style: none;
 }
 
-.wrap_list li
-{
+.wrap_list li {
     list-style: none;
     font-family: Poppins-Medium;
 
 }
-.wrap_list .border{
+
+.wrap_list .border {
     height: 2px;
     width: 100%;
     background: #adadad;
 }
-.wrap_list li:hover +.border {
+
+.wrap_list li:hover + .border {
     background: -webkit-linear-gradient(left, #21d4fd, #b721ff);
     background: -o-linear-gradient(left, #21d4fd, #b721ff);
     background: -moz-linear-gradient(left, #21d4fd, #b721ff);
     background: linear-gradient(left, #21d4fd, #b721ff);
 }
-.list_title
-{
+
+.list_title {
     display: block;
     font-family: Poppins-Bold;
     font-size: 30px;
@@ -275,70 +278,84 @@ input[name ="menu"]
     font-family: Poppins-Regular;
     display: none;
 }
+
 .wrap_list li:hover + .challenge_description {
     display: block;
 }
-.wrap_list li .link{
+
+.wrap_list li .link {
     width: 100%;
 }
 
-.wrap_list li .link:hover + .border{
+.wrap_list li .link:hover + .border {
     background: -webkit-linear-gradient(left, #21d4fd, #b721ff);
     background: -o-linear-gradient(left, #21d4fd, #b721ff);
     background: -moz-linear-gradient(left, #21d4fd, #b721ff);
     background: linear-gradient(left, #21d4fd, #b721ff);
 }
+
 .challenge_description:hover {
     display: block;
 }
-.wrap_list a{
-    text-decoration: none;
-    color: #555555;
-}
-.wrap_list a:visited{
+
+.wrap_list a {
     text-decoration: none;
     color: #555555;
 }
 
-.menu .item{
+.wrap_list a:visited {
+    text-decoration: none;
+    color: #555555;
+}
+
+.menu .item {
     width: 250px;
     margin: auto;
     margin-top: 100px;
 
 }
-.menu .item a{
-    text-decoration: none;
-    color: #555555;
-}
-.menu .item a:visited{
+
+.menu .item a {
     text-decoration: none;
     color: #555555;
 }
 
-.menu .item li .link{
+.menu .item a:visited {
+    text-decoration: none;
+    color: #555555;
+}
+
+.menu .item li .link {
     width: 100%;
 }
-.menu .item li
-{
+
+.menu .item li {
     list-style: none;
     font-family: Poppins-Medium;
-    margin :15px 0;
+    margin: 15px 0;
 
 }
-.menu .item .border{
+
+.menu .item .border {
     height: 2px;
     width: 100%;
     background: #adadad;
 }
-.menu .item li:hover +.border {
+
+.menu .item li:hover + .border {
     background: -webkit-linear-gradient(left, #21d4fd, #b721ff);
     background: -o-linear-gradient(left, #21d4fd, #b721ff);
     background: -moz-linear-gradient(left, #21d4fd, #b721ff);
     background: linear-gradient(left, #21d4fd, #b721ff);
 }
-.menu .item li .link:hover + .border{
+
+.menu .item li .link:hover + .border {
     background: -webkit-linear-gradient(left, #21d4fd, #b721ff);
     background: -o-linear-gradient(left, #21d4fd, #b721ff);
     background: -moz-linear-gradient(left, #21d4fd, #b721ff);
     background: linear-gradient(left, #21d4fd, #b721ff);
+}
+
+.hidden {
+    display: none;
 }

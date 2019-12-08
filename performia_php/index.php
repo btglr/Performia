@@ -76,6 +76,15 @@ try {
         else if (strcmp($_GET['action'], 'sign_out') == 0) {
             sign_out();
         }
+
+        else if (strcmp($_GET['action'], 'start_ai') == 0) {
+            if (isset($_POST["ai_id"]) && isset($_POST["ai_login"]) && isset($_POST["ai_password"]) && isset($_POST[$_POST["ai_id"]])) {
+                $err = -1;
+
+                $exploded_host_port = explode("_", $_POST[$_POST["ai_id"]]);
+                request_start_ai($_POST["ai_id"], $_POST["ai_login"], $_POST["ai_password"], $exploded_host_port[0], $exploded_host_port[1]);
+            }
+        }
     }
     else {
         $err = -1;
