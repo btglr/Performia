@@ -7,12 +7,14 @@ public abstract class Challenge {
 	protected boolean fini;
 	protected Participant[] players;
 	protected int id_player; //J1 ou J2
+	protected int winner;
+
 
 	public Challenge(String nom) {
 		this.nom = nom;
 		this.fini = false;
+		this.winner = -1;
 	}
-
 	/**
 	 * Converti les données du challenge à envoyer en Json
 	 */
@@ -50,4 +52,8 @@ public abstract class Challenge {
 	 * @return vrai ou faux si un joueur a bien été ajouté
 	 */
 	public abstract boolean addPlayer(Participant p);
+
+	public int getWinners() {
+		return winner;
+	}
 }
