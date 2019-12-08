@@ -152,7 +152,7 @@ input[name ="menu"] {
 
 /*___________________________________*/
 
-.login form input[type="submit"], .admin form input[type="submit"] {
+.login form input[type="submit"] {
 
     font-family: Poppins-Regular;
     font-size: 14px;
@@ -223,6 +223,60 @@ input[name ="menu"] {
     text-transform: uppercase;
 
     color: darkred;
+}
+
+.wrap_list_stat{
+    width: 80%;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 77px 55px 33px 55px;
+    margin:50px auto 50px auto;
+
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -o-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+}
+.wrap_list_stat .list_title
+{
+    text-align: right;
+    margin : 0 5%;
+    display: block;
+    font-family: Poppins-Bold;
+    font-size: 30px;
+    color: #333333;
+    line-height: 1.2;
+    margin-bottom: 100px;
+}
+.wrap_list_stat table
+{
+    width: 90%;
+    margin: auto;
+    text-align: right;
+    border-collapse: collapse;
+    font-family: Poppins-Regular;
+
+}
+
+.wrap_list_stat table th
+{
+    text-align: center;
+    padding : 15px 0;
+}
+.wrap_list_stat table td{
+    width: 12%;
+    padding: 10px 10px;
+
+}
+.wrap_list_stat table td:nth-child(1) {
+    width: 32%;
+    text-align: center;
+}
+.wrap_list_stat table tr:nth-child(even)
+{
+    background-color: rgba(33, 212, 253,0.2);
 }
 
 .wrap_list {
