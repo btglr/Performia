@@ -801,7 +801,7 @@ public class MessageManager implements Runnable {
 
 		// Ne peut être null ici, vérification antérieure
 		Participant p = getParticipantByID(idUser);
-		Salle s = findAvailableRoom();
+		Salle s = findAvailableRoom(challengeId);
 
 		if (s == null) {
 			switch (challengeId) {
@@ -888,11 +888,11 @@ public class MessageManager implements Runnable {
 		return null;
 	}
 
-	private Salle findAvailableRoom() {
+	private Salle findAvailableRoom(int challengeId) {
 		Salle s = null;
 
 		for (Salle tmp : rooms) {
-			if (tmp != null && !tmp.estPleine() && !tmp.estFermee()) {
+			if (tmp != null && tmp.getChallenge().getChallengeId() == challengeId && !tmp.estPleine() && !tmp.estFermee()) {
 				s = tmp;
 			}
 		}

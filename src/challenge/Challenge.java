@@ -8,9 +8,10 @@ public abstract class Challenge {
 	protected Participant[] players;
 	protected int id_player; //J1 ou J2
 	protected int winner;
+	protected int challengeId;
 
-
-	public Challenge(String nom) {
+	public Challenge(int id, String nom) {
+		this.challengeId = id;
 		this.nom = nom;
 		this.fini = false;
 		this.winner = -1;
@@ -55,5 +56,9 @@ public abstract class Challenge {
 
 	public int getWinners() {
 		return winner;
+	}
+
+	public int getChallengeId() {
+		return challengeId;
 	}
 }

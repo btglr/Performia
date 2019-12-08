@@ -13,7 +13,7 @@ public class Connect4 extends Challenge {
 	}
 
 	public Connect4(Participant p1, Participant p2) {
-		super("Connect 4");
+		super(1, "Connect 4");
 
 		this.players = new Participant[2];
 		this.players[0] = p1;
@@ -23,7 +23,7 @@ public class Connect4 extends Challenge {
 	}
 
 	public Connect4(int[] grille, Participant p1, Participant p2) {
-		super("Connect 4");
+		super(1, "Connect 4");
 
 		this.players = new Participant[2];
 		this.players[0] = p1;

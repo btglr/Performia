@@ -14,7 +14,7 @@ public class Reflex extends Challenge implements Runnable{
 	private int change_round = 0;
 	
 	public Reflex(Participant[] participants) {
-		super("Reflex");
+		super(2, "Reflex");
 		this.players = new Participant[4];
 		
 		this.players[0] = participants[0];
@@ -30,7 +30,7 @@ public class Reflex extends Challenge implements Runnable{
 	
 	public Reflex(Participant p) {
 				
-		super("Reflex");
+		super(2, "Reflex");
 		this.players = new Participant[4];
 		
 		this.players[0] = p;
@@ -46,7 +46,7 @@ public class Reflex extends Challenge implements Runnable{
 	}
 	
 	public Reflex(boolean[] grille, Participant[] participants) {
-		super("Reflex");
+		super(2, "Reflex");
 		this.players = new Participant[4];
 		
 		this.players[0] = participants[0];
@@ -73,6 +73,7 @@ public class Reflex extends Challenge implements Runnable{
 		json.put("grille", this.grille);
 		json.put("score", this.score);
 		json.put("round", this.tour);
+		json.put("fini", this.fini);
 
 		return json;
 	}
