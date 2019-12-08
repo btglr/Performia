@@ -386,6 +386,14 @@ public class MessageManager implements Runnable {
             }
         }
 
+        /* Le nom de l'IA */
+        query = dbConnection.prepareStatement("SELECT username FROM user WHERE id=?");
+        query.setInt(1, ai);
+        resultat = query.executeQuery();
+        String name = "Erreur_Username";
+        if(resultat.next()) {
+            name = resultat.getString(1);
+        }
         /* Partie sur les prédictions où on récupère le nmbre de prédiction exacte */
         query = dbConnection.prepareStatement("SELECT id_prediction FROM prediction WHERE id_predicted=? AND thinkAI=1");
         query.setInt(1,ai);
@@ -396,7 +404,7 @@ public class MessageManager implements Runnable {
 
 
 
-        return new JSONObject().put("id_ai", ai).put("nb_win", nb_win).put("nb_played", nb_partie).put("nb_prediction", nb_prediction);
+        return new JSONObject().put("name_ai", name).put("nb_win", nb_win).put("nb_played", nb_partie).put("nb_prediction", nb_prediction);
 
     }
 
