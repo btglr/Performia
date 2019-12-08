@@ -1,4 +1,8 @@
 <?php
+
+$title = "";
+$css = "";
+
 if (!empty($data) && array_key_exists("code", $data) && ($data["code"] >= 500) && $data["code"] < 1000) {
 	$challenge = $data["data"];
 	$title = $challenge['challenge_name'];
@@ -50,6 +54,8 @@ $content = <<<HTML
 		$( document ).ready(function() {
 		    let intervalID = setInterval(waitChallenge, 250);
 			
+			var cpt = 0;
+			var s = "";
 			function waitChallenge() {
 				$.ajax({
 					url: "$ajax_url",
@@ -65,17 +71,17 @@ $content = <<<HTML
 						intervalIDPlateau = setInterval(updatePlateau, 1000);
 					}
 					else {
-						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent...</h2>");
+						cpt++;
+						if(cpt == 4) cpt = 1;
+						if(cpt == 1) s = ".";
+						if(cpt == 2) s = ". .";
+						if(cpt == 3) s = ". . .";
+
+						$("#challenge").html("<h2 class='waiting-opponent'>Waiting for an opponent</h2><h2 class='waiting-opponent'>" + s + " </h2>");
 						console.log("Challenge cannot start");
 					}
 				});
 			}
-		});
-
-		//Mise a jour du plateau
-		//Pour le moment lors du click sur le bouton "Actualiser le plateau"
-		$("#refresh").click(function() {
-			updatePlateau();
 		});
 
 		//Fonction de mise a jour visuel
@@ -83,10 +89,22 @@ $content = <<<HTML
 		function updatePlateau() {
 			$.ajax({
 			  url: "challenges/reflex/reflex.php",
-			  data: "url=$url"
+			  data: "url=$url",
+			  dataType: "json"
 			}).done(function(res) {
-			 	 $("#challenge").replaceWith(res);
-			  console.log('update done');
+				if (res["code"] === 507) {
+					clearInterval(intervalIDPlateau);
+
+				if (res["id_player"] === $user_id) {
+				    $("<div class='modal'><p>You have lost!</p></div>").appendTo("body").modal();
+				}
+
+				else {
+					$("<div class='modal'><p>You have won!</p></div>").appendTo("body").modal();
+				}
+			}
+			$("#challenge").replaceWith(res["php"]);
+			console.log('update done');
 			});
 		}
 

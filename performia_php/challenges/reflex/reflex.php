@@ -1,24 +1,35 @@
 <?php
 
+if(session_status() == PHP_SESSION_NONE) {
+	session_start();
+}
 
 $php = "<p> Impossible de créer le challenge :</p>
 		<p>     -> serveur http injoignable ?</p>
 		<p>     -> donnees recues invalides ?</p>";
 
+// Connection error
+$code = 1001;
+$id_player = -1;
+
 if(isset($_GET["url"])) {
-	$url = $_GET["url"] . "?code=4&user_id=1";
+	$url = $_GET["url"] . "?code=4&user_id=" . $_SESSION["id"];
 
 	$handle = curl_init($url);
 	curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
 	$response = curl_exec($handle);
-	if($response == FALSE) {
-		$json = "0";
-	} else {
-		$json = file_get_contents($url);
-	}
-if($json != "0" && strcmp($json,"") != 0)  {
-	$data = json_decode(json_encode($json));
+	$json = json_decode($response,true);
+
+	if (array_key_exists("data", $json)) {
+		if (array_key_exists("fini", $json["data"]) && $json["data"]["fini"] === true) {
+		    $code = 507;
+		    $id_player = $json["data"]["id_player"];
+		}
+		else {
+		    $code = 502;
+        }
+	$data = $json;
 	$html = <<<HTML
 		<div class="container">
 			<div class="game-container">
@@ -99,7 +110,7 @@ if($json != "0" && strcmp($json,"") != 0)  {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 	<script type="text/javascript">
-		var data = $json;
+		var data = $response;
 		var game = data["data"];
 
 		$( document ).ready(function() {
@@ -131,4 +142,10 @@ HTML;
 	$php = $html;
 	}
 }
-echo $php;
+
+$result = array(
+    "code" => $code,
+    "php" => $php
+);
+
+echo json_encode($result);
