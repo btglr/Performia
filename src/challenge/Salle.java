@@ -1,5 +1,7 @@
 package challenge;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Salle {
@@ -10,9 +12,9 @@ public class Salle {
     // Le challenge en cours dans la salle (polymorphisme)
     private Challenge challenge;
     // Les IDs des joueurs présents dans la salle
-    private int[] joueurs;
+    private List<Integer> joueurs;
     // Nombre de joueurs présents dans la salle
-    private int nbJoueursConnectes;
+    private static final AtomicInteger nbJoueursConnectes = new AtomicInteger(0);
     // Nombre de joueurs maximum
     private int nbJoueursMax;
     // Indique si la salle est fermée (partie terminée)
@@ -30,25 +32,19 @@ public class Salle {
         this.nbJoueursMax = Math.max(nbJoueursMax, 2);
         this.challenge = challenge;
 
-        this.joueurs = new int[this.nbJoueursMax];
+        this.joueurs = new ArrayList<>(this.nbJoueursMax);
 
         for (int i = 0; i < this.nbJoueursMax; ++i) {
-            this.joueurs[i] = -1;
+            this.joueurs.add(-1);
         }
 
-        this.nbJoueursConnectes = 0;
         this.id = count.incrementAndGet();
     }
 
     public void addJoueur(int joueurId) {
-        if (this.nbJoueursConnectes < this.nbJoueursMax) {
-            this.joueurs[this.nbJoueursConnectes++] = joueurId;
-        }
-    }
-
-    public void demarrerJeu() {
-        if (this.nbJoueursConnectes == this.nbJoueursMax) {
-            // Démarrage du jeu
+        if (nbJoueursConnectes.get() < this.nbJoueursMax) {
+            this.joueurs.add(joueurId);
+            nbJoueursConnectes.incrementAndGet();
         }
     }
 
@@ -56,16 +52,16 @@ public class Salle {
         return challenge;
     }
 
-    public int[] getJoueurs() {
+    public List<Integer> getJoueurs() {
         return joueurs;
     }
 
     public int getNbJoueursConnectes() {
-        return nbJoueursConnectes;
+        return nbJoueursConnectes.get();
     }
 
     public boolean estPleine() {
-        return this.nbJoueursConnectes == this.nbJoueursMax;
+        return nbJoueursConnectes.get() == this.nbJoueursMax;
     }
 
     public boolean estFermee() {
@@ -74,5 +70,9 @@ public class Salle {
 
     public void fermer() {
         this.fermee = true;
+    }
+
+    public int getId() {
+        return id;
     }
 }
