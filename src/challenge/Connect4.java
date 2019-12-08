@@ -202,8 +202,11 @@ public class Connect4 extends Challenge {
 		if (complet) fini = true;
 		
 		if(fini) {
-			if (this.id_player == this.players[0].getId()) this.winners.add(this.players[0]);
-			else this.winners.add(this.players[1]);
+			if(!complet) {
+				if (this.id_player == this.players[0].getId()) this.winner = this.players[0].getId();
+				else this.winner = this.players[1].getId();
+			}
+			
 		}
 	}
 

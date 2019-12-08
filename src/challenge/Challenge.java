@@ -9,12 +9,12 @@ public abstract class Challenge {
 	protected boolean fini;
 	protected Participant[] players;
 	protected int id_player; //J1 ou J2
-	protected ArrayList<Participant> winners;
+	protected int winner;
 
 	public Challenge(String nom) {
 		this.nom = nom;
 		this.fini = false;
-		this.winners = new ArrayList<Participant>();
+		this.winner = -1;
 	}
 
 	/**
@@ -55,7 +55,7 @@ public abstract class Challenge {
 	 */
 	public abstract boolean addPlayer(Participant p);
 
-	public ArrayList<Participant> getWinners() {
-		return winners;
+	public int getWinners() {
+		return winner;
 	}
 }

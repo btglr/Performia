@@ -107,20 +107,17 @@ public class Reflex extends Challenge implements Runnable{
 	}
 	
 	void setWinners() {
-		ArrayList<Integer> indMax = new ArrayList<Integer>();
-		indMax.add(0);
+		int indMax = 0;
+		boolean egalite = false;
 		for(int i = 0; i < this.players.length; i++) {
-			if(this.score[i] > this.score[indMax.get(0)]) {
-				indMax = new ArrayList<Integer>();
-				indMax.add(i);
+			if(this.score[i] > this.score[indMax]) {
+				indMax = i;
 			}
-			if(this.score[i] == this.score[indMax.get(0)]) {
-				indMax.add(i);
+			if(i != 0 && this.score[i] == this.score[indMax]) {
+				egalite = true;
 			}
 		}
-		for(int i = 0; i < indMax.size(); i++) {
-			this.winners.add(this.players[indMax.get(i)]);
-		}
+		if(!egalite) this.winner = this.players[indMax].getId(); 
 	}
 
 	@Override
