@@ -547,7 +547,7 @@ public class MessageManager implements Runnable {
 		query.setInt(1, id1);
 		query.setInt(2, id2);
 		query.setBoolean(3, isAI != 0);
-		query.executeQuery();
+		query.executeUpdate();
 
 		db.disconnect();
 	}
@@ -574,7 +574,7 @@ public class MessageManager implements Runnable {
 		query.setInt(8, mean_time_player3);
 		query.setInt(9, mean_time_player4);
 		query.setInt(10, id_winner);
-		query.executeQuery();
+		query.executeUpdate();
 
 		db.disconnect();
 	}
@@ -597,7 +597,7 @@ public class MessageManager implements Runnable {
 		query.setInt(4, mean_time_player1);
 		query.setInt(5, mean_time_player2);
 		query.setInt(6, id_winner);
-		query.executeQuery();
+		query.executeUpdate();
 
 		db.disconnect();
 	}
