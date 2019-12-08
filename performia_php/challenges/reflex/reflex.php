@@ -30,6 +30,16 @@ if(isset($_GET["url"])) {
 		    $code = 502;
         }
 	$data = $json;
+	$score1 = 0;
+	$score2 = 0;
+	$score3 = 0;
+	$score4 = 0;
+	if(array_key_exists("score",$json["data"])) {	
+		$score1 = $json["data"]["score"][0];
+		$score2 = $json["data"]["score"][1];
+		$score3 = $json["data"]["score"][2];
+		$score4 = $json["data"]["score"][0];
+	}
 	$html = <<<HTML
 		<div class="container">
 			<div class="game-container">
@@ -99,10 +109,10 @@ if(isset($_GET["url"])) {
 					<h2>Score : </h2>
 				</div>
 				<div class="playerscore">
-					<p>J1 : <strong>Pas</strong> points</p>
-					<p>J2 : <strong>encore</strong> points</p>
-					<p>J3 : <strong>implementé</strong> points</p>
-					<p>J4 : <strong>!</strong> points</p>
+					<p>J1 : <strong>{$score1}</strong> points</p>
+					<p>J2 : <strong>{$score2}</strong> points</p>
+					<p>J3 : <strong>{$score3}</strong> points</p>
+					<p>J4 : <strong>{$score4}</strong> points</p>
 				</div>
 			</div>
 		</div>
@@ -147,5 +157,10 @@ $result = array(
     "code" => $code,
     "php" => $php
 );
+
+
+if ($id_player !== -1) {
+    $result["id_player"] = $id_player;
+}
 
 echo json_encode($result);

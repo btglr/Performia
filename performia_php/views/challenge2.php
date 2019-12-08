@@ -22,12 +22,6 @@ curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($handle);
 
-if($response == FALSE) {
-	$json = 0;
-} else {
-    $json = file_get_contents($url);
-}
-
 $content = <<<HTML
   	<link rel="stylesheet" href="public/reflex.css">
 	<div class="challengebox">
@@ -50,6 +44,8 @@ $content = <<<HTML
 		<p>Le principe du jeu est de frapper à l'aide d'un marteau sur le plus grand nombre de taupes parmi celles qui sortent pour un temps très limité et aléatoirement des trous situés sur un terrain de jeu.</p>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 	<script>
 		$( document ).ready(function() {
 		    let intervalID = setInterval(waitChallenge, 250);
@@ -95,12 +91,8 @@ $content = <<<HTML
 				if (res["code"] === 507) {
 					clearInterval(intervalIDPlateau);
 
-				if (res["id_player"] === $user_id) {
-				    $("<div class='modal'><p>You have lost!</p></div>").appendTo("body").modal();
-				}
-
-				else {
-					$("<div class='modal'><p>You have won!</p></div>").appendTo("body").modal();
+				if (res["id_player"] != -1) {
+				    $("<div class='modal'><p>Fin du jeu!</p></div>").appendTo("body").modal();
 				}
 			}
 			$("#challenge").replaceWith(res["php"]);
