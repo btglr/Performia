@@ -17,6 +17,8 @@ public class Salle {
     private int nbJoueursMax;
     // Temps de la partie
     private long tempsPartie;
+    // Enregistrer partie
+    private boolean save;
 
     public Salle() {
         this(null);
@@ -38,6 +40,7 @@ public class Salle {
 
         this.nbJoueursConnectes = 0;
         this.id = count.incrementAndGet();
+        this.save = false;
     }
 
     public void addJoueur(int joueurId) {
@@ -75,5 +78,13 @@ public class Salle {
     public long finPartie() {
         // On divise par 1000 pour avoir le temps en seconde
         return (int)((System.currentTimeMillis() - tempsPartie)/1000);
+    }
+
+    public boolean isSave() {
+        return save;
+    }
+
+    public void setSave(boolean save) {
+        this.save = save;
     }
 }

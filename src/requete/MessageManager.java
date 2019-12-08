@@ -260,9 +260,10 @@ public class MessageManager implements Runnable {
 									p.canPlay();
 									// Si la partie est finie, on enregistre dans la BDD le match
 									if(jsonObject.getBoolean("fini")) {
-										Salle s = getRoomByID(req.getData().getInt("user_id"));
-										if (s != null) {
+										Salle s = getRoomByID(req.getData().getInt("room_id"));
+										if (s != null && !s.isSave()) {
 											// Si c'est 4 joueurs
+											s.setSave(true);
 											JSONArray arrayPlayers = new JSONArray();
 											arrayPlayers = jsonObject.getJSONArray("players");
 											int id1 = arrayPlayers.getJSONObject(0).getInt("id");
@@ -386,7 +387,6 @@ public class MessageManager implements Runnable {
 			}
 		}
 
-
 		/* Le nom de l'IA */
         query = dbConnection.prepareStatement("SELECT username FROM user WHERE id=?");
         query.setInt(1, ai);
@@ -400,11 +400,6 @@ public class MessageManager implements Runnable {
         query.setInt(1,ai);
         resultat = query.executeQuery();
         int nb_prediction = resultat.getMetaData().getColumnCount()-1;
-
-        db.disconnect();
-
-
-
         return new JSONObject().put("name_ai", name).put("nb_win", nb_win).put("nb_played", nb_partie).put("nb_prediction", nb_prediction);
 
     }
@@ -479,7 +474,7 @@ public class MessageManager implements Runnable {
 		query.setBoolean(3, isAI != 0);
 		query.executeQuery();
 
-		db.disconnect();
+
 	}
 
 	private void match_finish4player(int id1, int id2, int id3, int id4, int match_time, int mean_time_player1, int mean_time_player2, int mean_time_player3,  int mean_time_player4, int id_winner) throws SQLException {
@@ -506,7 +501,6 @@ public class MessageManager implements Runnable {
 		query.setInt(10, id_winner);
 		query.executeQuery();
 
-		db.disconnect();
 	}
 
 	private void match_finish2player(int id1, int id2, int match_time, int mean_time_player1, int mean_time_player2, int id_winner) throws SQLException {
@@ -529,7 +523,6 @@ public class MessageManager implements Runnable {
 		query.setInt(6, id_winner);
 		query.executeQuery();
 
-		db.disconnect();
 	}
 
 	private boolean checkCanChallengeStart(Message request) {
