@@ -61,7 +61,7 @@ echo "<div class='wrap_list_stat'>
         echo "</table>";
     }
     else
-        echo "Vous n'avez pas encore d'IA";
+        echo "<p>Vous n'avez pas encore d'IA</p>";
 
 echo "</div>";
 
