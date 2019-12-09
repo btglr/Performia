@@ -104,7 +104,7 @@ namespace AiCSharp
             jo.Add("id_utilisateur", this.userID);
 
             JObject message = new JObject();
-            message.Add("code", 2);
+            message.Add("code", 4);
             message.Add("data", jo.ToString());
             SendData(message);
 
@@ -120,7 +120,7 @@ namespace AiCSharp
         public void SendTurn(JObject action)
         {
             JObject message = new JObject();
-            message.Add("code", 2);
+            message.Add("code", 3);
             message.Add("data", action.ToString());
             SendData(message);
         }
