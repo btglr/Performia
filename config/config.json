@@ -1,5 +1,5 @@
 {
-  "ip": "ec2-35-180-228-52.eu-west-3.compute.amazonaws.com",
+  "ip": "localhost",
   "port_http": 25000,
   "port_tcp": 30000
 }

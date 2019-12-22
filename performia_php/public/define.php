@@ -12,7 +12,7 @@ if (!defined("ERROR_")) {
 }
 
 if (!defined("HTTP_SERVER_URL")) {
-    define("HTTP_SERVER_URL", "http://ec2-35-180-228-52.eu-west-3.compute.amazonaws.com:25000");
+    define("HTTP_SERVER_URL", "http://localhost:25000");
 }
 
 if (!defined("REQUEST_HANDLER")) {

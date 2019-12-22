@@ -1,5 +1,5 @@
 {
-  "host" : "database-1.cunwf0ixerw5.us-east-1.rds.amazonaws.com",
+  "host" : "localhost",
   "port" : 3306,
   "user" : "performia",
   "password" : "performia",
