@@ -1,11 +1,11 @@
 INSERT INTO performia.account_type (id, type) VALUES (1, 'Utilisateur');
 INSERT INTO performia.account_type (id, type) VALUES (2, 'Laboratoire');
 INSERT INTO performia.account_type (id, type) VALUES (3, 'IA');
+INSERT INTO performia.ai_type (id, type) VALUES (1, 'Connect4');
+INSERT INTO performia.ai_type (id, type) VALUES (2, 'Reflex');
 INSERT INTO performia.ai (id, name, host, port, type) VALUES (1, 'Random Connect4 Java', 'localhost', 40000, 1);
 INSERT INTO performia.ai (id, name, host, port, type) VALUES (2, 'Reflex Java', 'localhost', 40001, 2);
 INSERT INTO performia.ai (id, name, host, port, type) VALUES (3, 'Smart Connect4 Java', 'localhost', 40002, 1);
-INSERT INTO performia.ai_type (id, type) VALUES (1, 'Connect4');
-INSERT INTO performia.ai_type (id, type) VALUES (2, 'Reflex');
 INSERT INTO performia.challenge (challenge_id, challenge_name, challenge_description) VALUES (1, 'Connect 4', 'Connect four of your checkers in a row while preventing your opponent from doing the same. But, look out -- your opponent can sneak up on you and win the game!');
 INSERT INTO performia.challenge (challenge_id, challenge_name, challenge_description) VALUES (2, 'Reflex', 'First to touch the cell that lights up is the first to win');
 INSERT INTO performia.gender (id, gender) VALUES (1, 'Homme');
